@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { VerdictRibbon } from '@/components/ui/verdict-ribbon';
 import { MetricCard, SplitBar } from '@/components/ui/metric-card';
 import { money } from '@/lib/format';
+import { getBusiness, getEntry } from '@/lib/api';
 
 const THAI_MONTHS = [
   '', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
@@ -100,32 +101,28 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
   const loadData = useCallback(async (m: string) => {
     setLoading(true);
     setError(false);
     try {
-      const bizRes = await fetch(`${apiUrl}/api/business`, { credentials: 'include' });
-      if (!bizRes.ok) {
-        // No business yet → onboarding
+      const biz = await getBusiness();
+      setBusiness(biz);
+
+      try {
+        const entry = await getEntry(m);
+        setData(entry);
+      } catch {
+        setData(null); // No entry for this month
+      }
+    } catch (e: any) {
+      if (e.message?.includes('Not Found') || e.message?.includes('No business')) {
         router.replace('/onboarding');
         return;
       }
-      const biz = await bizRes.json();
-      setBusiness(biz);
-
-      const entryRes = await fetch(`${apiUrl}/api/entries/${m}`, { credentials: 'include' });
-      if (entryRes.ok) {
-        setData(await entryRes.json());
-      } else {
-        setData(null); // No entry for this month
-      }
-    } catch {
       setError(true);
     }
     setLoading(false);
-  }, [apiUrl, router]);
+  }, [router]);
 
   useEffect(() => {
     loadData(month);

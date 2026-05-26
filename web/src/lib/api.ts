@@ -1,9 +1,34 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
+let cachedUserId: string | null = null;
+
+/** Get current user ID from Auth.js session */
+async function getUserId(): Promise<string | null> {
+  if (cachedUserId) return cachedUserId;
+  try {
+    const res = await fetch('/api/auth/session');
+    if (res.ok) {
+      const session = await res.json();
+      cachedUserId = session?.user?.id || null;
+      return cachedUserId;
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
+/** Clear cached user (call on logout) */
+export function clearUserCache() {
+  cachedUserId = null;
+}
+
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
+  const userId = await getUserId();
   const res = await fetch(`${API_URL}${path}`, {
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(userId ? { 'X-User-Id': userId } : {}),
+      ...options?.headers,
+    },
     ...options,
   });
   if (!res.ok) {

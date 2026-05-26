@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { maskCurrency, unmaskCurrency } from '@/lib/format';
+import { createBusiness, upsertEntry } from '@/lib/api';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -15,36 +16,24 @@ export default function OnboardingPage() {
   const handleFinish = async () => {
     setSaving(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-      await fetch(`${apiUrl}/api/business`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          monthlyDebtService: debt ? unmaskCurrency(debt) : null,
-        }),
+      await createBusiness({
+        name: name.trim(),
+        monthlyDebtService: debt ? unmaskCurrency(debt) : null,
       });
 
       if (useSample) {
-        // Create sample month entry
         const now = new Date();
         const yyyyMm = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        await fetch(`${apiUrl}/api/entries/${yyyyMm}`, {
-          method: 'PUT',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            grossSales: 500000,
-            creditSales: 150000,
-            cogs: 300000,
-            otherExpenses: 135000,
-            cashIn: 380000,
-            arBalance: 220000,
-            apBalance: 160000,
-            cashOnHand: 280000,
-            leakNote: 'ค่าขนส่งเกินงบ — 18,000 บาท (ข้อมูลตัวอย่าง)',
-          }),
+        await upsertEntry(yyyyMm, {
+          grossSales: 500000,
+          creditSales: 150000,
+          cogs: 300000,
+          otherExpenses: 135000,
+          cashIn: 380000,
+          arBalance: 220000,
+          apBalance: 160000,
+          cashOnHand: 280000,
+          leakNote: 'ค่าขนส่งเกินงบ — 18,000 บาท (ข้อมูลตัวอย่าง)',
         });
       }
 

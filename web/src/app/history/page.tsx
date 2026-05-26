@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money } from '@/lib/format';
+import { getBusiness, getTrends } from '@/lib/api';
 
 const THAI_MONTHS_SHORT = [
   '', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
@@ -125,25 +126,17 @@ export default function HistoryPage() {
   const [business, setBusiness] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
   useEffect(() => {
     async function load() {
       try {
-        const [bizRes, trendRes] = await Promise.all([
-          fetch(`${apiUrl}/api/business`, { credentials: 'include' }),
-          fetch(`${apiUrl}/api/entries/trends?months=12`, { credentials: 'include' }),
-        ]);
-        if (bizRes.ok) setBusiness(await bizRes.json());
-        if (trendRes.ok) {
-          const data = await trendRes.json();
-          setTrends(data.map(extractTrend));
-        }
+        const [biz, data] = await Promise.all([getBusiness(), getTrends(12)]);
+        setBusiness(biz);
+        setTrends((data as any[]).map(extractTrend));
       } catch { /* ignore */ }
       setLoading(false);
     }
     load();
-  }, [apiUrl]);
+  }, []);
 
   const latest = trends.length > 0 ? trends[trends.length - 1] : null;
   const latestVal = latest ? latest[metric] : null;

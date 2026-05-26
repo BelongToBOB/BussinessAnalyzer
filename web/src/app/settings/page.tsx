@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { maskCurrency, unmaskCurrency, money } from '@/lib/format';
+import { getBusiness, updateBusiness } from '@/lib/api';
 
 function SettingsRow({ label, value, trailing, onTap, last, danger }: {
   label: string; value?: string; trailing?: React.ReactNode;
@@ -52,27 +53,21 @@ export default function SettingsPage() {
   const [editDebt, setEditDebt] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`${apiUrl}/api/business`, { credentials: 'include' });
-        if (res.ok) {
-          const biz = await res.json();
-          setBusiness(biz);
-          setEditName(biz.name);
-          setEditDebt(biz.monthlyDebtService ? money(Number(biz.monthlyDebtService)) : '');
-        }
+        const biz = await getBusiness();
+        setBusiness(biz);
+        setEditName((biz as any).name);
+        setEditDebt((biz as any).monthlyDebtService ? money(Number((biz as any).monthlyDebtService)) : '');
       } catch { /* ignore */ }
       setLoading(false);
     }
     load();
 
-    // Load theme
     const stored = localStorage.getItem('theme') || 'light';
     setTheme(stored);
-  }, [apiUrl]);
+  }, []);
 
   const handleTheme = (t: string) => {
     setTheme(t);
@@ -92,16 +87,8 @@ export default function SettingsPage() {
   const saveBusiness = async (data: Record<string, unknown>) => {
     setSaving(true);
     try {
-      const res = await fetch(`${apiUrl}/api/business`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      if (res.ok) {
-        const updated = await res.json();
-        setBusiness(updated);
-      }
+      const updated = await updateBusiness(data as any);
+      setBusiness(updated);
     } catch { /* ignore */ }
     setSaving(false);
   };

@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { NumberInput } from '@/components/ui/number-input';
 import { maskCurrency, unmaskCurrency, money } from '@/lib/format';
+import { getBusiness, getEntry, upsertEntry } from '@/lib/api';
 
 const FIELDS = [
   { id: 'grossSales',    label: 'ยอดขายรวมเดือนนี้',           helper: 'รวมทั้งขายสดและขายเชื่อ' },
@@ -38,40 +39,32 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
   // Load existing data
   useEffect(() => {
     async function load() {
       try {
-        // Load business for debt service display
-        const bizRes = await fetch(`${apiUrl}/api/business`, { credentials: 'include' });
-        if (bizRes.ok) {
-          const biz = await bizRes.json();
-          if (biz.monthlyDebtService) {
-            setDebtService(money(Number(biz.monthlyDebtService)));
-          }
+        const biz = await getBusiness();
+        if (biz.monthlyDebtService) {
+          setDebtService(money(Number(biz.monthlyDebtService)));
         }
+      } catch { /* no business */ }
 
-        // Load existing entry if any
-        const entryRes = await fetch(`${apiUrl}/api/entries/${yyyyMm}`, { credentials: 'include' });
-        if (entryRes.ok) {
-          const data = await entryRes.json();
-          const inputs = data.inputs || {};
-          const newVals: Record<string, string> = {};
-          for (const f of FIELDS) {
-            if (inputs[f.id] != null) {
-              newVals[f.id] = money(inputs[f.id]);
-            }
+      try {
+        const data = await getEntry(yyyyMm);
+        const inputs = (data as any).inputs || {};
+        const newVals: Record<string, string> = {};
+        for (const f of FIELDS) {
+          if (inputs[f.id] != null) {
+            newVals[f.id] = money(inputs[f.id]);
           }
-          setVals(newVals);
-          if (inputs.leakNote) setLeakNote(inputs.leakNote);
         }
+        setVals(newVals);
+        if (inputs.leakNote) setLeakNote(inputs.leakNote);
       } catch { /* new entry */ }
       setLoading(false);
     }
     load();
-  }, [yyyyMm, apiUrl]);
+  }, [yyyyMm]);
 
   const set = (id: string) => (value: string) => {
     setVals((prev) => ({ ...prev, [id]: value }));
@@ -114,12 +107,7 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
     body.leakNote = leakNote || null;
 
     try {
-      await fetch(`${apiUrl}/api/entries/${yyyyMm}`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+      await upsertEntry(yyyyMm, body);
       setSaved(true);
       setTimeout(() => router.push(`/dashboard?month=${yyyyMm}`), 1000);
     } catch {
