@@ -30,7 +30,7 @@ export const updateBusinessSchema = z.object({
   monthlyDebtService: z.number().min(0).nullable().optional(),
 });
 
-/** Parse YYYY-MM string into Date (1st of month). Rejects future months. */
+/** Parse YYYY-MM string into Date (1st of month, UTC). Rejects future months. */
 export function parseMonth(yyyyMm: string): Date {
   const match = yyyyMm.match(/^(\d{4})-(\d{2})$/);
   if (!match) throw new Error('Invalid month format. Use YYYY-MM.');
@@ -39,10 +39,11 @@ export function parseMonth(yyyyMm: string): Date {
   const month = parseInt(match[2], 10);
   if (month < 1 || month > 12) throw new Error('Invalid month.');
 
-  const date = new Date(year, month - 1, 1);
+  // Use UTC to avoid timezone offset issues with @db.Date
+  const date = new Date(Date.UTC(year, month - 1, 1));
 
   const now = new Date();
-  const currentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const currentMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
   if (date > currentMonth) throw new Error('Cannot enter data for future months.');
 
   return date;

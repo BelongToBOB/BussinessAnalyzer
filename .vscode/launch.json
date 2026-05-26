@@ -1,0 +1,61 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: Debug",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": ["--inspect", "-r", "ts-node/register", "-r", "tsconfig-paths/register"],
+      "args": ["${workspaceFolder}/server/src/main.ts"],
+      "cwd": "${workspaceFolder}/server",
+      "envFile": "${workspaceFolder}/server/.env",
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "restart": true
+    },
+    {
+      "name": "Backend: Attach",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "sourceMaps": true
+    },
+    {
+      "name": "Frontend: Debug (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3001",
+      "webRoot": "${workspaceFolder}/web/src",
+      "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${workspaceFolder}/web/*"
+      }
+    },
+    {
+      "name": "Frontend: Server Debug",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "cwd": "${workspaceFolder}/web",
+      "envFile": "${workspaceFolder}/web/.env",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Tests: Formula",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["test", "--", "--testPathPatterns=dashboard", "--verbose"],
+      "cwd": "${workspaceFolder}/server",
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack: Debug",
+      "configurations": ["Backend: Debug", "Frontend: Server Debug"],
+      "stopAll": true
+    }
+  ]
+}
