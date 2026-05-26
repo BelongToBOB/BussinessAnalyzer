@@ -17,9 +17,15 @@ export default function LoginPage() {
     e.preventDefault();
     if (!email.trim()) return;
     setSending(true);
-    await signIn('resend', { email, callbackUrl: '/dashboard', redirect: false });
+    // Dev mode: use credentials provider (instant login, no email sent)
+    // Production: will switch to LINE Login as primary
+    const result = await signIn('dev-login', { email, redirect: false });
     setSending(false);
-    setSent(true);
+    if (result?.ok) {
+      window.location.href = '/dashboard';
+    } else {
+      setSent(true); // fallback UI
+    }
   };
 
   if (sent) {
