@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
 
-// Root route — redirect to dashboard (or login if not authenticated)
-// TODO: check auth session and redirect accordingly
-export default function Home() {
-  redirect('/dashboard');
+export default async function Home() {
+  const session = await auth();
+  if (session?.user) {
+    redirect('/dashboard');
+  }
+  redirect('/login');
 }
