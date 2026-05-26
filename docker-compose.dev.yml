@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: insidebank_postgres_dev
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: insidebank_tools
+      POSTGRES_USER: insidebank_tools_user
+      POSTGRES_PASSWORD: devpassword123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
