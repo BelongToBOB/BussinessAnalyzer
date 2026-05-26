@@ -1,0 +1,29 @@
+# InsideBank Tools API — add this block to /etc/caddy/Caddyfile on VPS
+# Then: sudo systemctl reload caddy
+#
+# Pattern matches existing WinWin services:
+#   checkout.winwinwealth.co → :3001 (lms_backend)
+#   automation.winwinwealth.co → :5678 (n8n)
+
+tools-api.winwinwealth.co {
+	reverse_proxy 127.0.0.1:3002
+
+	header {
+		# CORS headers for cross-origin cookie
+		Access-Control-Allow-Origin https://tools.winwinwealth.co
+		Access-Control-Allow-Credentials true
+		Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+		Access-Control-Allow-Headers "Content-Type, Authorization"
+	}
+
+	# Handle preflight
+	@options method OPTIONS
+	respond @options 204
+
+	# Security headers
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+}

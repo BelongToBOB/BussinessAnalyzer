@@ -1,11 +1,12 @@
 import NextAuth from 'next-auth';
 import LINE from 'next-auth/providers/line';
 import Resend from 'next-auth/providers/resend';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import { prisma } from './prisma';
+
+// JWT strategy — no DB connection needed at the edge (CF Pages compatible).
+// User account creation/linking is handled by the NestJS backend.
+// Auth.js only manages the JWT session token.
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
   providers: [
     LINE({
       clientId: process.env.LINE_CHANNEL_ID!,
@@ -21,15 +22,41 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     verifyRequest: '/auth/verify',
   },
   callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    async jwt({ token, user, account, profile }) {
+      // On initial sign-in, sync user to backend
+      if (account && (user?.email || profile)) {
+        try {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+          const res = await fetch(`${apiUrl}/api/auth/sync`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              email: user?.email || null,
+              name: user?.name || (profile as any)?.displayName || null,
+              image: user?.image || null,
+            }),
+          });
+          if (res.ok) {
+            const synced = await res.json();
+            token.userId = synced.id;
+          }
+        } catch {
+          // Backend unavailable — continue with token-only
+        }
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.userId) {
+        session.user.id = token.userId as string;
       }
       return session;
     },
   },
   session: {
-    strategy: 'database',
+    strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 });
