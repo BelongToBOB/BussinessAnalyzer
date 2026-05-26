@@ -1,0 +1,15 @@
+services:
+  tools_backend:
+    build: .
+    container_name: tools_backend
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    env_file:
+      - .env
+    networks:
+      - winwin-network
+
+networks:
+  winwin-network:
+    external: true

@@ -1,0 +1,110 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ─── InsideBank Design Tokens (from prototype) ─────────── */
+
+:root {
+  /* Light mode */
+  --bg-primary:    #FFFFFF;
+  --bg-secondary:  #F5F5F7;
+  --bg-tertiary:   #FAFAFB;
+  --bg-card:       #FFFFFF;
+  --bg-elevated:   #FFFFFF;
+  --text-primary:  #1D1D1F;
+  --text-secondary:#86868B;
+  --text-tertiary: #B0B0B5;
+  --border:        #E5E5EA;
+  --border-strong: #D2D2D7;
+  --accent:        #007AFF;
+  --accent-soft:   rgba(0, 122, 255, 0.10);
+
+  /* Status (theme-stable) */
+  --status-good:   #34C759;
+  --status-warn:   #FF9500;
+  --status-bad:    #FF3B30;
+  --status-empty:  #C7C7CC;
+
+  /* Status washes (card backgrounds) */
+  --wash-good:    rgba(52, 199, 89, 0.10);
+  --wash-warn:    rgba(255, 149, 0, 0.10);
+  --wash-bad:     rgba(255, 59, 48, 0.10);
+  --wash-empty:   rgba(199, 199, 204, 0.18);
+  --wash-info:    rgba(0, 122, 255, 0.08);
+
+  /* Radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+
+  /* Shadow */
+  --shadow-card: 0 1px 2px rgba(20, 20, 30, 0.04);
+  --shadow-pop:  0 8px 24px rgba(20, 20, 30, 0.10), 0 2px 4px rgba(20, 20, 30, 0.04);
+}
+
+[data-theme="dark"] {
+  --bg-primary:    #000000;
+  --bg-secondary:  #1C1C1E;
+  --bg-tertiary:   #161618;
+  --bg-card:       #1C1C1E;
+  --bg-elevated:   #2C2C2E;
+  --text-primary:  #FFFFFF;
+  --text-secondary:#98989F;
+  --text-tertiary: #6E6E73;
+  --border:        #2C2C2E;
+  --border-strong: #38383A;
+  --accent:        #0A84FF;
+  --accent-soft:   rgba(10, 132, 255, 0.18);
+
+  --wash-good:   rgba(48, 209, 88, 0.18);
+  --wash-warn:   rgba(255, 159, 10, 0.18);
+  --wash-bad:    rgba(255, 69, 58, 0.18);
+  --wash-empty:  rgba(199, 199, 204, 0.08);
+  --wash-info:   rgba(10, 132, 255, 0.16);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-pop:  0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Tailwind theme integration ───────────────────────── */
+
+@theme inline {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-card: var(--bg-card);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-status-good: var(--status-good);
+  --color-status-warn: var(--status-warn);
+  --color-status-bad: var(--status-bad);
+  --color-status-empty: var(--status-empty);
+  --color-wash-good: var(--wash-good);
+  --color-wash-warn: var(--wash-warn);
+  --color-wash-bad: var(--wash-bad);
+  --color-wash-empty: var(--wash-empty);
+  --color-wash-info: var(--wash-info);
+  --font-thai: 'IBM Plex Sans Thai', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-num: 'Inter', 'IBM Plex Sans Thai', -apple-system, system-ui, sans-serif;
+}
+
+/* ─── Base styles ──────────────────────────────────────── */
+
+body {
+  font-family: var(--font-thai);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.45;
+}
+
+/* Tabular nums for financial data */
+.num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
