@@ -23,14 +23,22 @@ export function clearUserCache() {
 
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
   const userId = await getUserId();
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (userId) {
+    headers['X-User-Id'] = userId;
+  }
+
   const res = await fetch(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(userId ? { 'X-User-Id': userId } : {}),
-      ...options?.headers,
-    },
     ...options,
+    headers: {
+      ...headers,
+      ...(options?.headers as Record<string, string> || {}),
+    },
   });
+
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }));
     throw new Error(error.message || `API error ${res.status}`);

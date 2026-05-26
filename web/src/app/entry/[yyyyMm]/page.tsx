@@ -109,7 +109,7 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
     try {
       await upsertEntry(yyyyMm, body);
       setSaved(true);
-      setTimeout(() => router.push(`/dashboard?month=${yyyyMm}`), 1000);
+      setTimeout(() => { window.location.href = `/dashboard?month=${yyyyMm}`; }, 1000);
     } catch {
       setSaving(false);
     }

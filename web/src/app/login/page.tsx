@@ -20,10 +20,12 @@ export default function LoginPage() {
     // Dev mode: use credentials provider (instant login, no email sent)
     // Production: will switch to LINE Login as primary
     const result = await signIn('dev-login', { email, redirect: false });
+    console.log('[login] signIn result:', JSON.stringify(result));
     setSending(false);
-    if (result?.ok) {
+    if (result && !result.error) {
       window.location.href = '/dashboard';
     } else {
+      console.error('[login] signIn failed:', result?.error);
       setSent(true); // fallback UI
     }
   };

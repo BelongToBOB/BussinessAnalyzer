@@ -23,8 +23,12 @@ if (!process.env.LINE_CHANNEL_ID || process.env.LINE_CHANNEL_ID === 'dummy') {
         email: { label: 'Email', type: 'email' },
       },
       async authorize(credentials) {
+        console.log('[dev-login] authorize called with:', JSON.stringify(credentials));
         const email = credentials?.email as string;
-        if (!email) return null;
+        if (!email) {
+          console.log('[dev-login] no email, returning null');
+          return null;
+        }
 
         // Sync with backend
         try {

@@ -114,15 +114,28 @@ function DashboardPage() {
       } catch {
         setData(null); // No entry for this month
       }
+      setLoading(false);
     } catch (e: any) {
-      if (e.message?.includes('Not Found') || e.message?.includes('No business')) {
-        router.replace('/onboarding');
+      console.error('Dashboard load error:', e);
+      const msg = e.message || '';
+
+      // Not logged in → go to login
+      if (msg.includes('Missing') || msg.includes('login') || msg.includes('Unauthorized')) {
+        window.location.href = '/login';
         return;
       }
+
+      // Logged in but no business → go to onboarding
+      if (msg.includes('No business') || msg.includes('Not Found')) {
+        window.location.href = '/onboarding';
+        return;
+      }
+
+      // Unknown error
       setError(true);
+      setLoading(false);
     }
-    setLoading(false);
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     loadData(month);

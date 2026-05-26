@@ -37,8 +37,11 @@ export default function OnboardingPage() {
         });
       }
 
-      router.push('/dashboard');
-    } catch {
+      // Full page reload to reset all state
+      window.location.href = '/dashboard';
+    } catch (err) {
+      console.error('Onboarding error:', err);
+      alert(`Error: ${err instanceof Error ? err.message : String(err)}`);
       setSaving(false);
     }
   };
