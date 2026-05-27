@@ -52,17 +52,48 @@ const CARD_META: Record<number, { label: string; goodIsUp?: boolean; variant?: s
 const CIRCLED = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
 
 const TOOLS = [
-  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'เทียบยอดขายกับเงินจริงในบัญชี', href: '/s1-check-cash' },
-  { tag: 'S2', label: 'อ่านงบ', desc: 'วิเคราะห์งบกำไรขาดทุน + margin', href: '/s2-income-statement' },
-  { tag: 'S2', label: 'งบเงินสด 2 ปี', desc: 'สร้างงบกระแสเงินสดจากงบ 2 ปี', href: '/s2-cashflow' },
-  { tag: 'S3', label: 'Cashflow 4 Layers', desc: 'ไล่เงินจริง 4 ชั้น + วินิจฉัย', href: '/s3-cashflow' },
-  { tag: 'S4', label: 'ตั้งราคา', desc: 'คำนวณราคาขายที่ได้กำไรจริง', href: '/s4-pricing' },
-  { tag: 'S4', label: 'CM + จุดคุ้มทุน', desc: 'Contribution Margin + Break-even', href: '/s4-cm' },
-  { tag: 'S4', label: 'Real Profit', desc: 'เงินสดที่เหลือจริงจากกำไร', href: '/s4-real-profit' },
-  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย + 10 จุดรั่ว', href: '/expense-map' },
-  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด 5 บัญชี', href: '/s6-five-buckets' },
-  { tag: 'S7', label: 'แผน 1 หน้า', desc: 'แผนธุรกิจตอบ 4 คำถามธนาคาร', href: '/s7-business-plan' },
+  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'เทียบยอดขายกับเงินจริงในบัญชี', href: '/s1-check-cash', color: 'var(--status-good)', icon: 'search-cash' },
+  { tag: 'S2', label: 'อ่านงบ', desc: 'วิเคราะห์งบกำไรขาดทุน + margin', href: '/s2-income-statement', color: 'var(--accent)', icon: 'bar-chart' },
+  { tag: 'S2', label: 'งบเงินสด 2 ปี', desc: 'สร้างงบกระแสเงินสดจากงบ 2 ปี', href: '/s2-cashflow', color: 'var(--accent)', icon: 'compare' },
+  { tag: 'S3', label: 'Cashflow 4 Layers', desc: 'ไล่เงินจริง 4 ชั้น + วินิจฉัย', href: '/s3-cashflow', color: '#8B5CF6', icon: 'layers' },
+  { tag: 'S4', label: 'ตั้งราคา', desc: 'คำนวณราคาขายที่ได้กำไรจริง', href: '/s4-pricing', color: 'var(--status-warn)', icon: 'tag' },
+  { tag: 'S4', label: 'CM + จุดคุ้มทุน', desc: 'Contribution Margin + Break-even', href: '/s4-cm', color: 'var(--status-warn)', icon: 'target' },
+  { tag: 'S4', label: 'Real Profit', desc: 'เงินสดที่เหลือจริงจากกำไร', href: '/s4-real-profit', color: 'var(--status-warn)', icon: 'diamond' },
+  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย + 10 จุดรั่ว', href: '/expense-map', color: 'var(--status-bad)', icon: 'map' },
+  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด 5 บัญชี', href: '/s6-five-buckets', color: '#06B6D4', icon: 'boxes' },
+  { tag: 'S7', label: 'แผน 1 หน้า', desc: 'แผนธุรกิจตอบ 4 คำถามธนาคาร', href: '/s7-business-plan', color: '#EC4899', icon: 'file-text' },
 ];
+
+function ToolIcon({ name, color, size = 28 }: { name: string; color: string; size?: number }) {
+  const s = size;
+  const sw = 1.8;
+  const props = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: sw, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+
+  switch (name) {
+    case 'search-cash':
+      return <svg {...props}><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>;
+    case 'bar-chart':
+      return <svg {...props}><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>;
+    case 'compare':
+      return <svg {...props}><path d="M3 3v18h18"/><path d="M7 16l4-8 4 5 5-9"/><circle cx="7" cy="16" r="1.5" fill={color}/><circle cx="11" cy="8" r="1.5" fill={color}/><circle cx="15" cy="13" r="1.5" fill={color}/><circle cx="20" cy="4" r="1.5" fill={color}/></svg>;
+    case 'layers':
+      return <svg {...props}><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/><path d="M12 2L2 7l10 5 10-5L12 2z"/></svg>;
+    case 'tag':
+      return <svg {...props}><path d="M12 2L2 7l10 5 10-5L12 2z" fill={color} opacity="0.15"/><path d="M12 2L2 7l10 5 10-5L12 2z"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="7" y1="12" x2="7" y2="15"/><line x1="17" y1="12" x2="17" y2="15"/></svg>;
+    case 'target':
+      return <svg {...props}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill={color}/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>;
+    case 'diamond':
+      return <svg {...props}><path d="M6 3h12l4 6-10 13L2 9l4-6z"/><path d="M2 9h20" opacity="0.4"/><path d="M10 3l-2 6 4 13 4-13-2-6" opacity="0.4"/></svg>;
+    case 'map':
+      return <svg {...props}><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6z"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/><circle cx="6" cy="10" r="1.5" fill={color}/><circle cx="12" cy="13" r="1.5" fill={color}/><circle cx="18" cy="8" r="1.5" fill={color}/></svg>;
+    case 'boxes':
+      return <svg {...props}><rect x="2" y="3" width="8" height="8" rx="2"/><rect x="14" y="3" width="8" height="8" rx="2"/><rect x="2" y="13" width="8" height="8" rx="2"/><rect x="14" y="13" width="8" height="8" rx="2"/><rect x="8" y="8" width="8" height="8" rx="2" fill={color} opacity="0.2"/></svg>;
+    case 'file-text':
+      return <svg {...props}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/><line x1="8" y1="9" x2="10" y2="9"/></svg>;
+    default:
+      return <svg {...props}><circle cx="12" cy="12" r="10"/></svg>;
+  }
+}
 
 type StatusColor = 'good' | 'warn' | 'bad' | 'empty' | 'neutral';
 
@@ -234,10 +265,16 @@ function DashboardPage() {
               <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-2">เครื่องมือวิเคราะห์</div>
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
                 {TOOLS.map((t) => (
-                  <a key={t.href} href={t.href} className="bg-bg-card border border-border rounded-xl p-3 no-underline hover:shadow-[var(--shadow-pop)] transition-shadow">
-                    <div className="text-[11px] text-text-tertiary font-semibold">{t.tag}</div>
-                    <div className="text-sm font-semibold text-text-primary mt-0.5">{t.label}</div>
-                    <div className="text-[11px] text-text-secondary mt-1 leading-snug">{t.desc}</div>
+                  <a key={t.href} href={t.href} className="group relative bg-bg-card border border-border rounded-2xl p-4 pb-3.5 no-underline hover:shadow-[var(--shadow-pop)] hover:border-transparent transition-all overflow-hidden">
+                    {/* Accent bar */}
+                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ background: t.color }} />
+                    {/* Icon */}
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110" style={{ background: `color-mix(in srgb, ${t.color} 12%, transparent)` }}>
+                      <ToolIcon name={t.icon} color={t.color} size={22} />
+                    </div>
+                    <div className="text-[10px] font-bold tracking-wider uppercase mb-0.5" style={{ color: t.color }}>{t.tag}</div>
+                    <div className="text-[15px] font-semibold text-text-primary leading-tight">{t.label}</div>
+                    <div className="text-[11px] text-text-secondary mt-1.5 leading-snug">{t.desc}</div>
                   </a>
                 ))}
               </div>
@@ -294,10 +331,16 @@ function DashboardPage() {
               <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-2">เครื่องมือวิเคราะห์</div>
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
                 {TOOLS.map((t) => (
-                  <a key={t.href} href={t.href} className="bg-bg-card border border-border rounded-xl p-3 no-underline hover:shadow-[var(--shadow-pop)] transition-shadow">
-                    <div className="text-[11px] text-text-tertiary font-semibold">{t.tag}</div>
-                    <div className="text-sm font-semibold text-text-primary mt-0.5">{t.label}</div>
-                    <div className="text-[11px] text-text-secondary mt-1 leading-snug">{t.desc}</div>
+                  <a key={t.href} href={t.href} className="group relative bg-bg-card border border-border rounded-2xl p-4 pb-3.5 no-underline hover:shadow-[var(--shadow-pop)] hover:border-transparent transition-all overflow-hidden">
+                    {/* Accent bar */}
+                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ background: t.color }} />
+                    {/* Icon */}
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110" style={{ background: `color-mix(in srgb, ${t.color} 12%, transparent)` }}>
+                      <ToolIcon name={t.icon} color={t.color} size={22} />
+                    </div>
+                    <div className="text-[10px] font-bold tracking-wider uppercase mb-0.5" style={{ color: t.color }}>{t.tag}</div>
+                    <div className="text-[15px] font-semibold text-text-primary leading-tight">{t.label}</div>
+                    <div className="text-[11px] text-text-secondary mt-1.5 leading-snug">{t.desc}</div>
                   </a>
                 ))}
               </div>
