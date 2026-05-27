@@ -12,6 +12,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3002;
   await app.listen(port);
-  console.log(`InsideBank Tools API running on port ${port}`);
+  console.log(`WinWin Analyzer API running on port ${port}`);
 }
 bootstrap();

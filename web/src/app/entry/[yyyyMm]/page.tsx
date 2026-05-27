@@ -232,7 +232,7 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
                 <PreviewStat label="Gross Margin" value={gm != null ? gm.toFixed(0) + '%' : '—'} />
                 <PreviewStat label="Net Profit" value={np != null && sales ? (np >= 0 ? '+' : '−') + money(Math.abs(np)) : '—'} />
                 <PreviewStat label="Cash In ÷ Sales" value={cashRatio != null ? cashRatio.toFixed(0) + '%' : '—'} />
-                <PreviewStat label="Runway" value={runway != null && isFinite(runway) ? runway.toFixed(1) + ' เดือน' : '—'} />
+                <PreviewStat label="Cash Runway" value={runway != null && isFinite(runway) ? runway.toFixed(1) + ' เดือน' : '—'} />
               </div>
               <p className="mt-3 text-[11px] text-text-tertiary">อัปเดตทุกครั้งที่กรอก · บันทึกแล้วจะเห็นครบ 10 ช่อง</p>
             </div>

@@ -214,7 +214,7 @@ export default function SettingsPage() {
           <SettingsRow label="ลบข้อมูลทั้งหมด" danger last onTap={handleDeleteAccount} trailing={<Chevron />} />
         </div>
 
-        <div className="mt-4 text-[11px] text-text-tertiary">InsideBank · v0.1 · WinWin Wealth Creation</div>
+        <div className="mt-4 text-[11px] text-text-tertiary">WinWin Analyzer · v0.1 · WinWin Wealth Creation</div>
       </main>
 
       {/* Bottom tabs */}

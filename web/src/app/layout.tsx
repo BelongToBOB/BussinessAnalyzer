@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "InsideBank — Owner Dashboard",
+  title: "WinWin Analyzer — Owner Dashboard",
   description: "เห็นธุรกิจชัด ใน 5 นาทีต่อเดือน",
 };
 

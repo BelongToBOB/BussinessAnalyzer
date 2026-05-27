@@ -216,7 +216,7 @@ function box9(input: Inputs): Box {
   };
 }
 
-// Box 10 — Runway
+// Box 10 — Cash Runway
 // NOTE: monthlyBurn does NOT include COGS — this is "operating runway"
 // (how long cash lasts if sales stop today). Confirm with Win if COGS should be included.
 function box10(input: Inputs, business: BusinessConfig): Box {
@@ -228,7 +228,7 @@ function box10(input: Inputs, business: BusinessConfig): Box {
   if (monthlyBurn <= 0) {
     return {
       months: null,
-      label: 'Runway',
+      label: 'Cash Runway',
       format: 'number',
       display: 'ไม่มีค่าใช้จ่ายประจำ — ใช้ได้ไม่จำกัด',
     };
@@ -240,13 +240,13 @@ function box10(input: Inputs, business: BusinessConfig): Box {
     monthlyBurn,
     cash,
     debtService,
-    label: 'Runway',
+    label: 'Cash Runway',
     format: 'number',
-    display: `ผ่อนหนี้ ${money(debtService)} บาท/เดือน · เงินสด ${money(cash)} บาท · Runway ${runwayMonths.toFixed(1)} เดือน`,
+    display: `ผ่อนหนี้ ${money(debtService)} บาท/เดือน · เงินสด ${money(cash)} บาท · Cash Runway ${runwayMonths.toFixed(1)} เดือน`,
     color: runwayMonths >= 6 ? 'green' : runwayMonths >= 3 ? 'yellow' : 'red',
     education: {
       formula: 'เงินสด ÷ (OPEX + ผ่อนหนี้ ต่อเดือน)',
-      advice: 'ถ้าเดือนหน้าเงียบ อยู่ได้กี่เดือน — ต่ำกว่า 3 เดือน = วิกฤต ระดมเงินหรือลดค่าใช้จ่ายด่วน',
+      advice: 'ถ้าเดือนหน้าเงียบ เงินสดอยู่ได้กี่เดือน — ต่ำกว่า 3 เดือน = วิกฤต ระดมเงินหรือลดค่าใช้จ่ายด่วน',
     },
   };
 }
@@ -256,10 +256,10 @@ function computeVerdict(boxes: Record<string, Box>): Verdict {
   const messages: string[] = [];
   let level: VerdictLevel = 'ok';
 
-  // Runway low
+  // Cash Runway low
   const b10 = boxes['10_runway'];
   if (b10?.months != null && b10.months < 3) {
-    messages.push(`Runway ${b10.months.toFixed(1)} เดือน — ต่ำกว่า 3 เดือน ระวังกระแสเงินสด`);
+    messages.push(`Cash Runway ${b10.months.toFixed(1)} เดือน — ต่ำกว่า 3 เดือน ระวังกระแสเงินสด`);
     level = 'critical';
   }
 

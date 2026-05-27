@@ -58,7 +58,7 @@ function levelToStatus(level: string): string {
 const METRIC_CONFIG: Record<Metric, { name: string; color: string; suffix: string; format: (v: number) => string }> = {
   np: { name: 'Net Profit', color: 'var(--text-primary)', suffix: 'บาท', format: (v) => (v >= 0 ? '+' : '−') + money(Math.abs(v)) },
   gm: { name: 'Gross Margin', color: 'var(--status-good)', suffix: '%', format: (v) => v.toFixed(0) + '%' },
-  rw: { name: 'Runway', color: 'var(--accent)', suffix: 'เดือน', format: (v) => v.toFixed(1) },
+  rw: { name: 'Cash Runway', color: 'var(--accent)', suffix: 'เดือน', format: (v) => v.toFixed(1) },
 };
 
 function MiniChart({ data, metric }: { data: TrendPoint[]; metric: Metric }) {
@@ -211,7 +211,7 @@ export default function HistoryPage() {
                 <span />
                 <span>เดือน</span>
                 <span>Net Profit</span>
-                <span>Runway</span>
+                <span>Cash Runway</span>
                 <span>Gross Margin</span>
                 <span />
               </div>

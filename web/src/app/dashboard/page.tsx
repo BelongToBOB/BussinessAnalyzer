@@ -46,7 +46,7 @@ const CARD_META: Record<number, { label: string; goodIsUp?: boolean; variant?: s
   7:  { label: 'Cash In',              key: '7_cashIn' },
   8:  { label: 'ลูกหนี้ค้างเก็บ',     key: '8_arBalance', goodIsUp: false },
   9:  { label: 'เจ้าหนี้ค้างจ่าย',    key: '9_apBalance', goodIsUp: false },
-  10: { label: 'Runway',               key: '10_runway' },
+  10: { label: 'Cash Runway',               key: '10_runway' },
 };
 
 const CIRCLED = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
@@ -179,9 +179,9 @@ function DashboardPage() {
         <div className="max-w-5xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-text-primary flex items-center justify-center">
-              <span className="text-bg-primary text-[10px] font-bold">IB</span>
+              <span className="text-bg-primary text-[10px] font-bold">WW</span>
             </div>
-            <span className="text-[15px] font-semibold tracking-tight">InsideBank</span>
+            <span className="text-[15px] font-semibold tracking-tight">WinWin Analyzer</span>
           </div>
           <div className="flex items-center gap-1">
             <button onClick={() => goMonth(-1)} className="p-2 cursor-pointer bg-transparent border-none text-text-primary">←</button>

@@ -64,9 +64,9 @@ export default function OnboardingPage() {
         {/* Header */}
         <div className="flex items-center gap-2.5 mb-7">
           <div className="w-[26px] h-[26px] rounded-lg bg-text-primary flex items-center justify-center">
-            <span className="text-bg-primary text-[10px] font-bold">IB</span>
+            <span className="text-bg-primary text-[10px] font-bold">WW</span>
           </div>
-          <span className="text-sm font-semibold">InsideBank</span>
+          <span className="text-sm font-semibold">WinWin Analyzer</span>
           <div className="flex-1" />
           <span className="num text-xs text-text-tertiary font-semibold">{step}/2</span>
         </div>
@@ -120,7 +120,7 @@ export default function OnboardingPage() {
               มีภาระผ่อนหนี้ทุกเดือน<br/>กี่บาท?
             </h1>
             <p className="text-sm text-text-secondary leading-relaxed mb-6">
-              ใช้คำนวณ Runway · ถ้าไม่มีให้ใส่ 0 หรือข้ามไป (แก้ที่ Settings ทีหลังได้)
+              ใช้คำนวณ Cash Runway · ถ้าไม่มีให้ใส่ 0 หรือข้ามไป (แก้ที่ Settings ทีหลังได้)
             </p>
 
             <div className="relative">
