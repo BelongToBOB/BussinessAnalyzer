@@ -4,6 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "WinWin Analyzer — Owner Dashboard",
   description: "เห็นธุรกิจชัด ใน 5 นาทีต่อเดือน",
+  icons: { icon: '/favicon.png', apple: '/logo-128.png' },
 };
 
 // Inline script to apply theme before paint (prevents flash)

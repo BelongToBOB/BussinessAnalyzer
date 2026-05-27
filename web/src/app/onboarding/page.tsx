@@ -63,9 +63,7 @@ export default function OnboardingPage() {
       <div className="w-full max-w-[520px] bg-bg-card rounded-[20px] border border-border p-6 md:p-10">
         {/* Header */}
         <div className="flex items-center gap-2.5 mb-7">
-          <div className="w-[26px] h-[26px] rounded-lg bg-text-primary flex items-center justify-center">
-            <span className="text-bg-primary text-[10px] font-bold">WW</span>
-          </div>
+          <img src="/logo-32.png" alt="WW" width={26} height={26} className="rounded" />
           <span className="text-sm font-semibold">WinWin Analyzer</span>
           <div className="flex-1" />
           <span className="num text-xs text-text-tertiary font-semibold">{step}/2</span>

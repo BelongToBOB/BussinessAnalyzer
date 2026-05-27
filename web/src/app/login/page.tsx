@@ -64,9 +64,7 @@ export default function LoginPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-4 md:px-12 py-5">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-text-primary flex items-center justify-center">
-            <span className="text-bg-primary text-xs font-bold">WW</span>
-          </div>
+          <img src="/logo-64.png" alt="WW" width={32} height={32} className="rounded" />
           <span className="text-base font-semibold tracking-tight">WinWin Analyzer</span>
         </div>
       </header>
