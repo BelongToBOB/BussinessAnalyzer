@@ -87,6 +87,7 @@ model Business {
   monthlyEntries MonthlyEntry[]
   expenseItems   ExpenseItem[]
   leakChecks     LeakCheck[]
+  sessionData    SessionData[]
 
   // MVP: 1 user = 1 business. Remove in Phase 4 for multi-business.
   @@unique([userId])
@@ -158,6 +159,38 @@ model LeakCheck {
 
   @@unique([businessId, checkNumber])
   @@index([businessId])
+}
+
+// ─── Session Data (flexible model for S1-S7) ─────────────
+
+enum SessionType {
+  S1_CHECK_CASH
+  S2A_INCOME_STATEMENT
+  S2B_CASHFLOW_2YR
+  S3_CASHFLOW_4LAYERS
+  S4A_PRICING
+  S4B_CM
+  S4C_REAL_PROFIT
+  S6_FIVE_BUCKETS
+  S7_BUSINESS_PLAN
+}
+
+model SessionData {
+  id          String      @id @default(cuid())
+  businessId  String
+  sessionType SessionType
+  month       DateTime?   @db.Date // optional — some sessions are not monthly
+  data        Json        // raw inputs from user
+  computed    Json        // server-computed results
+  verdict     String?     // green | yellow | red
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, sessionType, month])
+  @@index([businessId, sessionType])
 }
 
 // ─── Analytics ─────────────────────────────────────────────

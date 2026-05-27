@@ -74,3 +74,9 @@ export const deleteExpenseItem = (id: string) =>
 export const getLeakChecks = () => fetchApi('/api/expense-map/leaks');
 export const upsertLeakCheck = (checkNumber: number, data: any) =>
   fetchApi(`/api/expense-map/leaks/${checkNumber}`, { method: 'PUT', body: JSON.stringify(data) });
+
+// Sessions (generic)
+export const getSession = (type: string, month?: string) =>
+  fetchApi(`/api/sessions/${type}${month ? `/${month}` : ''}`);
+export const saveSession = (type: string, data: any, month?: string) =>
+  fetchApi(`/api/sessions/${type}${month ? `/${month}` : ''}`, { method: 'PUT', body: JSON.stringify(data) });

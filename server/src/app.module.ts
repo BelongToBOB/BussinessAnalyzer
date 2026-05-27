@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { BusinessModule } from './business/business.module';
 import { EntriesModule } from './entries/entries.module';
 import { ExpenseMapModule } from './expense-map/expense-map.module';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ExpenseMapModule } from './expense-map/expense-map.module';
     BusinessModule,
     EntriesModule,
     ExpenseMapModule,
+    SessionsModule,
   ],
 })
 export class AppModule {}
