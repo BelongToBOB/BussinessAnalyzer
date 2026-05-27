@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Delete, Param, Body, Query, Req } from '@nestjs/common';
+import { Controller, Get, Put, Delete, Param, Body, Query, Req, BadRequestException } from '@nestjs/common';
 import * as express from 'express';
 import { EntriesService } from './entries.service';
 import { upsertEntrySchema } from '../common/validation';
@@ -25,8 +25,11 @@ export class EntriesController {
 
   @Put(':yyyyMm')
   upsert(@Req() req: express.Request, @Param('yyyyMm') yyyyMm: string, @Body() body: any) {
-    const dto = upsertEntrySchema.parse(body);
-    return this.entries.upsert(getUserId(req), yyyyMm, dto);
+    const result = upsertEntrySchema.safeParse(body);
+    if (!result.success) {
+      throw new BadRequestException(result.error.issues.map((i) => i.message).join(', '));
+    }
+    return this.entries.upsert(getUserId(req), yyyyMm, result.data);
   }
 
   @Delete(':yyyyMm')

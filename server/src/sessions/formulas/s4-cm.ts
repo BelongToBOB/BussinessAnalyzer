@@ -27,7 +27,19 @@ export interface S4bResult {
   verdict: 'green' | 'yellow' | 'red';
 }
 
-export function computeS4b(inputs: S4bInputs): S4bResult {
+export function computeS4b(raw: any): S4bResult {
+  // Accept both naming conventions
+  const inputs: S4bInputs = {
+    price: raw.price ?? 0,
+    materialCost: raw.materialCost ?? raw.materials ?? 0,
+    laborCost: raw.laborCost ?? raw.variableLabor ?? 0,
+    packagingCost: raw.packagingCost ?? 0,
+    shippingCost: raw.shippingCost ?? raw.shipping ?? 0,
+    commissionCost: raw.commissionCost ?? raw.commission ?? 0,
+    otherVariableCost: raw.otherVariableCost ?? raw.platformFee ?? 0,
+    fixedCost: raw.fixedCost ?? 0,
+    financingCost: raw.financingCost ?? 0,
+  };
   const totalVC = inputs.materialCost + inputs.laborCost + inputs.packagingCost
     + inputs.shippingCost + inputs.commissionCost + inputs.otherVariableCost;
 

@@ -43,20 +43,30 @@ export interface S7Result {
   verdict: 'green' | 'yellow' | 'red';
 }
 
-export function computeS7(inputs: S7Inputs): S7Result {
+export function computeS7(raw: any): S7Result {
+  const inputs = raw as S7Inputs;
+
   // Repayment ratio
   let repaymentRatio: number | null = null;
-  if (inputs.monthlyPayment > 0) {
-    repaymentRatio = inputs.cashFlow / inputs.monthlyPayment;
+  const cashFlow = inputs.cashFlow ?? 0;
+  const monthlyPayment = inputs.monthlyPayment ?? 0;
+  if (monthlyPayment > 0) {
+    repaymentRatio = cashFlow / monthlyPayment;
   }
 
-  // Readiness checklist
-  const readinessChecklist = [
-    { item: 'Financial statements available', ready: inputs.hasFinancialStatements },
-    { item: 'Collateral available', ready: inputs.hasCollateral },
-    { item: 'Business plan prepared', ready: inputs.hasBusinessPlan },
-    { item: 'Cash flow projection available', ready: inputs.hasCashFlowProjection },
+  // Readiness — accept both boolean fields and array format
+  const ITEMS = [
+    { key: 'business', field: 'hasFinancialStatements', label: 'ความพร้อมของธุรกิจ' },
+    { key: 'collateral', field: 'hasCollateral', label: 'หลักประกัน' },
+    { key: 'history', field: 'hasCashFlowProjection', label: 'ประวัติการชำระ' },
+    { key: 'documents', field: 'hasBusinessPlan', label: 'เอกสาร' },
   ];
+  const readinessArr: string[] = Array.isArray(raw.readiness) ? raw.readiness : [];
+
+  const readinessChecklist = ITEMS.map((it) => ({
+    item: it.label,
+    ready: (raw[it.field] === true) || readinessArr.includes(it.key),
+  }));
 
   const readinessScore = readinessChecklist.filter(c => c.ready).length;
 
