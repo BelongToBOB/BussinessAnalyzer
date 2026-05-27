@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { VerdictRibbon } from '@/components/ui/verdict-ribbon';
 import { MetricCard, SplitBar } from '@/components/ui/metric-card';
 import { money } from '@/lib/format';
-import { getBusiness, getEntry } from '@/lib/api';
+import { getBusiness, getEntry, getTrends } from '@/lib/api';
+import { DashboardTrendChart } from '@/components/ui/charts';
 
 const THAI_MONTHS = [
   '', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
@@ -142,6 +143,7 @@ function DashboardPage() {
   const [month, setMonth] = useState(searchParams.get('month') || currentYYYYMM());
   const [data, setData] = useState<any>(null);
   const [business, setBusiness] = useState<any>(null);
+  const [trends, setTrends] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -151,6 +153,17 @@ function DashboardPage() {
     try {
       const biz = await getBusiness();
       setBusiness(biz);
+
+      // Load trends for chart
+      try {
+        const t = await getTrends(6) as any[];
+        setTrends(t.map((item: any) => ({
+          month: item.month,
+          np: typeof item.boxes?.['4_netProfit']?.value === 'number' ? item.boxes['4_netProfit'].value : null,
+          rw: item.boxes?.['10_runway']?.months ?? null,
+          gm: typeof item.boxes?.['3_grossMargin']?.value === 'number' ? item.boxes['3_grossMargin'].value * 100 : null,
+        })));
+      } catch { setTrends([]); }
 
       try {
         const entry = await getEntry(m);
@@ -321,6 +334,13 @@ function DashboardPage() {
                   title={verdict.messages[0] || ''}
                   body={verdict.messages.slice(1).join(' · ') || undefined}
                 />
+              </div>
+            )}
+
+            {/* Trend chart */}
+            {trends.length >= 2 && (
+              <div className="mb-6">
+                <DashboardTrendChart data={trends} />
               </div>
             )}
 

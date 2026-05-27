@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
+import { FiveBucketsChart } from '@/components/ui/charts';
 
 const DEFAULT_BUCKETS = [
   { name: 'ต้นทุนสินค้า/วัตถุดิบ', pct: 40 },
@@ -149,6 +150,20 @@ export default function S6FiveBucketsPage() {
             </div>
           ))}
         </div>
+
+        {/* Visual chart */}
+        {revNum > 0 && (
+          <div className="bg-bg-card border border-border rounded-2xl p-4 mt-4">
+            <FiveBucketsChart
+              revenue={revNum}
+              buckets={buckets.map((b: any, i: number) => ({
+                name: b.name || `ช่อง ${i + 1}`,
+                pct: (b.pct || 0) / 100,
+                amount: revNum * ((b.pct || 0) / 100),
+              }))}
+            />
+          </div>
+        )}
 
         {/* Verdict */}
         <div className={`rounded-2xl p-4 mt-4 ${isBalanced ? 'bg-wash-good' : 'bg-wash-warn'}`}>

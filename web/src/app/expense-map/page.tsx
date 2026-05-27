@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
+import { ExpenseDonutChart } from '@/components/ui/charts';
 import { getExpenseItems, createExpenseItem, updateExpenseItem, deleteExpenseItem, getLeakChecks, upsertLeakCheck } from '@/lib/api';
 
 const CATEGORIES = ['ลงทุน', 'ดำเนินงาน', 'สูญเปล่า'] as const;
@@ -148,13 +149,18 @@ export default function ExpenseMapPage() {
         {/* Summary */}
         {itemsData && itemsData.items.length > 0 && (
           <div className="bg-bg-card border border-border rounded-2xl p-4 mb-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
-              <SummaryCard label="รวมทั้งหมด" value={money(itemsData.total)} />
-              <SummaryCard label="ลงทุน" value={money(itemsData.byCategory.invest)} color="good" />
-              <SummaryCard label="ดำเนินงาน" value={money(itemsData.byCategory.operate)} color="info" />
-              <SummaryCard label="สูญเปล่า" value={money(itemsData.byCategory.waste)} color="bad" />
+            <ExpenseDonutChart
+              invest={itemsData.byCategory.invest}
+              operate={itemsData.byCategory.operate}
+              waste={itemsData.byCategory.waste}
+            />
+            <div className="mt-4 pt-3 border-t border-border">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-text-secondary">รวมทั้งหมด</span>
+                <span className="num text-base font-semibold">{money(itemsData.total)} บาท/เดือน</span>
+              </div>
+              <div className="text-sm font-medium leading-relaxed">{itemsData.verdict}</div>
             </div>
-            <div className="text-sm font-medium leading-relaxed">{itemsData.verdict}</div>
           </div>
         )}
 
