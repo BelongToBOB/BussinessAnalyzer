@@ -24,8 +24,22 @@ export interface S6Result {
   verdict: 'green' | 'yellow' | 'red';
 }
 
-export function computeS6(inputs: S6Inputs): S6Result {
-  const { monthlyRevenue, bucket1Pct, bucket2Pct, bucket3Pct, bucket4Pct, bucket5Pct } = inputs;
+export function computeS6(raw: any): S6Result {
+  const inputs = raw as S6Inputs;
+  const monthlyRevenue = inputs.monthlyRevenue || 0;
+
+  // Support both { bucket1Pct, bucket2Pct, ... } and { buckets: [{ pct }, ...] }
+  let bucket1Pct: number, bucket2Pct: number, bucket3Pct: number, bucket4Pct: number, bucket5Pct: number;
+  if (Array.isArray(raw.buckets)) {
+    const b = raw.buckets;
+    bucket1Pct = b[0]?.pct ?? 0;
+    bucket2Pct = b[1]?.pct ?? 0;
+    bucket3Pct = b[2]?.pct ?? 0;
+    bucket4Pct = b[3]?.pct ?? 0;
+    bucket5Pct = b[4]?.pct ?? 0;
+  } else {
+    ({ bucket1Pct = 0, bucket2Pct = 0, bucket3Pct = 0, bucket4Pct = 0, bucket5Pct = 0 } = inputs);
+  }
 
   const totalPct = bucket1Pct + bucket2Pct + bucket3Pct + bucket4Pct + bucket5Pct;
   // Allow tiny floating-point tolerance

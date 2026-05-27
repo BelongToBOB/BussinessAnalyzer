@@ -13,17 +13,32 @@ import { computeS4c } from './formulas/s4-real-profit';
 import { computeS6 } from './formulas/s6-five-buckets';
 import { computeS7 } from './formulas/s7-business-plan';
 
-// Map URL slugs to enum values
+// Map URL slugs to enum values (short + long forms)
 const TYPE_MAP: Record<string, SessionType> = {
   's1': SessionType.S1_CHECK_CASH,
+  's1-check-cash': SessionType.S1_CHECK_CASH,
   's2a': SessionType.S2A_INCOME_STATEMENT,
+  's2a-income-statement': SessionType.S2A_INCOME_STATEMENT,
+  's2-income-statement': SessionType.S2A_INCOME_STATEMENT,
   's2b': SessionType.S2B_CASHFLOW_2YR,
+  's2b-cashflow-2yr': SessionType.S2B_CASHFLOW_2YR,
+  's2-cashflow': SessionType.S2B_CASHFLOW_2YR,
   's3': SessionType.S3_CASHFLOW_4LAYERS,
+  's3-cashflow-4layers': SessionType.S3_CASHFLOW_4LAYERS,
+  's3-cashflow': SessionType.S3_CASHFLOW_4LAYERS,
   's4a': SessionType.S4A_PRICING,
+  's4a-pricing': SessionType.S4A_PRICING,
+  's4-pricing': SessionType.S4A_PRICING,
   's4b': SessionType.S4B_CM,
+  's4b-cm': SessionType.S4B_CM,
+  's4-cm': SessionType.S4B_CM,
   's4c': SessionType.S4C_REAL_PROFIT,
+  's4c-real-profit': SessionType.S4C_REAL_PROFIT,
+  's4-real-profit': SessionType.S4C_REAL_PROFIT,
   's6': SessionType.S6_FIVE_BUCKETS,
+  's6-five-buckets': SessionType.S6_FIVE_BUCKETS,
   's7': SessionType.S7_BUSINESS_PLAN,
+  's7-business-plan': SessionType.S7_BUSINESS_PLAN,
 };
 
 // Sessions that require a month

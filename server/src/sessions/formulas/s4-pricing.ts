@@ -29,8 +29,11 @@ export interface S4aResult {
   verdict: 'green' | 'yellow' | 'red';
 }
 
-export function computeS4a(inputs: S4aInputs): S4aResult {
-  const { costPerUnit, opexPct, profitPct } = inputs.pricing;
+export function computeS4a(raw: any): S4aResult {
+  const inputs = raw as S4aInputs;
+  // Support both nested { pricing: { costPerUnit } } and flat { costPerUnit }
+  const pricing = inputs.pricing ?? raw;
+  const { costPerUnit, opexPct, profitPct } = pricing;
   const totalPct = opexPct + profitPct;
 
   // Price = cost / (1 - totalPct)
@@ -42,8 +45,9 @@ export function computeS4a(inputs: S4aInputs): S4aResult {
   // Markup checker
   let markupPct: number | null = null;
   let marginPct: number | null = null;
-  if (inputs.markup) {
-    const { costPerUnit2, sellingPrice } = inputs.markup;
+  const markup = inputs.markup ?? (raw.costPerUnit2 != null ? raw : null);
+  if (markup) {
+    const { costPerUnit2, sellingPrice } = markup;
     if (costPerUnit2 > 0) {
       markupPct = (sellingPrice - costPerUnit2) / costPerUnit2;
     }
