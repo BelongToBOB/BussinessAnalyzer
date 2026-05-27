@@ -119,6 +119,13 @@ function DashboardPage() {
       console.error('Dashboard load error:', e);
       const msg = e.message || '';
 
+      // Network error (backend down) → show error UI with retry
+      if (e instanceof TypeError || msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+        setError(true);
+        setLoading(false);
+        return;
+      }
+
       // Not logged in → go to login
       if (msg.includes('Missing') || msg.includes('login') || msg.includes('Unauthorized')) {
         window.location.href = '/login';

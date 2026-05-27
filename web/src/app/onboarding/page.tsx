@@ -1,13 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { maskCurrency, unmaskCurrency } from '@/lib/format';
-import { createBusiness, upsertEntry } from '@/lib/api';
+import { getBusiness, createBusiness, upsertEntry } from '@/lib/api';
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [checking, setChecking] = useState(true);
+
+  // Skip onboarding if business already exists
+  useEffect(() => {
+    getBusiness()
+      .then(() => { window.location.href = '/dashboard'; })
+      .catch(() => { setChecking(false); });
+  }, []);
   const [name, setName] = useState('');
   const [debt, setDebt] = useState('');
   const [useSample, setUseSample] = useState(true);
@@ -45,6 +53,10 @@ export default function OnboardingPage() {
       setSaving(false);
     }
   };
+
+  if (checking) {
+    return <div className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังตรวจสอบ...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
