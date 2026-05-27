@@ -338,7 +338,7 @@ function DashboardPage() {
             )}
 
             {/* Trend chart */}
-            {trends.length >= 2 && (
+            {trends.length >= 1 && (
               <div className="mb-6">
                 <DashboardTrendChart data={trends} />
               </div>

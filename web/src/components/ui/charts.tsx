@@ -16,7 +16,7 @@ interface TrendPoint {
 }
 
 export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
-  if (data.length < 2) return null;
+  if (data.length === 0) return null;
 
   const chartData = data.map((d) => ({
     month: d.month.slice(5), // "05" from "2026-05"
