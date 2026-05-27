@@ -6,6 +6,16 @@ import { CreateBusinessDto, UpdateBusinessDto } from '../common/validation';
 export class BusinessService {
   constructor(private prisma: PrismaService) {}
 
+  /** Ensure user exists in DB — create if missing (defensive for JWT-only auth) */
+  private async ensureUser(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      await this.prisma.user.create({
+        data: { id: userId, name: 'User', email: null },
+      });
+    }
+  }
+
   async get(userId: string) {
     const business = await this.prisma.business.findUnique({ where: { userId } });
     if (!business) throw new NotFoundException('No business found.');
@@ -13,6 +23,8 @@ export class BusinessService {
   }
 
   async create(userId: string, dto: CreateBusinessDto) {
+    await this.ensureUser(userId);
+
     const existing = await this.prisma.business.findUnique({ where: { userId } });
     if (existing) throw new ConflictException('Business already exists. Use PATCH to update.');
 
