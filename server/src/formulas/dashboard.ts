@@ -28,6 +28,7 @@ export interface Box {
   color?: StatusColor;
   note?: string | null;
   warning?: string | null;
+  education?: { formula: string; advice: string } | null;
   // Box 2 specific
   cashPct?: number | null;
   creditPct?: number | null;
@@ -70,6 +71,10 @@ function box1(input: Inputs): Box {
     format: 'currency',
     color: null,
     note: 'เดือนนี้ขายได้กี่บาท — ตัวตั้งต้น แต่ยังไม่ใช่เงินในมือ',
+    education: {
+      formula: 'ผลรวม invoice / receipt เดือนนี้',
+      advice: 'ดูแนวโน้ม 3 เดือนล่าสุดที่ History — ยอดขายขยับขึ้นหรือลง',
+    },
   };
 }
 
@@ -89,6 +94,10 @@ function box2(input: Inputs): Box {
     format: 'mix',
     display: `ได้เงินแล้ว ${pct(cashPct)} · ยังเป็นลูกหนี้ ${pct(creditPct)}`,
     color: creditPct > 0.5 ? 'red' : creditPct > 0.3 ? 'yellow' : 'green',
+    education: {
+      formula: '(ยอดขายเชื่อ ÷ ยอดขายรวม) × 100',
+      advice: 'ขายเชื่อยิ่งมาก เงินยิ่งเข้าช้า — ต้องเร่งเก็บหรือลดเครดิตเทอม',
+    },
   };
 }
 
@@ -103,6 +112,10 @@ function box3(input: Inputs): Box {
     format: 'percent',
     label: 'Gross Margin (กำไรขั้นต้น %)',
     color: gm >= 0.3 ? 'green' : gm >= 0.1 ? 'yellow' : 'red',
+    education: {
+      formula: '(ยอดขาย − ต้นทุนสินค้า) ÷ ยอดขาย × 100',
+      advice: 'ขายแล้วเหลือกำไรขั้นต้นกี่ % — ดูเทรนด์ ถ้าลดลงเรื่อยๆ = อันตราย ต่ำกว่า 30% ปรับราคาหรือลดต้นทุน',
+    },
   };
 }
 
@@ -118,6 +131,10 @@ function box4(input: Inputs): Box {
     label: 'Net Profit (กำไรบัญชี)',
     color: np > 0 ? 'green' : np === 0 ? 'yellow' : 'red',
     note: 'ยังไม่ใช่เงินสด — เช็คช่อง 7 ต่อ',
+    education: {
+      formula: 'ยอดขาย − ต้นทุน − ค่าใช้จ่ายอื่น',
+      advice: 'หักค่าใช้จ่ายแล้ว เหลือกำไรบัญชีเท่าไหร่ — ยังไม่ใช่เงินสด ดู Cash In ประกอบ',
+    },
   };
 }
 
@@ -132,6 +149,10 @@ function box5(input: Inputs): Box {
     format: 'percent',
     label: 'ค่าใช้จ่ายกินยอดขาย %',
     color: ratio < 0.2 ? 'green' : ratio < 0.35 ? 'yellow' : 'red',
+    education: {
+      formula: '(OPEX ÷ ยอดขาย) × 100',
+      advice: 'ค่าใช้จ่ายประจำกินยอดขายกี่ % — ยิ่งสูงยิ่งกินกำไร เกิน 35% รื้อ Expense Map ไล่หาตัวบวม',
+    },
   };
 }
 
@@ -142,6 +163,10 @@ function box6(input: Inputs): Box {
     format: 'text',
     label: 'จุดรั่วเดือนนี้',
     note: 'เดือนนี้เงินรั่วจากจุดไหนมากสุด — ไล่อุดที่ Expense Map',
+    education: {
+      formula: 'บันทึกของเจ้าของ (textarea)',
+      advice: 'เขียนทุกเดือนแม้ไม่มี รวมกัน 6 เดือนเห็น pattern',
+    },
   };
 }
 
@@ -162,17 +187,33 @@ function box7(input: Inputs): Box {
     format: 'currency',
     label: 'Cash In (เงินเข้าจริง)',
     warning,
+    education: {
+      formula: 'ผลรวมเงินเข้าบัญชีเดือนนี้ (จาก Statement)',
+      advice: 'เก็บเงินสดได้จริงกี่บาท — ถ้าต่ำกว่ายอดขายมาก เงินไปจมที่ลูกหนี้ ลด Credit Term',
+    },
   };
 }
 
 // Box 8 — AR Balance
 function box8(input: Inputs): Box {
-  return { value: input.arBalance, format: 'currency', label: 'ลูกหนี้ค้างเก็บ' };
+  return {
+    value: input.arBalance, format: 'currency', label: 'ลูกหนี้ค้างเก็บ',
+    education: {
+      formula: 'ยอด AR ณ สิ้นเดือน',
+      advice: 'เงินที่รอเข้ากระเป๋า — ขายได้แต่ยังไม่ได้เงิน บวมขึ้นต่อเนื่อง = ทบทวนเครดิตเทอม',
+    },
+  };
 }
 
 // Box 9 — AP Balance
 function box9(input: Inputs): Box {
-  return { value: input.apBalance, format: 'currency', label: 'เจ้าหนี้ค้างจ่าย' };
+  return {
+    value: input.apBalance, format: 'currency', label: 'เจ้าหนี้ค้างจ่าย',
+    education: {
+      formula: 'ยอด AP ณ สิ้นเดือน',
+      advice: 'เดือนนี้ต้องจ่ายซัพพลายเออร์กี่บาท — เครดิตช่วยหมุน แต่ต้องจ่ายไหว',
+    },
+  };
 }
 
 // Box 10 — Runway
@@ -203,6 +244,10 @@ function box10(input: Inputs, business: BusinessConfig): Box {
     format: 'number',
     display: `ผ่อนหนี้ ${money(debtService)} บาท/เดือน · เงินสด ${money(cash)} บาท · Runway ${runwayMonths.toFixed(1)} เดือน`,
     color: runwayMonths >= 6 ? 'green' : runwayMonths >= 3 ? 'yellow' : 'red',
+    education: {
+      formula: 'เงินสด ÷ (OPEX + ผ่อนหนี้ ต่อเดือน)',
+      advice: 'ถ้าเดือนหน้าเงียบ อยู่ได้กี่เดือน — ต่ำกว่า 3 เดือน = วิกฤต ระดมเงินหรือลดค่าใช้จ่ายด่วน',
+    },
   };
 }
 

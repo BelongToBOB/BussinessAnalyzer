@@ -25,6 +25,7 @@ export class EntriesService {
   async getWithDashboard(userId: string, yyyyMm: string) {
     const business = await this.getBusiness(userId);
     const month = parseMonth(yyyyMm);
+    const bizConfig = { monthlyDebtService: Number(business.monthlyDebtService ?? 0) };
 
     const entry = await this.prisma.monthlyEntry.findUnique({
       where: { businessId_month: { businessId: business.id, month } },
@@ -33,11 +34,21 @@ export class EntriesService {
     if (!entry) throw new NotFoundException(`No entry for ${yyyyMm}`);
 
     const inputs = toInputs(entry);
-    const dashboard = computeDashboard(inputs, {
-      monthlyDebtService: Number(business.monthlyDebtService ?? 0),
+    const dashboard = computeDashboard(inputs, bizConfig);
+
+    // Previous month for delta comparison
+    const prevMonth = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth() - 1, 1));
+    const prevEntry = await this.prisma.monthlyEntry.findUnique({
+      where: { businessId_month: { businessId: business.id, month: prevMonth } },
     });
 
-    return { month: yyyyMm, inputs, ...dashboard };
+    let prevDashboard = null;
+    if (prevEntry) {
+      const prevInputs = toInputs(prevEntry);
+      prevDashboard = computeDashboard(prevInputs, bizConfig);
+    }
+
+    return { month: yyyyMm, inputs, ...dashboard, prevMonth: prevDashboard };
   }
 
   async upsert(userId: string, yyyyMm: string, dto: UpsertEntryDto) {

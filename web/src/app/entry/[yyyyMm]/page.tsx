@@ -43,7 +43,7 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
   useEffect(() => {
     async function load() {
       try {
-        const biz = await getBusiness();
+        const biz = await getBusiness() as any;
         if (biz.monthlyDebtService) {
           setDebtService(money(Number(biz.monthlyDebtService)));
         }

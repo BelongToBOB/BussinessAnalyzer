@@ -2,7 +2,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
 let cachedUserId: string | null = null;
 
-/** Get current user ID from Auth.js session */
 async function getUserId(): Promise<string | null> {
   if (cachedUserId) return cachedUserId;
   try {
@@ -16,7 +15,6 @@ async function getUserId(): Promise<string | null> {
   return null;
 }
 
-/** Clear cached user (call on logout) */
 export function clearUserCache() {
   cachedUserId = null;
 }
@@ -63,3 +61,16 @@ export const deleteEntry = (yyyyMm: string) =>
 
 // Trends
 export const getTrends = (months = 12) => fetchApi(`/api/entries/trends?months=${months}`);
+
+// Expense Map
+export const getExpenseItems = () => fetchApi('/api/expense-map/items');
+export const createExpenseItem = (data: any) =>
+  fetchApi('/api/expense-map/items', { method: 'POST', body: JSON.stringify(data) });
+export const updateExpenseItem = (id: string, data: any) =>
+  fetchApi(`/api/expense-map/items/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const deleteExpenseItem = (id: string) =>
+  fetchApi(`/api/expense-map/items/${id}`, { method: 'DELETE' });
+
+export const getLeakChecks = () => fetchApi('/api/expense-map/leaks');
+export const upsertLeakCheck = (checkNumber: number, data: any) =>
+  fetchApi(`/api/expense-map/leaks/${checkNumber}`, { method: 'PUT', body: JSON.stringify(data) });

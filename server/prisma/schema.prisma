@@ -85,6 +85,8 @@ model Business {
 
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   monthlyEntries MonthlyEntry[]
+  expenseItems   ExpenseItem[]
+  leakChecks     LeakCheck[]
 
   // MVP: 1 user = 1 business. Remove in Phase 4 for multi-business.
   @@unique([userId])
@@ -117,6 +119,45 @@ model MonthlyEntry {
 
   @@unique([businessId, month])
   @@index([businessId, month])
+}
+
+// ─── S5 Expense Map ───────────────────────────────────────
+
+model ExpenseItem {
+  id         String @id @default(cuid())
+  businessId String
+
+  name     String  // รายการค่าใช้จ่าย
+  category String  // "ลงทุน" | "ดำเนินงาน" | "สูญเปล่า"
+  amount   Decimal @db.Decimal(15, 2) // บาท/เดือน
+  decision String? // "ตัด" | "เพิ่ม" | "ปรับ" | null
+
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+model LeakCheck {
+  id         String @id @default(cuid())
+  businessId String
+
+  // 1-10 matching the 10 checkpoints in template
+  checkNumber Int
+  found       Boolean  @default(false) // ✓ = true
+  leakAmount  Decimal? @db.Decimal(15, 2) // เงินรั่ว/เดือน (ประมาณ)
+  fixPlan     String?  @db.Text // แผนแก้
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, checkNumber])
+  @@index([businessId])
 }
 
 // ─── Analytics ─────────────────────────────────────────────
