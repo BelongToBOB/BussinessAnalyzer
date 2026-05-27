@@ -51,6 +51,19 @@ const CARD_META: Record<number, { label: string; goodIsUp?: boolean; variant?: s
 
 const CIRCLED = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
 
+const TOOLS = [
+  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'เทียบยอดขายกับเงินจริงในบัญชี', href: '/s1-check-cash' },
+  { tag: 'S2', label: 'อ่านงบ', desc: 'วิเคราะห์งบกำไรขาดทุน + margin', href: '/s2-income-statement' },
+  { tag: 'S2', label: 'งบเงินสด 2 ปี', desc: 'สร้างงบกระแสเงินสดจากงบ 2 ปี', href: '/s2-cashflow' },
+  { tag: 'S3', label: 'Cashflow 4 Layers', desc: 'ไล่เงินจริง 4 ชั้น + วินิจฉัย', href: '/s3-cashflow' },
+  { tag: 'S4', label: 'ตั้งราคา', desc: 'คำนวณราคาขายที่ได้กำไรจริง', href: '/s4-pricing' },
+  { tag: 'S4', label: 'CM + จุดคุ้มทุน', desc: 'Contribution Margin + Break-even', href: '/s4-cm' },
+  { tag: 'S4', label: 'Real Profit', desc: 'เงินสดที่เหลือจริงจากกำไร', href: '/s4-real-profit' },
+  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย + 10 จุดรั่ว', href: '/expense-map' },
+  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด 5 บัญชี', href: '/s6-five-buckets' },
+  { tag: 'S7', label: 'แผน 1 หน้า', desc: 'แผนธุรกิจตอบ 4 คำถามธนาคาร', href: '/s7-business-plan' },
+];
+
 type StatusColor = 'good' | 'warn' | 'bad' | 'empty' | 'neutral';
 
 function colorToStatus(c: string | null | undefined): StatusColor {
@@ -216,6 +229,20 @@ function DashboardPage() {
               ctaLabel="กรอกเลย"
               onTap={() => router.push(`/entry/${month}`)}
             />
+            {/* Tools grid */}
+            <div className="mt-6 mb-6">
+              <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-2">เครื่องมือวิเคราะห์</div>
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
+                {TOOLS.map((t) => (
+                  <a key={t.href} href={t.href} className="bg-bg-card border border-border rounded-xl p-3 no-underline hover:shadow-[var(--shadow-pop)] transition-shadow">
+                    <div className="text-[11px] text-text-tertiary font-semibold">{t.tag}</div>
+                    <div className="text-sm font-semibold text-text-primary mt-0.5">{t.label}</div>
+                    <div className="text-[11px] text-text-secondary mt-1 leading-snug">{t.desc}</div>
+                  </a>
+                ))}
+              </div>
+            </div>
+
             {/* Empty cards */}
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 md:gap-4 xl:gap-3">
               {GROUPS.map((g) => (
@@ -261,6 +288,20 @@ function DashboardPage() {
                 />
               </div>
             )}
+
+            {/* Tools grid */}
+            <div className="mb-6">
+              <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-2">เครื่องมือวิเคราะห์</div>
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
+                {TOOLS.map((t) => (
+                  <a key={t.href} href={t.href} className="bg-bg-card border border-border rounded-xl p-3 no-underline hover:shadow-[var(--shadow-pop)] transition-shadow">
+                    <div className="text-[11px] text-text-tertiary font-semibold">{t.tag}</div>
+                    <div className="text-sm font-semibold text-text-primary mt-0.5">{t.label}</div>
+                    <div className="text-[11px] text-text-secondary mt-1 leading-snug">{t.desc}</div>
+                  </a>
+                ))}
+              </div>
+            </div>
 
             {/* Dashboard grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 md:gap-4 xl:gap-3">
