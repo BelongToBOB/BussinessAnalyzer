@@ -65,9 +65,9 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       {/* Background layers */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-bg-primary" />
+        <img src="/bg-login.jpg" alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: 'rgba(var(--bg-primary-rgb, 255,255,255), 0.85)' }} />
         <AuroraBG />
-        <InteractiveBG />
       </div>
 
       {/* Header */}
