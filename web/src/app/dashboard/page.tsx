@@ -226,6 +226,14 @@ function DashboardPage() {
     if (!hasLoadedOnce.current) setLoading(true);
     setError(false);
     try {
+      // Check session first — redirect to login if not authenticated
+      const sessRes = await fetch('/api/auth/session');
+      const sess = await sessRes.json().catch(() => ({}));
+      if (!sess?.user?.id) {
+        window.location.href = '/login';
+        return;
+      }
+
       const biz = await getBusiness();
       setBusiness(biz);
 
