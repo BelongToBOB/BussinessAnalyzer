@@ -262,10 +262,18 @@ function DashboardPage() {
           getExpenseItems(),
         ]);
         const done = new Set<string>();
-        slugs.forEach((s, i) => { if (checks[i].status === 'fulfilled') done.add(s); });
+        slugs.forEach((s, i) => {
+          if (checks[i].status === 'fulfilled') {
+            const val = (checks[i] as any).value;
+            // API returns [] for list (no data) or { data, computed } for actual data
+            const hasData = val && !Array.isArray(val) && (val.data || val.computed);
+            const hasListData = Array.isArray(val) && val.length > 0;
+            if (hasData || hasListData) done.add(s);
+          }
+        });
         if (checks[slugs.length].status === 'fulfilled') {
-          const items = (checks[slugs.length] as any).value;
-          if (items?.items?.length > 0) done.add('expense-map');
+          const val = (checks[slugs.length] as any).value;
+          if (val?.items?.length > 0) done.add('expense-map');
         }
         setCompletedSlugs(done);
       } catch { /* ignore */ }
