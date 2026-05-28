@@ -419,24 +419,9 @@ function DashboardPage() {
               </div>
             )}
 
-            {/* Tools grid */}
+            {/* Tools checklist */}
             <div className="mb-6">
-              <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-2">เครื่องมือวิเคราะห์</div>
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
-                {TOOLS.map((t) => (
-                  <a key={t.href} href={t.href} className="group relative bg-bg-card border border-border rounded-2xl p-4 pb-3.5 no-underline hover:shadow-[var(--shadow-pop)] hover:border-transparent transition-all overflow-hidden">
-                    {/* Accent bar */}
-                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ background: t.color }} />
-                    {/* Icon */}
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110" style={{ background: `color-mix(in srgb, ${t.color} 12%, transparent)` }}>
-                      <ToolIcon name={t.icon} color={t.color} size={22} />
-                    </div>
-                    <div className="text-[10px] font-bold tracking-wider uppercase mb-0.5" style={{ color: t.color }}>{t.tag}</div>
-                    <div className="text-[15px] font-semibold text-text-primary leading-tight">{t.label}</div>
-                    <div className="text-[11px] text-text-secondary mt-1.5 leading-snug">{t.desc}</div>
-                  </a>
-                ))}
-              </div>
+              <ToolChecklist tools={TOOLS} completedSlugs={completedSlugs} />
             </div>
 
             {/* Dashboard grid */}
