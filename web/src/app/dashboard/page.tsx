@@ -93,10 +93,10 @@ function ToolChecklist({ tools, completedSlugs }: { tools: typeof TOOLS; complet
 
       {/* Checklist */}
       <div className="space-y-2">
-        {tools.map((t) => {
+        {tools.map((t, i) => {
           const done = completedSlugs.has(t.apiSlug);
           return (
-            <a key={t.href} href={t.href} className="group flex items-center gap-3 bg-bg-card border border-border rounded-xl px-4 py-3 no-underline hover:shadow-[var(--shadow-pop)] hover:border-transparent transition-all">
+            <a key={t.href} href={t.href} className="group flex items-center gap-3 bg-bg-card border border-border rounded-xl px-4 py-3 no-underline hover:shadow-[var(--shadow-pop)] hover:border-transparent transition-all anim-fade-up" style={{ animationDelay: `${i * 0.04}s` }}>
               {/* Check circle */}
               <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${done ? '' : 'border-2'}`}
                 style={{
@@ -350,19 +350,21 @@ function DashboardPage() {
         {/* No entry for this month */}
         {noEntry && (
           <>
-            <div className="mb-4">
+            <div className="mb-4 anim-fade-up anim-d1">
               <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">{business?.name}</div>
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{formatMonthThai(month)}</h1>
             </div>
-            <VerdictRibbon
-              level="empty"
-              title="ยังไม่ได้กรอกข้อมูลเดือนนี้"
-              body="ใช้เวลา 5 นาที กรอก 9 ตัวเลข เพื่อเห็นภาพรวม"
-              ctaLabel="กรอกเลย"
-              onTap={() => router.push(`/entry/${month}`)}
-            />
+            <div className="anim-scale-in anim-d2">
+              <VerdictRibbon
+                level="empty"
+                title="ยังไม่ได้กรอกข้อมูลเดือนนี้"
+                body="ใช้เวลา 5 นาที กรอก 9 ตัวเลข เพื่อเห็นภาพรวม"
+                ctaLabel="กรอกเลย"
+                onTap={() => router.push(`/entry/${month}`)}
+              />
+            </div>
             {/* Tools checklist */}
-            <div className="mt-6 mb-6">
+            <div className="mt-6 mb-6 anim-fade-up anim-d3">
               <ToolChecklist tools={TOOLS} completedSlugs={completedSlugs} />
             </div>
 
@@ -388,7 +390,7 @@ function DashboardPage() {
         {/* Has data */}
         {!loading && !error && data && (
           <>
-            <div className="flex items-baseline justify-between mb-1.5 gap-3 flex-wrap">
+            <div className="flex items-baseline justify-between mb-1.5 gap-3 flex-wrap anim-fade-up anim-d1">
               <div>
                 <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">{business?.name}</div>
                 <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{formatMonthThai(month)}</h1>
@@ -403,7 +405,7 @@ function DashboardPage() {
 
             {/* Verdict */}
             {verdict && (
-              <div className="mt-3 mb-6">
+              <div className="mt-3 mb-6 anim-scale-in anim-d2">
                 <VerdictRibbon
                   level={verdictLevelMap(verdict.level)}
                   title={verdict.messages[0] || ''}
@@ -414,18 +416,18 @@ function DashboardPage() {
 
             {/* Trend chart */}
             {trends.length >= 1 && (
-              <div className="mb-6">
+              <div className="mb-6 anim-fade-up anim-d3">
                 <DashboardTrendChart data={trends} />
               </div>
             )}
 
             {/* Tools checklist */}
-            <div className="mb-6">
+            <div className="mb-6 anim-fade-up anim-d4">
               <ToolChecklist tools={TOOLS} completedSlugs={completedSlugs} />
             </div>
 
             {/* Dashboard grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 md:gap-4 xl:gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 md:gap-4 xl:gap-3 anim-fade-up anim-d5">
               {GROUPS.map((g) => (
                 <div key={g.idx}>
                   <div className="flex items-center gap-2 px-1 pb-2">
