@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
+import { SessionGuide } from '@/components/ui/session-guide';
 
 interface DiagItem {
   label: string;
@@ -119,6 +120,8 @@ export default function S3CashflowPage() {
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Cashflow 4 ชั้น</h1>
         <p className="text-sm text-text-secondary mt-1 mb-6">ดูว่าเงินสดไหลผ่านธุรกิจอย่างไร ชั้นต่อชั้น</p>
+
+        <SessionGuide page="s3-cashflow" />
 
         {/* Layer 1: Cash In */}
         <LayerSection num={1} title="Cash In — เงินสดเข้า" color="bg-wash-good">

@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
+import { SessionGuide } from '@/components/ui/session-guide';
 
 const CATEGORIES = ['ลงทุน', 'ดำเนินงาน', 'สูญเปล่า'] as const;
 const CAT_COLORS: Record<string, string> = {
@@ -106,6 +107,8 @@ export default function ExpenseMapPage() {
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">แผนที่ค่าใช้จ่าย</h1>
         <p className="text-sm text-text-secondary mt-1 mb-2">อุดรอยรั่วก่อนเร่งยอดขาย — ปริมาณการขายไม่ช่วยอุดรอยรั่ว</p>
+
+        <SessionGuide page="expense-map" />
 
         {/* Category legend */}
         <div className="bg-bg-card border border-border rounded-2xl p-4 mb-6">

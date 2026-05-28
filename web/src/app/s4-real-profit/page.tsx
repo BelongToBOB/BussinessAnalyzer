@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
+import { SessionGuide } from '@/components/ui/session-guide';
 
 export default function S4RealProfitPage() {
   const router = useRouter();
@@ -59,6 +60,8 @@ export default function S4RealProfitPage() {
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">กำไรจริง (Real Profit)</h1>
         <p className="text-sm text-text-secondary mt-1 mb-6">4 ขั้นตอน เปลี่ยนกำไรทางบัญชี เป็นเงินสดจริง</p>
+
+        <SessionGuide page="s4-real-profit" />
 
         {/* Step 1 */}
         <StepHeader num={1} title="กำไรสุทธิ + ค่าเสื่อม = เงินสดจากกำไร" />

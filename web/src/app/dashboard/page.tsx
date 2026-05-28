@@ -11,6 +11,7 @@ import { exportDashboardPDF } from '@/lib/pdf-export';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { DashboardSkeleton } from '@/components/ui/skeleton';
 import { WinTip } from '@/components/ui/win-tip';
+import { WelcomeTour } from '@/components/ui/welcome-tour';
 
 const THAI_MONTHS = [
   '', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
@@ -402,7 +403,7 @@ function DashboardPage() {
               <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">{business?.name}</div>
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{formatMonthThai(month)}</h1>
             </div>
-            <div className="anim-scale-in anim-d2">
+            <div className="anim-scale-in anim-d2" data-tour="entry-button">
               <VerdictRibbon
                 level="empty"
                 title="ยังไม่ได้กรอกข้อมูลเดือนนี้"
@@ -412,7 +413,7 @@ function DashboardPage() {
               />
             </div>
             {/* Tools checklist */}
-            <div className="mt-6 mb-6 anim-fade-up anim-d3">
+            <div className="mt-6 mb-6 anim-fade-up anim-d3" data-tour="checklist">
               <ToolChecklist tools={TOOLS} completedSlugs={completedSlugs} />
             </div>
 
@@ -457,6 +458,7 @@ function DashboardPage() {
                 </button>
                 <button
                   onClick={() => { window.location.href = `/entry/${month}`; }}
+                  data-tour="entry-button"
                   className="bg-text-primary text-bg-primary rounded-[10px] px-3.5 py-2.5 text-sm font-semibold inline-flex items-center gap-1.5 cursor-pointer border-none"
                 >
                   แก้ไขข้อมูล
@@ -466,7 +468,7 @@ function DashboardPage() {
 
             {/* Verdict */}
             {verdict && (
-              <div className="mt-3 mb-6 anim-scale-in anim-d2">
+              <div className="mt-3 mb-6 anim-scale-in anim-d2" data-tour="verdict">
                 <VerdictRibbon
                   level={verdictLevelMap(verdict.level)}
                   title={verdict.messages[0] || ''}
@@ -483,7 +485,7 @@ function DashboardPage() {
             )}
 
             {/* Tools checklist */}
-            <div className="mb-6 anim-fade-up anim-d4">
+            <div className="mb-6 anim-fade-up anim-d4" data-tour="checklist">
               <ToolChecklist tools={TOOLS} completedSlugs={completedSlugs} />
             </div>
 
@@ -564,6 +566,7 @@ function DashboardPage() {
       </main>
 
       <BottomNav />
+      {!loading && !error && <WelcomeTour />}
     </div>
   );
 }

@@ -8,14 +8,14 @@ import { getBusiness, getEntry, upsertEntry } from '@/lib/api';
 import { toast } from 'sonner';
 
 const FIELDS = [
-  { id: 'grossSales',    label: 'ยอดขายรวมเดือนนี้',           helper: 'รวมทั้งขายสดและขายเชื่อ' },
-  { id: 'creditSales',   label: 'ในนั้น เป็นการขายเชื่อ',     helper: 'ขายแล้วยังไม่ได้รับเงิน' },
-  { id: 'cogs',          label: 'ต้นทุนสินค้าที่ขายไปเดือนนี้', helper: 'COGS — เฉพาะของที่ขายออก' },
-  { id: 'otherExpenses', label: 'ค่าใช้จ่ายอื่นๆ ทั้งหมด',     helper: 'เงินเดือน เช่า การตลาด น้ำไฟ ดอกเบี้ย ภาษี' },
-  { id: 'cashIn',        label: 'เงินเข้าบัญชีจริงเดือนนี้',   helper: 'เช็คจาก bank statement' },
-  { id: 'arBalance',     label: 'ลูกหนี้ค้างเก็บ ณ สิ้นเดือน', helper: 'รวมยอดที่ลูกค้ายังไม่จ่าย' },
-  { id: 'apBalance',     label: 'เจ้าหนี้ค้างจ่าย ณ สิ้นเดือน', helper: 'รวมยอดที่ยังไม่ได้จ่าย Supplier' },
-  { id: 'cashOnHand',    label: 'เงินสดในมือ ณ สิ้นเดือน',     helper: 'รวมเงินในบัญชีทุกธนาคาร' },
+  { id: 'grossSales',    label: 'ยอดขายรวมเดือนนี้',           helper: 'รวมทั้งขายสดและขายเชื่อ', help: 'เปิด Bank Statement หรือระบบ POS ดูยอดรวมรายรับทั้งเดือน \u2014 รวมทั้งขายสดและขายเชื่อ' },
+  { id: 'creditSales',   label: 'ในนั้น เป็นการขายเชื่อ',     helper: 'ขายแล้วยังไม่ได้รับเงิน', help: 'ยอดที่ขายแล้วยังไม่ได้เงิน \u2014 ดูจากยอดลูกหนี้ใหม่ที่เกิดเดือนนี้' },
+  { id: 'cogs',          label: 'ต้นทุนสินค้าที่ขายไปเดือนนี้', helper: 'COGS — เฉพาะของที่ขายออก', help: 'ยอดซื้อสินค้า/วัตถุดิบที่จ่ายจริงเดือนนี้ \u2014 ดูจากใบสั่งซื้อหรือ Statement' },
+  { id: 'otherExpenses', label: 'ค่าใช้จ่ายอื่นๆ ทั้งหมด',     helper: 'เงินเดือน เช่า การตลาด น้ำไฟ ดอกเบี้ย ภาษี', help: 'รวมทุกอย่าง: เงินเดือน + ค่าเช่า + การตลาด + น้ำไฟ + ดอกเบี้ย + ภาษี (ไม่นับต้นทุนสินค้า)' },
+  { id: 'cashIn',        label: 'เงินเข้าบัญชีจริงเดือนนี้',   helper: 'เช็คจาก bank statement', help: 'เปิด Bank Statement ดูยอดเงินเข้าทั้งเดือน \u2014 เฉพาะเงินจากการขาย ไม่รวมเงินกู้/โอนระหว่างบัญชี' },
+  { id: 'arBalance',     label: 'ลูกหนี้ค้างเก็บ ณ สิ้นเดือน', helper: 'รวมยอดที่ลูกค้ายังไม่จ่าย', help: 'ยอดรวมที่ลูกค้ายังค้างจ่าย ณ สิ้นเดือน \u2014 ถ้าไม่มีระบบ ประมาณจากบิลค้าง' },
+  { id: 'apBalance',     label: 'เจ้าหนี้ค้างจ่าย ณ สิ้นเดือน', helper: 'รวมยอดที่ยังไม่ได้จ่าย Supplier', help: 'ยอดรวมที่ยังค้างจ่าย Supplier ณ สิ้นเดือน' },
+  { id: 'cashOnHand',    label: 'เงินสดในมือ ณ สิ้นเดือน',     helper: 'รวมเงินในบัญชีทุกธนาคาร', help: 'รวมเงินในบัญชีทุกธนาคาร + เงินสดย่อย ณ วันสิ้นเดือน \u2014 เปิด Mobile Banking เช็คได้เลย' },
 ] as const;
 
 type FieldId = (typeof FIELDS)[number]['id'];
@@ -39,6 +39,7 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [helpOpen, setHelpOpen] = useState<Record<string, boolean>>({});
 
   // Load existing data
   useEffect(() => {
@@ -180,6 +181,21 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
                   onChange={set(f.id)}
                   error={errors[f.id] || null}
                 />
+                {f.help && (
+                  <div className="mt-2">
+                    <button
+                      onClick={() => setHelpOpen(prev => ({ ...prev, [f.id]: !prev[f.id] }))}
+                      className="text-xs font-medium cursor-pointer bg-transparent border-none p-0 text-accent"
+                    >
+                      {'\uD83D\uDCA1'} หาจากไหน?
+                    </button>
+                    {helpOpen[f.id] && (
+                      <div className="bg-wash-info rounded-xl p-3 mt-1.5 text-sm text-text-primary leading-relaxed">
+                        {f.help}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
 

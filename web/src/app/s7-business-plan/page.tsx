@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
+import { SessionGuide } from '@/components/ui/session-guide';
 
 const READINESS_ITEMS = [
   'มีงบการเงินย้อนหลัง 3 ปี',
@@ -117,6 +118,8 @@ export default function S7BusinessPlanPage() {
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">แผนธุรกิจ 1 หน้า</h1>
         <p className="text-sm text-text-secondary mt-1 mb-6">สรุปแผนธุรกิจในรูปแบบที่ธนาคารต้องการ</p>
+
+        <SessionGuide page="s7-business-plan" />
 
         {/* Business Info */}
         <SectionTitle text="ข้อมูลธุรกิจ" />

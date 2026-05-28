@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
+import { SessionGuide } from '@/components/ui/session-guide';
 
 export default function S4PricingPage() {
   const router = useRouter();
@@ -46,6 +47,8 @@ export default function S4PricingPage() {
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">ตั้งราคาสินค้า</h1>
         <p className="text-sm text-text-secondary mt-1 mb-6">คำนวณราคาขายจากต้นทุน และเปรียบเทียบ Markup vs Margin</p>
+
+        <SessionGuide page="s4-pricing" />
 
         {/* Section A */}
         <div className="text-xs font-semibold text-text-secondary uppercase tracking-wide px-1 mb-2">A. คำนวณราคาขาย</div>

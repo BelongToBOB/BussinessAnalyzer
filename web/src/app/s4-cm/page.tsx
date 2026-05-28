@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
+import { SessionGuide } from '@/components/ui/session-guide';
 
 const VC_LABELS = [
   'วัตถุดิบ/ต้นทุนสินค้า',
@@ -59,6 +60,8 @@ export default function S4CMPage() {
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Contribution Margin</h1>
         <p className="text-sm text-text-secondary mt-1 mb-6">วิเคราะห์กำไรส่วนเกินต่อหน่วย และจุดคุ้มทุน</p>
+
+        <SessionGuide page="s4-cm" />
 
         {/* Per-product */}
         <div className="text-xs font-semibold text-text-secondary uppercase tracking-wide px-1 mb-2">ราคาขายและต้นทุนผันแปร (ต่อหน่วย)</div>

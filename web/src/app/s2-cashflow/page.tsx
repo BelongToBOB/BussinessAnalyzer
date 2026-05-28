@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
+import { SessionGuide } from '@/components/ui/session-guide';
 
 const ASSET_FIELDS = [
   { key: 'cash', label: 'เงินสด+เงินฝาก' },
@@ -96,6 +97,8 @@ export default function S2CashflowPage() {
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">งบกระแสเงินสด (2 ปี)</h1>
         <p className="text-sm text-text-secondary mt-1 mb-4">กรอกงบดุล 2 ปี เพื่อวิเคราะห์กระแสเงินสด</p>
+
+        <SessionGuide page="s2-cashflow" />
 
         {/* Tab selector */}
         <div className="flex gap-1 bg-bg-card border border-border rounded-xl p-1 mb-6">

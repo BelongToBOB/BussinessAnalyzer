@@ -8,6 +8,7 @@ import { getSession, saveSession } from '@/lib/api';
 import { FiveBucketsChart } from '@/components/ui/charts';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
+import { SessionGuide } from '@/components/ui/session-guide';
 
 const DEFAULT_BUCKETS = [
   { name: 'ต้นทุนสินค้า/วัตถุดิบ', pct: 40 },
@@ -82,6 +83,8 @@ export default function S6FiveBucketsPage() {
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">ระบบ 5 ช่อง</h1>
         <p className="text-sm text-text-secondary mt-1 mb-6">แบ่งรายรับออกเป็น 5 ช่อง เพื่อบริหารเงินอย่างเป็นระบบ</p>
+
+        <SessionGuide page="s6-five-buckets" />
 
         <div className="mb-6">
           <label className="text-sm font-medium mb-1.5 block">รายรับต่อเดือน</label>
