@@ -64,7 +64,7 @@ export default function LoginPage() {
       {/* Background */}
       <div className="absolute inset-0 z-0">
         <img src="/bg-login.jpg" alt="" className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
-        <div className="absolute inset-0" style={{ background: 'rgba(var(--bg-primary-rgb, 255,255,255), 0.85)' }} />
+        <div className="absolute inset-0" style={{ background: 'rgba(var(--bg-primary-rgb, 255,255,255), 0.92)' }} />
       </div>
 
       {/* Header */}
