@@ -60,9 +60,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-primary flex flex-col">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 z-0">
+        <img src="/bg-login.jpg" alt="" className="w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(var(--bg-primary-rgb, 255,255,255), 0.92) 0%, rgba(var(--bg-primary-rgb, 255,255,255), 0.75) 50%, rgba(var(--bg-primary-rgb, 255,255,255), 0.85) 100%)' }} />
+      </div>
+
       {/* Header */}
-      <header className="flex items-center justify-between px-4 md:px-12 py-5">
+      <header className="relative z-10 flex items-center justify-between px-4 md:px-12 py-5">
         <div className="flex items-center gap-2.5">
           <img src="/logo-64.png" alt="WW" width={32} height={32} className="rounded" />
           <span className="text-base font-semibold tracking-tight">WinWin Analyzer</span>
@@ -70,8 +76,8 @@ export default function LoginPage() {
       </header>
 
       {/* Hero */}
-      <main className="flex-1 flex items-center justify-center px-4 md:px-12 pb-20">
-        <div className="w-full max-w-md">
+      <main className="relative z-10 flex-1 flex items-center justify-center px-4 md:px-12 pb-20">
+        <div className="w-full max-w-md bg-bg-card/80 backdrop-blur-xl rounded-3xl p-8 md:p-10 border border-border shadow-[0_24px_48px_rgba(0,0,0,0.08)]">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-wash-info text-accent text-xs font-semibold mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
             สำหรับศิษย์เก่า Inside Bank · IBF

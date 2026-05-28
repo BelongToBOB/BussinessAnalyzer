@@ -5,6 +5,7 @@
 
 :root {
   /* Light mode */
+  --bg-primary-rgb: 255, 255, 255;
   --bg-primary:    #FFFFFF;
   --bg-secondary:  #F5F5F7;
   --bg-tertiary:   #FAFAFB;
@@ -43,6 +44,7 @@
 }
 
 [data-theme="dark"] {
+  --bg-primary-rgb: 0, 0, 0;
   --bg-primary:    #000000;
   --bg-secondary:  #1C1C1E;
   --bg-tertiary:   #161618;
