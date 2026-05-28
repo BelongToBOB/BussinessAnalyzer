@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { VerdictRibbon } from '@/components/ui/verdict-ribbon';
 import { MetricCard, SplitBar } from '@/components/ui/metric-card';
 import { money } from '@/lib/format';
-import { getBusiness, getEntry, getTrends } from '@/lib/api';
+import { getBusiness, getEntry, getTrends, getSession, getExpenseItems } from '@/lib/api';
 import { DashboardTrendChart } from '@/components/ui/charts';
 
 const THAI_MONTHS = [
@@ -53,17 +53,90 @@ const CARD_META: Record<number, { label: string; goodIsUp?: boolean; variant?: s
 const CIRCLED = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
 
 const TOOLS = [
-  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'เทียบยอดขายกับเงินจริงในบัญชี', href: '/s1-check-cash', color: 'var(--status-good)', icon: 'search-cash' },
-  { tag: 'S2', label: 'อ่านงบ', desc: 'วิเคราะห์งบกำไรขาดทุน + margin', href: '/s2-income-statement', color: 'var(--accent)', icon: 'bar-chart' },
-  { tag: 'S2', label: 'งบเงินสด 2 ปี', desc: 'สร้างงบกระแสเงินสดจากงบ 2 ปี', href: '/s2-cashflow', color: 'var(--accent)', icon: 'compare' },
-  { tag: 'S3', label: 'Cashflow 4 Layers', desc: 'ไล่เงินจริง 4 ชั้น + วินิจฉัย', href: '/s3-cashflow', color: '#8B5CF6', icon: 'layers' },
-  { tag: 'S4', label: 'ตั้งราคา', desc: 'คำนวณราคาขายที่ได้กำไรจริง', href: '/s4-pricing', color: 'var(--status-warn)', icon: 'tag' },
-  { tag: 'S4', label: 'CM + จุดคุ้มทุน', desc: 'Contribution Margin + Break-even', href: '/s4-cm', color: 'var(--status-warn)', icon: 'target' },
-  { tag: 'S4', label: 'Real Profit', desc: 'เงินสดที่เหลือจริงจากกำไร', href: '/s4-real-profit', color: 'var(--status-warn)', icon: 'diamond' },
-  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย + 10 จุดรั่ว', href: '/expense-map', color: 'var(--status-bad)', icon: 'map' },
-  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด 5 บัญชี', href: '/s6-five-buckets', color: '#06B6D4', icon: 'boxes' },
-  { tag: 'S7', label: 'แผน 1 หน้า', desc: 'แผนธุรกิจตอบ 4 คำถามธนาคาร', href: '/s7-business-plan', color: '#EC4899', icon: 'file-text' },
+  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'เทียบยอดขายกับเงินจริงในบัญชี', href: '/s1-check-cash', color: 'var(--status-good)', icon: 'search-cash', apiSlug: 's1-check-cash' },
+  { tag: 'S2', label: 'อ่านงบ', desc: 'วิเคราะห์งบกำไรขาดทุน + margin', href: '/s2-income-statement', color: 'var(--accent)', icon: 'bar-chart', apiSlug: 's2-income-statement' },
+  { tag: 'S2', label: 'งบเงินสด 2 ปี', desc: 'สร้างงบกระแสเงินสดจากงบ 2 ปี', href: '/s2-cashflow', color: 'var(--accent)', icon: 'compare', apiSlug: 's2-cashflow' },
+  { tag: 'S3', label: 'Cashflow 4 Layers', desc: 'ไล่เงินจริง 4 ชั้น + วินิจฉัย', href: '/s3-cashflow', color: '#8B5CF6', icon: 'layers', apiSlug: 's3-cashflow' },
+  { tag: 'S4', label: 'ตั้งราคา', desc: 'คำนวณราคาขายที่ได้กำไรจริง', href: '/s4-pricing', color: 'var(--status-warn)', icon: 'tag', apiSlug: 's4-pricing' },
+  { tag: 'S4', label: 'CM + จุดคุ้มทุน', desc: 'Contribution Margin + Break-even', href: '/s4-cm', color: 'var(--status-warn)', icon: 'target', apiSlug: 's4-cm' },
+  { tag: 'S4', label: 'Real Profit', desc: 'เงินสดที่เหลือจริงจากกำไร', href: '/s4-real-profit', color: 'var(--status-warn)', icon: 'diamond', apiSlug: 's4-real-profit' },
+  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย + 10 จุดรั่ว', href: '/expense-map', color: 'var(--status-bad)', icon: 'map', apiSlug: 'expense-map' },
+  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด 5 บัญชี', href: '/s6-five-buckets', color: '#06B6D4', icon: 'boxes', apiSlug: 's6-five-buckets' },
+  { tag: 'S7', label: 'แผน 1 หน้า', desc: 'แผนธุรกิจตอบ 4 คำถามธนาคาร', href: '/s7-business-plan', color: '#EC4899', icon: 'file-text', apiSlug: 's7-business-plan' },
 ];
+
+function ToolChecklist({ tools, completedSlugs }: { tools: typeof TOOLS; completedSlugs: Set<string> }) {
+  const doneCount = tools.filter(t => completedSlugs.has(t.apiSlug)).length;
+  const total = tools.length;
+  const pct = Math.round((doneCount / total) * 100);
+
+  return (
+    <div>
+      {/* Progress header */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">เครื่องมือวิเคราะห์</div>
+        <div className="flex items-center gap-2">
+          <span className="num text-xs font-semibold text-text-secondary">{doneCount}/{total}</span>
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${doneCount === total ? 'bg-wash-good text-status-good' : 'bg-wash-info text-accent'}`}>
+            {doneCount === total ? 'ครบแล้ว!' : `${pct}%`}
+          </span>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-1.5 rounded-full bg-border overflow-hidden mb-4">
+        <div className="h-full rounded-full transition-all duration-500" style={{
+          width: `${pct}%`,
+          background: doneCount === total ? 'var(--status-good)' : 'var(--accent)',
+        }} />
+      </div>
+
+      {/* Checklist */}
+      <div className="space-y-2">
+        {tools.map((t) => {
+          const done = completedSlugs.has(t.apiSlug);
+          return (
+            <a key={t.href} href={t.href} className="group flex items-center gap-3 bg-bg-card border border-border rounded-xl px-4 py-3 no-underline hover:shadow-[var(--shadow-pop)] hover:border-transparent transition-all">
+              {/* Check circle */}
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${done ? '' : 'border-2'}`}
+                style={{
+                  background: done ? t.color : 'transparent',
+                  borderColor: done ? 'transparent' : 'var(--border-strong)',
+                }}>
+                {done ? (
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 7l3 3 5-6"/>
+                  </svg>
+                ) : (
+                  <span className="text-[9px] font-bold text-text-tertiary">{t.tag}</span>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-text-primary">{t.label}</span>
+                  {done && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-wash-good text-status-good">เสร็จ</span>
+                  )}
+                </div>
+                <div className="text-[11px] text-text-secondary leading-snug">{t.desc}</div>
+              </div>
+
+              {/* Action */}
+              <div className={`shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${done
+                ? 'bg-bg-secondary text-text-secondary group-hover:bg-bg-card'
+                : 'text-white group-hover:brightness-110'
+              }`} style={!done ? { background: t.color } : {}}>
+                {done ? 'ดูผล →' : 'เริ่มทำ'}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function ToolIcon({ name, color, size = 28 }: { name: string; color: string; size?: number }) {
   const s = size;
@@ -144,6 +217,7 @@ function DashboardPage() {
   const [data, setData] = useState<any>(null);
   const [business, setBusiness] = useState<any>(null);
   const [trends, setTrends] = useState<any[]>([]);
+  const [completedSlugs, setCompletedSlugs] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -153,6 +227,22 @@ function DashboardPage() {
     try {
       const biz = await getBusiness();
       setBusiness(biz);
+
+      // Check which sessions are completed
+      try {
+        const slugs = ['s1-check-cash','s2-income-statement','s2-cashflow','s3-cashflow','s4-pricing','s4-cm','s4-real-profit','s6-five-buckets','s7-business-plan'];
+        const checks = await Promise.allSettled([
+          ...slugs.map(s => getSession(s)),
+          getExpenseItems(),
+        ]);
+        const done = new Set<string>();
+        slugs.forEach((s, i) => { if (checks[i].status === 'fulfilled') done.add(s); });
+        if (checks[slugs.length].status === 'fulfilled') {
+          const items = (checks[slugs.length] as any).value;
+          if (items?.items?.length > 0) done.add('expense-map');
+        }
+        setCompletedSlugs(done);
+      } catch { /* ignore */ }
 
       // Load trends for chart
       try {
@@ -271,24 +361,9 @@ function DashboardPage() {
               ctaLabel="กรอกเลย"
               onTap={() => router.push(`/entry/${month}`)}
             />
-            {/* Tools grid */}
+            {/* Tools checklist */}
             <div className="mt-6 mb-6">
-              <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-2">เครื่องมือวิเคราะห์</div>
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-2">
-                {TOOLS.map((t) => (
-                  <a key={t.href} href={t.href} className="group relative bg-bg-card border border-border rounded-2xl p-4 pb-3.5 no-underline hover:shadow-[var(--shadow-pop)] hover:border-transparent transition-all overflow-hidden">
-                    {/* Accent bar */}
-                    <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ background: t.color }} />
-                    {/* Icon */}
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110" style={{ background: `color-mix(in srgb, ${t.color} 12%, transparent)` }}>
-                      <ToolIcon name={t.icon} color={t.color} size={22} />
-                    </div>
-                    <div className="text-[10px] font-bold tracking-wider uppercase mb-0.5" style={{ color: t.color }}>{t.tag}</div>
-                    <div className="text-[15px] font-semibold text-text-primary leading-tight">{t.label}</div>
-                    <div className="text-[11px] text-text-secondary mt-1.5 leading-snug">{t.desc}</div>
-                  </a>
-                ))}
-              </div>
+              <ToolChecklist tools={TOOLS} completedSlugs={completedSlugs} />
             </div>
 
             {/* Empty cards */}
