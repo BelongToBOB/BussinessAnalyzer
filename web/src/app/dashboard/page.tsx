@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { VerdictRibbon } from '@/components/ui/verdict-ribbon';
 import { MetricCard, SplitBar } from '@/components/ui/metric-card';
@@ -221,8 +221,9 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const hasLoadedOnce = useRef(false);
   const loadData = useCallback(async (m: string) => {
-    setLoading(true);
+    if (!hasLoadedOnce.current) setLoading(true);
     setError(false);
     try {
       const biz = await getBusiness();
@@ -261,6 +262,7 @@ function DashboardPage() {
       } catch {
         setData(null); // No entry for this month
       }
+      hasLoadedOnce.current = true;
       setLoading(false);
     } catch (e: any) {
       console.error('Dashboard load error:', e);
