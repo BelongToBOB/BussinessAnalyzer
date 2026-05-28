@@ -65,7 +65,7 @@ export default function LoginPage() {
       {/* Animated background */}
       <div className="absolute inset-0 z-0">
         <img src="/bg-login.jpg" alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(var(--bg-primary-rgb, 255,255,255), 0.88) 0%, rgba(var(--bg-primary-rgb, 255,255,255), 0.7) 50%, rgba(var(--bg-primary-rgb, 255,255,255), 0.82) 100%)' }} />
+        <div className="absolute inset-0" style={{ background: 'rgba(var(--bg-primary-rgb, 255,255,255), 0.93)' }} />
         <InteractiveBG />
       </div>
 
