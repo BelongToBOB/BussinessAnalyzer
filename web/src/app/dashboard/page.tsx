@@ -351,17 +351,17 @@ function DashboardPage() {
   const verdict = data?.verdict;
 
   return (
-    <div className="min-h-screen bg-bg-secondary">
+    <div className="min-h-screen bg-bg-secondary overflow-x-hidden">
       {/* Top bar */}
       <header className="sticky top-0 z-10 bg-bg-primary/85 backdrop-blur-lg border-b border-border">
         <div className="max-w-5xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <img src="/logo-32.png" alt="WW" width={28} height={28} className="rounded" />
-            <span className="text-[15px] font-semibold tracking-tight">WinWin Analyzer</span>
+            <span className="text-[15px] font-semibold tracking-tight hidden sm:inline">WinWin Analyzer</span>
           </div>
-          <div className="flex items-center gap-1">
-            <button onClick={() => goMonth(-1)} className="p-2 cursor-pointer bg-transparent border-none text-text-primary">←</button>
-            <span className="text-[15px] font-semibold min-w-[140px] text-center">{formatMonthThai(month)}</span>
+          <div className="flex items-center gap-0.5">
+            <button onClick={() => goMonth(-1)} className="p-1.5 cursor-pointer bg-transparent border-none text-text-primary">←</button>
+            <span className="text-[13px] sm:text-[15px] font-semibold text-center">{formatMonthThai(month)}</span>
             <button
               onClick={() => goMonth(1)}
               disabled={shiftMonth(month, 1) > currentYYYYMM()}

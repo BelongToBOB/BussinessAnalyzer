@@ -99,6 +99,7 @@ body {
   font-family: var(--font-thai);
   background: var(--bg-secondary);
   color: var(--text-primary);
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.45;

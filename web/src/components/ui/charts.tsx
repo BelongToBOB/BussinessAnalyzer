@@ -25,7 +25,7 @@ export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
   }));
 
   return (
-    <div className="bg-bg-card border border-border rounded-2xl p-4">
+    <div className="bg-bg-card border border-border rounded-2xl p-4 overflow-hidden">
       <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-3">
         แนวโน้ม {data.length} เดือน
       </div>

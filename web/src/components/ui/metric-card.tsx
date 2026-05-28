@@ -57,7 +57,7 @@ export function MetricCard({
   return (
     <div
       onClick={onTap}
-      className={`${wash} rounded-2xl p-3.5 pb-4 min-h-[130px] flex flex-col justify-between transition-transform ${onTap ? 'cursor-pointer hover:shadow-[var(--shadow-pop)]' : ''}`}
+      className={`${wash} rounded-2xl p-3.5 pb-4 min-h-[130px] flex flex-col justify-between transition-transform overflow-hidden ${onTap ? 'cursor-pointer hover:shadow-[var(--shadow-pop)]' : ''}`}
     >
       {/* Header: circled number + dot */}
       <div className="flex items-center justify-between">
@@ -71,9 +71,9 @@ export function MetricCard({
       {/* Value */}
       <div className="flex-1 flex flex-col justify-end mt-2.5">
         {variant === 'number' && (
-          <div className={`num text-[22px] md:text-[28px] font-semibold leading-none tracking-tight ${status === 'empty' ? 'text-text-tertiary' : 'text-text-primary'}`}>
+          <div className={`num text-[18px] sm:text-[22px] md:text-[28px] font-semibold leading-none tracking-tight break-all ${status === 'empty' ? 'text-text-tertiary' : 'text-text-primary'}`}>
             {big}
-            {unit && <span className="text-[13px] font-medium text-text-secondary ml-1">{unit}</span>}
+            {unit && <span className="text-[11px] sm:text-[13px] font-medium text-text-secondary ml-1">{unit}</span>}
           </div>
         )}
         {variant === 'text' && (
