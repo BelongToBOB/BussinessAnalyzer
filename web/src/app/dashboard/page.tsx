@@ -221,19 +221,22 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  // Check session on mount — redirect immediately if not logged in
+  const sessionChecked = useRef(false);
+  useEffect(() => {
+    if (sessionChecked.current) return;
+    sessionChecked.current = true;
+    fetch('/api/auth/session')
+      .then(r => r.json())
+      .then(s => { if (!s?.user?.id) window.location.href = '/login'; })
+      .catch(() => {});
+  }, []);
+
   const hasLoadedOnce = useRef(false);
   const loadData = useCallback(async (m: string) => {
     if (!hasLoadedOnce.current) setLoading(true);
     setError(false);
     try {
-      // Check session first — redirect to login if not authenticated
-      const sessRes = await fetch('/api/auth/session');
-      const sess = await sessRes.json().catch(() => ({}));
-      if (!sess?.user?.id) {
-        window.location.href = '/login';
-        return;
-      }
-
       const biz = await getBusiness();
       setBusiness(biz);
 
@@ -301,17 +304,24 @@ function DashboardPage() {
     }
   }, []);
 
+  // Always reload data — on mount, month change, back navigation, tab focus
   useEffect(() => {
     loadData(month);
+  }, [month, loadData]);
 
-    // Reload when user comes back (tab focus or back navigation)
-    const handleFocus = () => loadData(month);
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') handleFocus();
-    });
+  // Handle back button + tab switch
+  useEffect(() => {
+    const reload = () => { hasLoadedOnce.current = false; loadData(month); };
+    const onVisibility = () => { if (document.visibilityState === 'visible') reload(); };
+    const onPageShow = (e: PageTransitionEvent) => { if (e.persisted) reload(); };
+
+    window.addEventListener('popstate', reload);
+    window.addEventListener('pageshow', onPageShow);
+    document.addEventListener('visibilitychange', onVisibility);
     return () => {
-      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('popstate', reload);
+      window.removeEventListener('pageshow', onPageShow as any);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [month, loadData]);
 
