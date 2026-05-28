@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import { InteractiveBG } from '@/components/ui/interactive-bg';
 
 export default function LoginPage() {
   const [showEmail, setShowEmail] = useState(false);
@@ -61,10 +62,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
-        <img src="/bg-login.jpg" alt="" className="w-full h-full object-cover" />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(var(--bg-primary-rgb, 255,255,255), 0.92) 0%, rgba(var(--bg-primary-rgb, 255,255,255), 0.75) 50%, rgba(var(--bg-primary-rgb, 255,255,255), 0.85) 100%)' }} />
+      {/* Animated background */}
+      <div className="absolute inset-0 z-0 bg-bg-secondary">
+        <InteractiveBG />
       </div>
 
       {/* Header */}
