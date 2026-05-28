@@ -62,7 +62,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Background image + animated overlay */}
+      {/* Animated background */}
       <div className="absolute inset-0 z-0">
         <img src="/bg-login.jpg" alt="" className="w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(var(--bg-primary-rgb, 255,255,255), 0.88) 0%, rgba(var(--bg-primary-rgb, 255,255,255), 0.7) 50%, rgba(var(--bg-primary-rgb, 255,255,255), 0.82) 100%)' }} />
@@ -77,9 +77,9 @@ export default function LoginPage() {
         </div>
       </header>
 
-      {/* Hero */}
-      <main className="relative z-10 flex-1 flex items-center justify-center px-4 md:px-12 pb-20">
-        <div className="w-full max-w-md bg-bg-card/80 backdrop-blur-xl rounded-3xl p-8 md:p-10 border border-border shadow-[0_24px_48px_rgba(0,0,0,0.08)]">
+      {/* Split layout: content left, visual right */}
+      <main className="relative z-10 flex-1 flex items-center px-6 md:px-16 lg:px-24 pb-16">
+        <div className="w-full max-w-lg">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-wash-info text-accent text-xs font-semibold mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
             สำหรับศิษย์เก่า Inside Bank · IBF
