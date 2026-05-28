@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
+import { BottomNav } from '@/components/ui/bottom-nav';
+import { WinTip } from '@/components/ui/win-tip';
+import { SessionSave } from '@/components/ui/session-save';
 
 export default function S2IncomeStatementPage() {
   const router = useRouter();
@@ -105,20 +108,13 @@ export default function S2IncomeStatementPage() {
             </div>
           </div>
         )}
+        <div className="mt-6">
+          <WinTip page="s2-income-statement" />
+        <SessionSave sessionType="s2-income-statement" getData={() => ({ revenue: unmaskCurrency(revenue), cogs: unmaskCurrency(cogs), sellingAdmin: unmaskCurrency(sellingAdmin), depreciation: unmaskCurrency(depreciation), interest: unmaskCurrency(interest), tax: unmaskCurrency(tax) })} />
+        </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'อ่านงบ', href: '/s2-income-statement' },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี', href: '/settings' },
-        ].map((tab) => (
-          <a key={tab.label} href={tab.href} className={`flex flex-col items-center gap-0.5 py-1.5 no-underline text-[10px] font-medium ${tab.href === '/s2-income-statement' ? 'text-text-primary' : 'text-text-tertiary'}`}>
-            {tab.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }

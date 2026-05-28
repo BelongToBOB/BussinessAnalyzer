@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { NumberInput } from '@/components/ui/number-input';
 import { maskCurrency, unmaskCurrency, money } from '@/lib/format';
 import { getBusiness, getEntry, upsertEntry } from '@/lib/api';
+import { toast } from 'sonner';
 
 const FIELDS = [
   { id: 'grossSales',    label: 'ยอดขายรวมเดือนนี้',           helper: 'รวมทั้งขายสดและขายเชื่อ' },
@@ -109,8 +110,10 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
     try {
       await upsertEntry(yyyyMm, body);
       setSaved(true);
+      toast.success('บันทึกสำเร็จ');
       setTimeout(() => { window.location.href = `/dashboard?month=${yyyyMm}`; }, 1000);
     } catch {
+      toast.error('เกิดข้อผิดพลาด');
       setSaving(false);
     }
   };
@@ -245,15 +248,6 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
         </div>
       </main>
 
-      {/* Toast */}
-      {saved && (
-        <div className="fixed top-20 left-0 right-0 flex justify-center z-40">
-          <div className="bg-status-good text-white px-4 py-2.5 rounded-xl text-[13px] font-medium flex items-center gap-2 shadow-lg">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round"><path d="M3 8l3 3 7-7"/></svg>
-            บันทึกแล้ว · กลับไปที่ Dashboard
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -6,6 +6,8 @@ import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
 import { FiveBucketsChart } from '@/components/ui/charts';
+import { BottomNav } from '@/components/ui/bottom-nav';
+import { WinTip } from '@/components/ui/win-tip';
 
 const DEFAULT_BUCKETS = [
   { name: 'ต้นทุนสินค้า/วัตถุดิบ', pct: 40 },
@@ -183,20 +185,12 @@ export default function S6FiveBucketsPage() {
         >
           {saving ? 'กำลังบันทึก...' : 'บันทึก'}
         </button>
+        <div className="mt-6">
+          <WinTip page="s6-five-buckets" />
+        </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'ระบบ 5 ช่อง', href: '/s6-five-buckets' },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี', href: '/settings' },
-        ].map((t) => (
-          <a key={t.label} href={t.href} className={`flex flex-col items-center gap-0.5 py-1.5 no-underline text-[10px] font-medium ${t.href === '/s6-five-buckets' ? 'text-text-primary' : 'text-text-tertiary'}`}>
-            {t.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }

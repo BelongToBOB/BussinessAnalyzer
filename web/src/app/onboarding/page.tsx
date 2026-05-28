@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { maskCurrency, unmaskCurrency } from '@/lib/format';
 import { getBusiness, createBusiness, upsertEntry } from '@/lib/api';
+import { toast } from 'sonner';
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function OnboardingPage() {
         });
       }
 
+      toast.success('สร้างธุรกิจสำเร็จ');
       // Full page reload to reset all state
       window.location.href = '/dashboard';
     } catch (err) {

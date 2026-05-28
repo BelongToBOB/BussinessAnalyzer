@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money } from '@/lib/format';
 import { getBusiness, getTrends } from '@/lib/api';
+import { BottomNav } from '@/components/ui/bottom-nav';
 
 const THAI_MONTHS_SHORT = [
   '', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
@@ -245,19 +246,7 @@ export default function HistoryPage() {
         )}
       </main>
 
-      {/* Bottom tabs */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'กรอกใหม่', href: '/entry/new' },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี',   href: '/settings' },
-        ].map((tab) => (
-          <a key={tab.label} href={tab.href} className={`flex flex-col items-center gap-0.5 py-1.5 no-underline text-[10px] font-medium ${tab.href === '/history' ? 'text-text-primary' : 'text-text-tertiary'}`}>
-            {tab.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }

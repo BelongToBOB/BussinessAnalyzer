@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { parseCSV, ImportedEntry } from '@/lib/csv-import';
 import { upsertEntry } from '@/lib/api';
 import { money } from '@/lib/format';
+import { toast } from 'sonner';
 
 const THAI_MONTHS = [
   '', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
@@ -66,6 +67,9 @@ export default function ImportPage() {
 
     setImportResult({ success, failed });
     setImporting(false);
+    if (success > 0) {
+      toast.success(`นำเข้าสำเร็จ ${success} เดือน`);
+    }
   };
 
   return (

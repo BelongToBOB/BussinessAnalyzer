@@ -1,0 +1,13 @@
+{
+  "name": "WinWin Analyzer",
+  "short_name": "WinWin",
+  "description": "\u0E40\u0E2B\u0E47\u0E19\u0E18\u0E38\u0E23\u0E01\u0E34\u0E08\u0E0A\u0E31\u0E14 \u0E43\u0E19 5 \u0E19\u0E32\u0E17\u0E35\u0E15\u0E48\u0E2D\u0E40\u0E14\u0E37\u0E2D\u0E19",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#F5F5F7",
+  "theme_color": "#1D1D1F",
+  "icons": [
+    { "src": "/logo-128.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "/logo-64.png", "sizes": "64x64", "type": "image/png" }
+  ]
+}

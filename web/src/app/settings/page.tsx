@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { maskCurrency, unmaskCurrency, money } from '@/lib/format';
 import { getBusiness, updateBusiness } from '@/lib/api';
+import { toast } from 'sonner';
+import Swal from 'sweetalert2';
+import { BottomNav } from '@/components/ui/bottom-nav';
 
 function SettingsRow({ label, value, trailing, onTap, last, danger }: {
   label: string; value?: string; trailing?: React.ReactNode;
@@ -89,6 +92,7 @@ export default function SettingsPage() {
     try {
       const updated = await updateBusiness(data as any);
       setBusiness(updated);
+      toast.success('บันทึกแล้ว');
     } catch { /* ignore */ }
     setSaving(false);
   };
@@ -106,8 +110,16 @@ export default function SettingsPage() {
   };
 
   const handleDeleteAccount = async () => {
-    if (!confirm('ลบข้อมูลทั้งหมดจริงหรือ? การกระทำนี้ย้อนกลับไม่ได้')) return;
-    if (!confirm('ยืนยันอีกครั้ง — ข้อมูลทั้งหมดจะหายถาวร')) return;
+    const result = await Swal.fire({
+      title: 'ลบข้อมูลทั้งหมด?',
+      text: 'การกระทำนี้ย้อนกลับไม่ได้',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF3B30',
+      confirmButtonText: 'ลบทั้งหมด',
+      cancelButtonText: 'ยกเลิก',
+    });
+    if (!result.isConfirmed) return;
     // TODO: implement DELETE /api/business (cascade)
     await signOut({ callbackUrl: '/login' });
   };
@@ -218,19 +230,7 @@ export default function SettingsPage() {
         <div className="mt-4 text-[11px] text-text-tertiary">WinWin Analyzer · v0.1 · WinWin Wealth Creation</div>
       </main>
 
-      {/* Bottom tabs */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'กรอกใหม่', href: '/entry/new' },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี',   href: '/settings' },
-        ].map((tab) => (
-          <a key={tab.label} href={tab.href} className={`flex flex-col items-center gap-0.5 py-1.5 no-underline text-[10px] font-medium ${tab.href === '/settings' ? 'text-text-primary' : 'text-text-tertiary'}`}>
-            {tab.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }

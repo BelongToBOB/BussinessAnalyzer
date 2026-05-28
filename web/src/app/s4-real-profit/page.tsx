@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
+import { BottomNav } from '@/components/ui/bottom-nav';
+import { WinTip } from '@/components/ui/win-tip';
+import { SessionSave } from '@/components/ui/session-save';
 
 export default function S4RealProfitPage() {
   const router = useRouter();
@@ -116,20 +119,13 @@ export default function S4RealProfitPage() {
             </div>
           </div>
         )}
+        <div className="mt-6">
+          <WinTip page="s4-real-profit" />
+        <SessionSave sessionType="s4-real-profit" getData={() => ({ netProfit: unmaskCurrency(netProfit), depreciation: unmaskCurrency(depreciation), deltaAR: unmaskCurrency(deltaAR), deltaInventory: unmaskCurrency(deltaInventory), deltaAP: unmaskCurrency(deltaAP), deltaTax: unmaskCurrency(deltaTax), debtPrincipal: unmaskCurrency(debtPrincipal), ownerDraw: unmaskCurrency(ownerDraw), reinvestment: unmaskCurrency(reinvestment) })} />
+        </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'Real Profit', href: '/s4-real-profit' },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี', href: '/settings' },
-        ].map((t) => (
-          <a key={t.label} href={t.href} className={`flex flex-col items-center gap-0.5 py-1.5 no-underline text-[10px] font-medium ${t.href === '/s4-real-profit' ? 'text-text-primary' : 'text-text-tertiary'}`}>
-            {t.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }

@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { ExpenseDonutChart } from '@/components/ui/charts';
 import { getExpenseItems, createExpenseItem, updateExpenseItem, deleteExpenseItem, getLeakChecks, upsertLeakCheck } from '@/lib/api';
+import { toast } from 'sonner';
+import Swal from 'sweetalert2';
+import { BottomNav } from '@/components/ui/bottom-nav';
+import { WinTip } from '@/components/ui/win-tip';
 
 const CATEGORIES = ['ลงทุน', 'ดำเนินงาน', 'สูญเปล่า'] as const;
 const CAT_COLORS: Record<string, string> = {
@@ -53,12 +57,22 @@ export default function ExpenseMapPage() {
     await createExpenseItem({ name: newName.trim(), category: newCat, amount: unmaskCurrency(newAmount), decision: newDecision || null });
     setNewName(''); setNewAmount(''); setNewDecision('');
     await refresh();
+    toast.success('บันทึกแล้ว');
   };
 
   const handleDeleteItem = async (id: string) => {
-    if (!confirm('ลบรายการนี้?')) return;
+    const result = await Swal.fire({
+      title: 'ลบรายการนี้?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#FF3B30',
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก',
+    });
+    if (!result.isConfirmed) return;
     await deleteExpenseItem(id);
     await refresh();
+    toast.success('บันทึกแล้ว');
   };
 
   const handleToggleLeak = async (checkNumber: number, current: any) => {
@@ -234,21 +248,13 @@ export default function ExpenseMapPage() {
         <p className="text-xs text-text-tertiary mt-4 px-1">
           * การอุดรอยรั่วคือการเพิ่มกำไรสุทธิที่ง่ายและเร็วที่สุด โดยไม่ต้องหายอดขายเพิ่ม
         </p>
+
+        <div className="mt-6">
+          <WinTip page="expense-map" />
+        </div>
       </main>
 
-      {/* Bottom tabs */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'Expense Map', href: '/expense-map' },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี', href: '/settings' },
-        ].map((tab) => (
-          <a key={tab.label} href={tab.href} className={`flex flex-col items-center gap-0.5 py-1.5 no-underline text-[10px] font-medium ${tab.href === '/expense-map' ? 'text-text-primary' : 'text-text-tertiary'}`}>
-            {tab.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }

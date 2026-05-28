@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
+import { BottomNav } from '@/components/ui/bottom-nav';
+import { WinTip } from '@/components/ui/win-tip';
 
 const READINESS_ITEMS = [
   'มีงบการเงินย้อนหลัง 3 ปี',
@@ -248,20 +250,12 @@ export default function S7BusinessPlanPage() {
         >
           {saving ? 'กำลังบันทึก...' : 'บันทึก'}
         </button>
+        <div className="mt-6">
+          <WinTip page="s7-business-plan" />
+        </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'แผน 1 หน้า', href: '/s7-business-plan' },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี', href: '/settings' },
-        ].map((t) => (
-          <a key={t.label} href={t.href} className={`flex flex-col items-center gap-0.5 py-1.5 no-underline text-[10px] font-medium ${t.href === '/s7-business-plan' ? 'text-text-primary' : 'text-text-tertiary'}`}>
-            {t.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }

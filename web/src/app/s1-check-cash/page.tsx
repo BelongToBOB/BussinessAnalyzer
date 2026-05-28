@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
+import { BottomNav } from '@/components/ui/bottom-nav';
+import { WinTip } from '@/components/ui/win-tip';
+import { SessionSave } from '@/components/ui/session-save';
 
 export default function S1CheckCashPage() {
   const router = useRouter();
@@ -105,20 +108,13 @@ export default function S1CheckCashPage() {
             <strong className="text-text-primary">หมายเหตุ:</strong> เงินที่เพิ่มจริงย่อมต่ำกว่ายอดขายอยู่แล้ว เพราะเงินสดยังถูกใช้กับต้นทุน ค่าใช้จ่าย ชำระหนี้ ถอนใช้ส่วนตัว ฯลฯ — แต่ถ้าส่วนต่างสูงผิดปกติ (มากกว่า 50% ของยอดขาย) แสดงว่ามี &quot;รอยรั่ว&quot; ที่ต้องตรวจสอบ
           </div>
         </div>
+        <div className="mt-6">
+          <WinTip page="s1-check-cash" />
+        <SessionSave sessionType="s1-check-cash" month={new Date().toISOString().slice(0,7)} getData={() => ({ grossSales: unmaskCurrency(sales), cashStart: unmaskCurrency(cashStart), cashEnd: unmaskCurrency(cashEnd), arBalance: unmaskCurrency(ar) })} />
+        </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'เช็คเงินจริง', href: '/s1-check-cash' },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี', href: '/settings' },
-        ].map((tab) => (
-          <a key={tab.label} href={tab.href} className={`flex flex-col items-center gap-0.5 py-1.5 no-underline text-[10px] font-medium ${tab.href === '/s1-check-cash' ? 'text-text-primary' : 'text-text-tertiary'}`}>
-            {tab.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }

@@ -8,6 +8,9 @@ import { money } from '@/lib/format';
 import { getBusiness, getEntry, getTrends, getSession, getExpenseItems } from '@/lib/api';
 import { DashboardTrendChart } from '@/components/ui/charts';
 import { exportDashboardPDF } from '@/lib/pdf-export';
+import { BottomNav } from '@/components/ui/bottom-nav';
+import { DashboardSkeleton } from '@/components/ui/skeleton';
+import { WinTip } from '@/components/ui/win-tip';
 
 const THAI_MONTHS = [
   '', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
@@ -205,7 +208,7 @@ function formatBoxValue(box: any, cardNum: number): { big: string; unit?: string
 
 export default function DashboardPageWrapper() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-bg-secondary flex items-center justify-center"><div className="text-text-secondary">กำลังโหลด...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-bg-secondary"><DashboardSkeleton /></div>}>
       <DashboardPage />
     </Suspense>
   );
@@ -360,11 +363,7 @@ function DashboardPage() {
 
       <main className="max-w-5xl mx-auto px-4 md:px-6 py-5 pb-24">
         {/* Loading */}
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-text-secondary">กำลังโหลด...</div>
-          </div>
-        )}
+        {loading && <DashboardSkeleton />}
 
         {/* Error */}
         {error && (
@@ -538,21 +537,15 @@ function DashboardPage() {
             </div>
           </>
         )}
+        {/* WinTip */}
+        {!loading && !error && (
+          <div className="mt-6">
+            <WinTip page="dashboard" />
+          </div>
+        )}
       </main>
 
-      {/* Bottom tabs (mobile) */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-bg-primary/92 backdrop-blur-lg border-t border-border pb-[env(safe-area-inset-bottom,12px)] pt-2 px-2 grid grid-cols-4 xl:hidden z-20">
-        {[
-          { label: 'หน้าหลัก', href: '/dashboard' },
-          { label: 'กรอกใหม่', href: `/entry/${currentYYYYMM()}` },
-          { label: 'ย้อนหลัง', href: '/history' },
-          { label: 'บัญชี',   href: '/settings' },
-        ].map((tab) => (
-          <a key={tab.label} href={tab.href} className="flex flex-col items-center gap-0.5 py-1.5 text-text-tertiary no-underline text-[10px] font-medium">
-            {tab.label}
-          </a>
-        ))}
-      </nav>
+      <BottomNav />
     </div>
   );
 }
