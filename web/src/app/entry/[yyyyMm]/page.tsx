@@ -209,6 +209,29 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
               />
             </div>
 
+            {/* Mobile live preview */}
+            <div className="lg:hidden py-4 border-t border-border">
+              <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-2">คำนวณสด</div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-bg-secondary rounded-xl p-2.5">
+                  <div className="text-[10px] text-text-secondary">Gross Margin</div>
+                  <div className="num text-sm font-semibold mt-0.5">{gm != null ? gm.toFixed(0) + '%' : '—'}</div>
+                </div>
+                <div className="bg-bg-secondary rounded-xl p-2.5">
+                  <div className="text-[10px] text-text-secondary">Net Profit</div>
+                  <div className="num text-sm font-semibold mt-0.5">{np != null && sales ? (np >= 0 ? '+' : '−') + money(Math.abs(np)) : '—'}</div>
+                </div>
+                <div className="bg-bg-secondary rounded-xl p-2.5">
+                  <div className="text-[10px] text-text-secondary">Cash In ÷ Sales</div>
+                  <div className="num text-sm font-semibold mt-0.5">{cashRatio != null ? cashRatio.toFixed(0) + '%' : '—'}</div>
+                </div>
+                <div className="bg-bg-secondary rounded-xl p-2.5">
+                  <div className="text-[10px] text-text-secondary">Cash Runway</div>
+                  <div className="num text-sm font-semibold mt-0.5">{runway != null && isFinite(runway) ? runway.toFixed(1) + ' เดือน' : '—'}</div>
+                </div>
+              </div>
+            </div>
+
             {/* Actions */}
             <div className="py-5 flex flex-col gap-2.5">
               <button

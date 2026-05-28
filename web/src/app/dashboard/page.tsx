@@ -70,74 +70,84 @@ const TOOLS = [
 ];
 
 function ToolChecklist({ tools, completedSlugs }: { tools: typeof TOOLS; completedSlugs: Set<string> }) {
+  const [expanded, setExpanded] = useState(false);
   const doneCount = tools.filter(t => completedSlugs.has(t.apiSlug)).length;
   const total = tools.length;
   const pct = Math.round((doneCount / total) * 100);
 
+  // Find next undone session
+  const nextTool = tools.find(t => !completedSlugs.has(t.apiSlug));
+
   return (
-    <div>
-      {/* Progress header */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">เครื่องมือวิเคราะห์</div>
-        <div className="flex items-center gap-2">
-          <span className="num text-xs font-semibold text-text-secondary">{doneCount}/{total}</span>
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${doneCount === total ? 'bg-wash-good text-status-good' : 'bg-wash-info text-accent'}`}>
-            {doneCount === total ? 'ครบแล้ว!' : `${pct}%`}
-          </span>
+    <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
+      {/* Compact header — always visible */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-3 px-4 py-3.5 cursor-pointer bg-transparent border-none text-left"
+      >
+        {/* Progress ring */}
+        <div className="relative w-10 h-10 shrink-0">
+          <svg width="40" height="40" viewBox="0 0 40 40" className="rotate-[-90deg]">
+            <circle cx="20" cy="20" r="17" fill="none" stroke="var(--border)" strokeWidth="3" />
+            <circle cx="20" cy="20" r="17" fill="none" stroke={doneCount === total ? 'var(--status-good)' : 'var(--accent)'} strokeWidth="3"
+              strokeDasharray={`${2 * Math.PI * 17}`} strokeDashoffset={`${2 * Math.PI * 17 * (1 - pct / 100)}`}
+              strokeLinecap="round" className="transition-all duration-500" />
+          </svg>
+          <span className="absolute inset-0 flex items-center justify-center num text-[11px] font-bold">{doneCount}/{total}</span>
         </div>
-      </div>
 
-      {/* Progress bar */}
-      <div className="h-1.5 rounded-full bg-border overflow-hidden mb-4">
-        <div className="h-full rounded-full transition-all duration-500" style={{
-          width: `${pct}%`,
-          background: doneCount === total ? 'var(--status-good)' : 'var(--accent)',
-        }} />
-      </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-semibold">เครื่องมือวิเคราะห์</div>
+          <div className="text-[11px] text-text-secondary">
+            {doneCount === total ? '✅ ทำครบทุกเครื่องมือแล้ว!' : nextTool ? `ถัดไป: ${nextTool.label}` : ''}
+          </div>
+        </div>
 
-      {/* Checklist */}
-      <div className="space-y-2">
-        {tools.map((t, i) => {
-          const done = completedSlugs.has(t.apiSlug);
-          return (
-            <a key={t.href} href={t.href} className="group flex items-center gap-3 bg-bg-card border border-border rounded-xl px-4 py-3 no-underline hover:shadow-[var(--shadow-pop)] hover:border-transparent transition-all anim-fade-up" style={{ animationDelay: `${i * 0.04}s` }}>
-              {/* Check circle */}
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${done ? '' : 'border-2'}`}
-                style={{
-                  background: done ? t.color : 'transparent',
-                  borderColor: done ? 'transparent' : 'var(--border-strong)',
-                }}>
-                {done ? (
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 7l3 3 5-6"/>
-                  </svg>
-                ) : (
-                  <span className="text-[9px] font-bold text-text-tertiary">{t.tag}</span>
-                )}
-              </div>
+        {/* Next button or expand */}
+        {!expanded && nextTool && (
+          <a href={nextTool.href} onClick={(e) => e.stopPropagation()}
+            className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg text-white no-underline"
+            style={{ background: nextTool.color }}>
+            เริ่มทำ →
+          </a>
+        )}
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-text-primary">{t.label}</span>
-                  {done && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-wash-good text-status-good">เสร็จ</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--text-tertiary)" strokeWidth="2" strokeLinecap="round"
+          className={`shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`}>
+          <path d="M4 6l4 4 4-4"/>
+        </svg>
+      </button>
+
+      {/* Expanded list */}
+      {expanded && (
+        <div className="border-t border-border">
+          {tools.map((t, i) => {
+            const done = completedSlugs.has(t.apiSlug);
+            return (
+              <a key={t.href} href={t.href} className="group flex items-center gap-3 px-4 py-2.5 no-underline hover:bg-bg-secondary transition-colors border-b border-border last:border-b-0">
+                {/* Check circle */}
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${done ? '' : 'border-[1.5px]'}`}
+                  style={{
+                    background: done ? t.color : 'transparent',
+                    borderColor: done ? 'transparent' : 'var(--border-strong)',
+                  }}>
+                  {done ? (
+                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M3 7l3 3 5-6"/></svg>
+                  ) : (
+                    <span className="text-[8px] font-bold text-text-tertiary">{t.tag}</span>
                   )}
                 </div>
-                <div className="text-[11px] text-text-secondary leading-snug">{t.desc}</div>
-              </div>
 
-              {/* Action */}
-              <div className={`shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors ${done
-                ? 'bg-bg-secondary text-text-secondary group-hover:bg-bg-card'
-                : 'text-white group-hover:brightness-110'
-              }`} style={!done ? { background: t.color } : {}}>
-                {done ? 'ดูผล →' : 'เริ่มทำ'}
-              </div>
-            </a>
-          );
-        })}
-      </div>
+                <span className={`flex-1 text-[13px] font-medium ${done ? 'text-text-secondary' : 'text-text-primary'}`}>{t.label}</span>
+
+                <span className={`text-[11px] font-semibold px-2 py-1 rounded-md ${done ? 'text-status-good bg-wash-good' : 'text-text-tertiary'}`}>
+                  {done ? '✓' : 'ยังไม่ได้ทำ'}
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
