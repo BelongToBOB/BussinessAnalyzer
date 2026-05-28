@@ -295,6 +295,16 @@ function DashboardPage() {
 
   useEffect(() => {
     loadData(month);
+
+    // Reload when user comes back (tab focus or back navigation)
+    const handleFocus = () => loadData(month);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') handleFocus();
+    });
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [month, loadData]);
 
   const goMonth = (delta: number) => {
