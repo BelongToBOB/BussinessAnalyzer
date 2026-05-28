@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { InteractiveBG } from '@/components/ui/interactive-bg';
-import { AuroraBG } from '@/components/ui/aurora-bg';
 
 export default function LoginPage() {
   const [showEmail, setShowEmail] = useState(false);
@@ -63,11 +61,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Background layers */}
+      {/* Background */}
       <div className="absolute inset-0 z-0">
-        <img src="/bg-login.jpg" alt="" className="w-full h-full object-cover" />
+        <img src="/bg-login.jpg" alt="" className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
         <div className="absolute inset-0" style={{ background: 'rgba(var(--bg-primary-rgb, 255,255,255), 0.85)' }} />
-        <AuroraBG />
       </div>
 
       {/* Header */}
