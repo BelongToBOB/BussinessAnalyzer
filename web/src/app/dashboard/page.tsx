@@ -425,12 +425,12 @@ function DashboardPage() {
                 <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">{business?.name}</div>
                 <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{formatMonthThai(month)}</h1>
               </div>
-              <a
-                href={`/entry/${month}`}
-                className="bg-text-primary text-bg-primary rounded-[10px] px-3.5 py-2.5 text-sm font-semibold inline-flex items-center gap-1.5 no-underline"
+              <button
+                onClick={() => { window.location.href = `/entry/${month}`; }}
+                className="bg-text-primary text-bg-primary rounded-[10px] px-3.5 py-2.5 text-sm font-semibold inline-flex items-center gap-1.5 cursor-pointer border-none"
               >
                 แก้ไขข้อมูล
-              </a>
+              </button>
             </div>
 
             {/* Verdict */}
