@@ -205,6 +205,7 @@ export default function SettingsPage() {
         {/* Data */}
         <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary px-1 pb-2">ข้อมูล</div>
         <div className="bg-bg-card border border-border rounded-[14px] overflow-hidden mb-7">
+          <SettingsRow label="นำเข้าจาก CSV / Excel" value="Import ข้อมูลจากชีตเดิม" onTap={() => window.location.href = '/import'} trailing={<Chevron />} />
           <SettingsRow label="ออกจากระบบ" onTap={() => signOut({ callbackUrl: '/login' })} last trailing={<Chevron />} />
         </div>
 
