@@ -44,15 +44,15 @@ const GROUPS = [
 
 const CARD_META: Record<number, { label: string; goodIsUp?: boolean; variant?: string; key: string }> = {
   1:  { label: 'ยอดขายรวม',           key: '1_grossSales' },
-  2:  { label: 'สัดส่วน สด/เชื่อ',    key: '2_salesMix', goodIsUp: false },
-  3:  { label: 'Gross Margin',         key: '3_grossMargin' },
-  4:  { label: 'Net Profit',           key: '4_netProfit' },
-  5:  { label: 'ค่าใช้จ่ายกินยอดขาย',  key: '5_expenseRatio', goodIsUp: false },
+  2:  { label: 'สัดส่วน ขายสด / ขายเชื่อ',    key: '2_salesMix', goodIsUp: false },
+  3:  { label: 'Gross Margin (กำไรขั้นต้น %)',         key: '3_grossMargin' },
+  4:  { label: 'Net Profit (กำไรสุทธิ)',           key: '4_netProfit' },
+  5:  { label: 'ค่าใช้จ่ายกินยอดขาย %',  key: '5_expenseRatio', goodIsUp: false },
   6:  { label: 'จุดรั่วเดือนนี้',     key: '6_leakNote', variant: 'text' },
-  7:  { label: 'Cash In',              key: '7_cashIn' },
+  7:  { label: 'Cash In (เงินเข้าจริง)',              key: '7_cashIn' },
   8:  { label: 'ลูกหนี้ค้างเก็บ',     key: '8_arBalance', goodIsUp: false },
   9:  { label: 'เจ้าหนี้ค้างจ่าย',    key: '9_apBalance', goodIsUp: false },
-  10: { label: 'Cash Runway',               key: '10_runway' },
+  10: { label: 'Cash Runway (เงินสดอยู่ได้กี่เดือน)',               key: '10_runway' },
 };
 
 const CIRCLED = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
@@ -61,11 +61,11 @@ const TOOLS = [
   { tag: 'S1', label: 'เช็คเงินจริง', desc: 'เทียบยอดขายกับเงินจริงในบัญชี', href: '/s1-check-cash', color: 'var(--status-good)', icon: 'search-cash', apiSlug: 's1-check-cash' },
   { tag: 'S2', label: 'อ่านงบ', desc: 'วิเคราะห์งบกำไรขาดทุน + margin', href: '/s2-income-statement', color: 'var(--accent)', icon: 'bar-chart', apiSlug: 's2-income-statement' },
   { tag: 'S2', label: 'งบเงินสด 2 ปี', desc: 'สร้างงบกระแสเงินสดจากงบ 2 ปี', href: '/s2-cashflow', color: 'var(--accent)', icon: 'compare', apiSlug: 's2-cashflow' },
-  { tag: 'S3', label: 'Cashflow 4 Layers', desc: 'ไล่เงินจริง 4 ชั้น + วินิจฉัย', href: '/s3-cashflow', color: '#8B5CF6', icon: 'layers', apiSlug: 's3-cashflow' },
+  { tag: 'S3', label: 'Cashflow 4 ชั้น (ไล่เงินจริง)', desc: 'ไล่เงินจริง 4 ชั้น + วินิจฉัย', href: '/s3-cashflow', color: '#8B5CF6', icon: 'layers', apiSlug: 's3-cashflow' },
   { tag: 'S4', label: 'ตั้งราคา', desc: 'คำนวณราคาขายที่ได้กำไรจริง', href: '/s4-pricing', color: 'var(--status-warn)', icon: 'tag', apiSlug: 's4-pricing' },
-  { tag: 'S4', label: 'CM + จุดคุ้มทุน', desc: 'Contribution Margin + Break-even', href: '/s4-cm', color: 'var(--status-warn)', icon: 'target', apiSlug: 's4-cm' },
-  { tag: 'S4', label: 'Real Profit', desc: 'เงินสดที่เหลือจริงจากกำไร', href: '/s4-real-profit', color: 'var(--status-warn)', icon: 'diamond', apiSlug: 's4-real-profit' },
-  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย + 10 จุดรั่ว', href: '/expense-map', color: 'var(--status-bad)', icon: 'map', apiSlug: 'expense-map' },
+  { tag: 'S4', label: 'CM (กำไรส่วนเกิน) + จุดคุ้มทุน', desc: 'Contribution Margin + Break-even', href: '/s4-cm', color: 'var(--status-warn)', icon: 'target', apiSlug: 's4-cm' },
+  { tag: 'S4', label: 'Real Profit (กำไรเงินสดจริง)', desc: 'เงินสดที่เหลือจริงจากกำไร', href: '/s4-real-profit', color: 'var(--status-warn)', icon: 'diamond', apiSlug: 's4-real-profit' },
+  { tag: 'S5', label: 'Expense Map (แผนที่ค่าใช้จ่าย)', desc: 'แผนที่ค่าใช้จ่าย + 10 จุดรั่ว', href: '/expense-map', color: 'var(--status-bad)', icon: 'map', apiSlug: 'expense-map' },
   { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด 5 บัญชี', href: '/s6-five-buckets', color: '#06B6D4', icon: 'boxes', apiSlug: 's6-five-buckets' },
   { tag: 'S7', label: 'แผน 1 หน้า', desc: 'แผนธุรกิจตอบ 4 คำถามธนาคาร', href: '/s7-business-plan', color: '#EC4899', icon: 'file-text', apiSlug: 's7-business-plan' },
 ];

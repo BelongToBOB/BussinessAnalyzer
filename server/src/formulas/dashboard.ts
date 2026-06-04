@@ -80,7 +80,7 @@ function box1(input: Inputs): Box {
 
 // Box 2 — Sales Mix (cash vs credit)
 function box2(input: Inputs): Box {
-  if (!input.grossSales || input.grossSales <= 0) return { ...EMPTY, label: 'ขายสด / ขายเชื่อ', format: 'mix' };
+  if (!input.grossSales || input.grossSales <= 0) return { ...EMPTY, label: 'สัดส่วน ขายสด / ขายเชื่อ', format: 'mix' };
 
   const credit = input.creditSales ?? 0;
   const cash = input.grossSales - credit;
@@ -90,7 +90,7 @@ function box2(input: Inputs): Box {
   return {
     cashPct,
     creditPct,
-    label: 'ขายสด / ขายเชื่อ',
+    label: 'สัดส่วน ขายสด / ขายเชื่อ',
     format: 'mix',
     display: `ได้เงินแล้ว ${pct(cashPct)} · ยังเป็นลูกหนี้ ${pct(creditPct)}`,
     color: creditPct > 0.5 ? 'red' : creditPct > 0.3 ? 'yellow' : 'green',
@@ -128,7 +128,7 @@ function box4(input: Inputs): Box {
   return {
     value: np,
     format: 'currency',
-    label: 'Net Profit (กำไรบัญชี)',
+    label: 'Net Profit (กำไรสุทธิ)',
     color: np > 0 ? 'green' : np === 0 ? 'yellow' : 'red',
     note: 'ยังไม่ใช่เงินสด — เช็คช่อง 7 ต่อ',
     education: {
@@ -228,7 +228,7 @@ function box10(input: Inputs, business: BusinessConfig): Box {
   if (monthlyBurn <= 0) {
     return {
       months: null,
-      label: 'Cash Runway',
+      label: 'Cash Runway (เงินสดอยู่ได้กี่เดือน)',
       format: 'number',
       display: 'ไม่มีค่าใช้จ่ายประจำ — ใช้ได้ไม่จำกัด',
     };
@@ -240,7 +240,7 @@ function box10(input: Inputs, business: BusinessConfig): Box {
     monthlyBurn,
     cash,
     debtService,
-    label: 'Cash Runway',
+    label: 'Cash Runway (เงินสดอยู่ได้กี่เดือน)',
     format: 'number',
     display: `ผ่อนหนี้ ${money(debtService)} บาท/เดือน · เงินสด ${money(cash)} บาท · Cash Runway ${runwayMonths.toFixed(1)} เดือน`,
     color: runwayMonths >= 6 ? 'green' : runwayMonths >= 3 ? 'yellow' : 'red',

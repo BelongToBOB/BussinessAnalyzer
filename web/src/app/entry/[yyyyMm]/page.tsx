@@ -8,14 +8,14 @@ import { getBusiness, getEntry, upsertEntry } from '@/lib/api';
 import { toast } from 'sonner';
 
 const FIELDS = [
-  { id: 'grossSales',    label: 'ยอดขายรวมเดือนนี้',           helper: 'รวมทั้งขายสดและขายเชื่อ', help: 'เปิด Bank Statement หรือระบบ POS ดูยอดรวมรายรับทั้งเดือน \u2014 รวมทั้งขายสดและขายเชื่อ' },
-  { id: 'creditSales',   label: 'ในนั้น เป็นการขายเชื่อ',     helper: 'ขายแล้วยังไม่ได้รับเงิน', help: 'ยอดที่ขายแล้วยังไม่ได้เงิน \u2014 ดูจากยอดลูกหนี้ใหม่ที่เกิดเดือนนี้' },
+  { id: 'grossSales',    label: 'ยอดขายรวมเดือนนี้ (เปิดบิลทั้งหมด)',           helper: 'รวมทั้งขายสดและขายเชื่อ', help: 'เปิด Bank Statement หรือระบบ POS ดูยอดรวมรายรับทั้งเดือน \u2014 รวมทั้งขายสดและขายเชื่อ' },
+  { id: 'creditSales',   label: 'ในนั้น — เป็นการขายเชื่อ (ขายแล้วยังไม่ได้เงิน)',     helper: 'ขายแล้วยังไม่ได้รับเงิน', help: 'ยอดที่ขายแล้วยังไม่ได้เงิน \u2014 ดูจากยอดลูกหนี้ใหม่ที่เกิดเดือนนี้' },
   { id: 'cogs',          label: 'ต้นทุนสินค้าที่ขายไปเดือนนี้', helper: 'COGS — เฉพาะของที่ขายออก', help: 'ยอดซื้อสินค้า/วัตถุดิบที่จ่ายจริงเดือนนี้ \u2014 ดูจากใบสั่งซื้อหรือ Statement' },
-  { id: 'otherExpenses', label: 'ค่าใช้จ่ายอื่นๆ ทั้งหมด',     helper: 'เงินเดือน เช่า การตลาด น้ำไฟ ดอกเบี้ย ภาษี', help: 'รวมทุกอย่าง: เงินเดือน + ค่าเช่า + การตลาด + น้ำไฟ + ดอกเบี้ย + ภาษี (ไม่นับต้นทุนสินค้า)' },
-  { id: 'cashIn',        label: 'เงินเข้าบัญชีจริงเดือนนี้',   helper: 'เช็คจาก bank statement', help: 'เปิด Bank Statement ดูยอดเงินเข้าทั้งเดือน \u2014 เฉพาะเงินจากการขาย ไม่รวมเงินกู้/โอนระหว่างบัญชี' },
+  { id: 'otherExpenses', label: 'ค่าใช้จ่ายอื่นๆ ทั้งหมด (ไม่นับต้นทุนสินค้า)',     helper: 'เงินเดือน เช่า การตลาด น้ำไฟ ดอกเบี้ย ภาษี', help: 'รวมทุกอย่าง: เงินเดือน + ค่าเช่า + การตลาด + น้ำไฟ + ดอกเบี้ย + ภาษี (ไม่นับต้นทุนสินค้า)' },
+  { id: 'cashIn',        label: 'เงินเข้าบัญชีจริงเดือนนี้ (ดูจาก Statement)',   helper: 'เช็คจาก bank statement', help: 'เปิด Bank Statement ดูยอดเงินเข้าทั้งเดือน \u2014 เฉพาะเงินจากการขาย ไม่รวมเงินกู้/โอนระหว่างบัญชี' },
   { id: 'arBalance',     label: 'ลูกหนี้ค้างเก็บ ณ สิ้นเดือน', helper: 'รวมยอดที่ลูกค้ายังไม่จ่าย', help: 'ยอดรวมที่ลูกค้ายังค้างจ่าย ณ สิ้นเดือน \u2014 ถ้าไม่มีระบบ ประมาณจากบิลค้าง' },
   { id: 'apBalance',     label: 'เจ้าหนี้ค้างจ่าย ณ สิ้นเดือน', helper: 'รวมยอดที่ยังไม่ได้จ่าย Supplier', help: 'ยอดรวมที่ยังค้างจ่าย Supplier ณ สิ้นเดือน' },
-  { id: 'cashOnHand',    label: 'เงินสดในมือ ณ สิ้นเดือน',     helper: 'รวมเงินในบัญชีทุกธนาคาร', help: 'รวมเงินในบัญชีทุกธนาคาร + เงินสดย่อย ณ วันสิ้นเดือน \u2014 เปิด Mobile Banking เช็คได้เลย' },
+  { id: 'cashOnHand',    label: 'เงินสดในมือ ณ สิ้นเดือน (รวมทุกบัญชี)',     helper: 'รวมเงินในบัญชีทุกธนาคาร', help: 'รวมเงินในบัญชีทุกธนาคาร + เงินสดย่อย ณ วันสิ้นเดือน \u2014 เปิด Mobile Banking เช็คได้เลย' },
 ] as const;
 
 type FieldId = (typeof FIELDS)[number]['id'];
@@ -271,10 +271,10 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
             <div className="bg-bg-card border border-border rounded-2xl p-[18px]">
               <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">ดูตัวอย่าง · คำนวณสด</div>
               <div className="mt-2.5 grid grid-cols-2 gap-2">
-                <PreviewStat label="Gross Margin" value={gm != null ? gm.toFixed(0) + '%' : '—'} />
-                <PreviewStat label="Net Profit" value={np != null && sales ? (np >= 0 ? '+' : '−') + money(Math.abs(np)) : '—'} />
-                <PreviewStat label="Cash In ÷ Sales" value={cashRatio != null ? cashRatio.toFixed(0) + '%' : '—'} />
-                <PreviewStat label="Cash Runway" value={runway != null && isFinite(runway) ? runway.toFixed(1) + ' เดือน' : '—'} />
+                <PreviewStat label="Gross Margin (กำไรขั้นต้น)" value={gm != null ? gm.toFixed(0) + '%' : '—'} />
+                <PreviewStat label="Net Profit (กำไรสุทธิ)" value={np != null && sales ? (np >= 0 ? '+' : '−') + money(Math.abs(np)) : '—'} />
+                <PreviewStat label="Cash In ÷ ยอดขาย" value={cashRatio != null ? cashRatio.toFixed(0) + '%' : '—'} />
+                <PreviewStat label="Cash Runway (อยู่ได้กี่เดือน)" value={runway != null && isFinite(runway) ? runway.toFixed(1) + ' เดือน' : '—'} />
               </div>
               <p className="mt-3 text-[11px] text-text-tertiary">อัปเดตทุกครั้งที่กรอก · บันทึกแล้วจะเห็นครบ 10 ช่อง</p>
             </div>

@@ -6,8 +6,8 @@ import { signIn } from 'next-auth/react';
 const TOOLS = [
   { tag: 'S1', label: 'เช็คเงินจริง', desc: 'ยอดขายสูงแต่เงินไม่เพิ่ม? เช็คได้ทันที', icon: 'search', color: '#34C759' },
   { tag: 'S2', label: 'อ่านงบกำไรขาดทุน', desc: 'ดู margin แต่ละชั้น รู้ว่ากำไรจริงเท่าไหร่', icon: 'chart', color: '#007AFF' },
-  { tag: 'S3', label: 'Cashflow 4 Layers', desc: 'ไล่เงินจริง 4 ชั้น หาว่าเงินหายตรงไหน', icon: 'layers', color: '#8B5CF6' },
-  { tag: 'S4', label: 'ตั้งราคา + CM', desc: 'คำนวณราคาที่ได้กำไรจริง + จุดคุ้มทุน', icon: 'tag', color: '#FF9500' },
+  { tag: 'S3', label: 'Cashflow 4 ชั้น', desc: 'ไล่เงินจริง 4 ชั้น หาว่าเงินหายตรงไหน', icon: 'layers', color: '#8B5CF6' },
+  { tag: 'S4', label: 'ตั้งราคา + CM (กำไรส่วนเกิน)', desc: 'คำนวณราคาที่ได้กำไรจริง + จุดคุ้มทุน', icon: 'tag', color: '#FF9500' },
   { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย อุดรอยรั่วก่อนเร่งยอด', icon: 'map', color: '#FF3B30' },
   { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด ไม่ปนกันอีกต่อไป', icon: 'grid', color: '#06B6D4' },
   { tag: 'S7', label: 'แผนธุรกิจ 1 หน้า', desc: 'ตอบ 4 คำถามธนาคาร พร้อมยื่นกู้', icon: 'file', color: '#EC4899' },
