@@ -118,11 +118,6 @@ export default function LoginPage() {
         {/* Hero content */}
         <div className="relative z-10 flex-1 flex items-center px-6 md:px-16 lg:px-24 pb-16">
           <div className="w-full max-w-lg">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-wash-info text-accent text-xs font-semibold mb-5 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-              สำหรับศิษย์เก่า Inside Bank · IBF
-            </div>
-
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] mb-5 animate-fade-up" style={{ animationDelay: '0.2s' }}>
               เห็นธุรกิจชัด<br />
               <span className="text-text-secondary">ใน 5 นาทีต่อเดือน</span>
