@@ -225,12 +225,39 @@ function box10(input: Inputs, business: BusinessConfig): Box {
   const cash = input.cashOnHand ?? 0;
   const monthlyBurn = otherExp + debtService;
 
+  // Case: ไม่มีค่าใช้จ่ายประจำเลย
+  if (monthlyBurn <= 0 && cash <= 0) {
+    return {
+      months: null,
+      label: 'Cash Runway (เงินสดอยู่ได้กี่เดือน)',
+      format: 'number',
+      display: 'ไม่ได้กรอกเงินสดและค่าใช้จ่าย — ข้ามช่องนี้ได้ถ้าไม่ได้ใช้เงินตัวเอง',
+      color: null,
+      note: 'ถ้าเป็นธุรกิจที่บริหารเงินคนอื่น (แฟรนไชส์/ผู้จัดการ) ช่องนี้ไม่เกี่ยว — ดูกำไรสุทธิแทน',
+    };
+  }
+
   if (monthlyBurn <= 0) {
     return {
       months: null,
       label: 'Cash Runway (เงินสดอยู่ได้กี่เดือน)',
       format: 'number',
       display: 'ไม่มีค่าใช้จ่ายประจำ — ใช้ได้ไม่จำกัด',
+    };
+  }
+
+  // Case: มี burn แต่เงินสด = 0 → อาจเป็นธุรกิจที่ไม่ได้ถือเงินเอง
+  if (cash <= 0) {
+    return {
+      months: 0,
+      monthlyBurn,
+      cash: 0,
+      debtService,
+      label: 'Cash Runway (เงินสดอยู่ได้กี่เดือน)',
+      format: 'number',
+      display: `เงินสด 0 บาท · ค่าใช้จ่าย ${money(monthlyBurn)} บาท/เดือน`,
+      color: null, // ไม่ขึ้นแดง — อาจเป็นธุรกิจที่ไม่ถือเงินเอง
+      note: 'ถ้าไม่ได้ใช้เงินสดตัวเอง (แฟรนไชส์/ผู้จัดการ) ช่องนี้จะเป็น 0 เป็นปกติ — ดูกำไรสุทธิแทน',
     };
   }
 
@@ -256,9 +283,10 @@ function computeVerdict(boxes: Record<string, Box>): Verdict {
   const messages: string[] = [];
   let level: VerdictLevel = 'ok';
 
-  // Cash Runway low
+  // Cash Runway low — but skip if no cash data (franchise/manager model)
   const b10 = boxes['10_runway'];
-  if (b10?.months != null && b10.months < 3) {
+  if (b10?.months != null && b10.months < 3 && b10.color != null) {
+    // Only flag if color is set (meaning cash > 0 was provided)
     messages.push(`Cash Runway ${b10.months.toFixed(1)} เดือน — ต่ำกว่า 3 เดือน ระวังกระแสเงินสด`);
     level = 'critical';
   }
