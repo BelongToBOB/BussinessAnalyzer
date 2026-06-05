@@ -10,6 +10,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [checking, setChecking] = useState(true);
+  const [consent, setConsent] = useState(false);
 
   // Skip onboarding if business already exists
   useEffect(() => {
@@ -102,10 +103,32 @@ export default function OnboardingPage() {
               className="mt-2 block w-full h-[52px] rounded-xl border border-border-strong bg-bg-card px-4 text-base text-text-primary outline-none focus:border-accent font-thai"
             />
 
-            <div className="mt-8 flex justify-end">
+            {/* Consent */}
+            <div className="mt-6 flex gap-3 items-start">
+              <button
+                onClick={() => setConsent(!consent)}
+                className="mt-0.5 w-5 h-5 rounded-md border-none cursor-pointer p-0 shrink-0 flex items-center justify-center"
+                style={{
+                  background: consent ? 'var(--accent)' : 'transparent',
+                  border: consent ? 'none' : '1.5px solid var(--text-tertiary)',
+                }}
+              >
+                {consent && (
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7l3 3 5-6"/></svg>
+                )}
+              </button>
+              <div className="text-xs text-text-secondary leading-relaxed">
+                ข้าพเจ้ายอมรับ{' '}
+                <a href="/terms" target="_blank" className="text-accent underline">ข้อกำหนดการใช้งาน</a>
+                {' '}และ{' '}
+                <a href="/privacy" target="_blank" className="text-accent underline">นโยบายความเป็นส่วนตัว</a>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setStep(2)}
-                disabled={!name.trim()}
+                disabled={!name.trim() || !consent}
                 className="h-12 px-6 rounded-xl bg-text-primary text-bg-primary font-semibold text-[15px] cursor-pointer disabled:opacity-40"
               >
                 ต่อไป →
