@@ -281,7 +281,7 @@ function DashboardPage() {
 
       // Load trends for chart
       try {
-        const t = await getTrends(6) as any[];
+        const t = await getTrends(12) as any[];
         setTrends(t.map((item: any) => ({
           month: item.month,
           np: typeof item.boxes?.['4_netProfit']?.value === 'number' ? item.boxes['4_netProfit'].value : null,
