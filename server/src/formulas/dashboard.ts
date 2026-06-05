@@ -283,35 +283,51 @@ function computeVerdict(boxes: Record<string, Box>): Verdict {
   const messages: string[] = [];
   let level: VerdictLevel = 'ok';
 
-  // Cash Runway low — but skip if no cash data (franchise/manager model)
+  // 1. Cash Runway
   const b10 = boxes['10_runway'];
   if (b10?.months != null && b10.months < 3 && b10.color != null) {
-    // Only flag if color is set (meaning cash > 0 was provided)
     messages.push(`Cash Runway ${b10.months.toFixed(1)} เดือน — ต่ำกว่า 3 เดือน ระวังกระแสเงินสด`);
     level = 'critical';
+  } else if (b10?.color == null && b10?.months != null) {
+    // No cash data (franchise/manager model)
+    messages.push('ไม่มีข้อมูลเงินสด — ข้ามช่องนี้ได้ถ้าไม่ได้ใช้เงินตัวเอง ดูกำไรสุทธิแทน');
   }
 
-  // Net Profit negative
+  // 2. Net Profit
   const b4 = boxes['4_netProfit'];
-  if (b4?.value != null && typeof b4.value === 'number' && b4.value < 0) {
-    messages.push(`ขาดทุน ${money(-b4.value)} บาท — เช็ค Gross Margin และค่าใช้จ่ายประจำ`);
-    if (level !== 'critical') level = 'critical';
+  if (b4?.value != null && typeof b4.value === 'number') {
+    if (b4.value < 0) {
+      messages.push(`ขาดทุน ${money(-b4.value)} บาท — เช็ค Gross Margin และค่าใช้จ่ายประจำ`);
+      if (level !== 'critical') level = 'critical';
+    } else if (b4.value > 0) {
+      messages.push(`กำไรสุทธิ ${money(b4.value)} บาท`);
+    }
   }
 
-  // Cash In warning
+  // 3. Gross Margin low
+  const b3 = boxes['3_grossMargin'];
+  if (b3?.value != null && typeof b3.value === 'number') {
+    if (b3.value < 0.10) {
+      messages.push(`Gross Margin ${pct(b3.value)} — ต่ำมาก กำไรบางต่อหน่วย ตรวจสอบราคาขายและต้นทุน`);
+      if (level === 'ok') level = 'warning';
+    }
+  }
+
+  // 4. Cash In warning
   const b7 = boxes['7_cashIn'];
   if (b7?.warning) {
     messages.push(b7.warning);
     if (level === 'ok') level = 'warning';
   }
 
-  // Expense ratio high
+  // 5. Expense ratio high
   const b5 = boxes['5_expenseRatio'];
   if (b5?.value != null && typeof b5.value === 'number' && b5.value > 0.35) {
     messages.push(`ค่าใช้จ่ายประจำกินยอดขาย ${pct(b5.value)} — สูงเกินไป ไล่อุดที่ Expense Map`);
     if (level === 'ok') level = 'warning';
   }
 
+  // Default: no issues found
   if (messages.length === 0) {
     messages.push('เดือนนี้ดูสุขภาพดี — รักษาวินัยนี้ไว้');
   }
