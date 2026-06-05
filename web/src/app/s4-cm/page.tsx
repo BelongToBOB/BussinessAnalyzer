@@ -127,6 +127,18 @@ export default function S4CMPage() {
             </div>
           )}
         </div>
+        {/* ทำไมเรื่องนี้สำคัญ */}
+        <div className="bg-wash-info rounded-2xl p-4 mt-6">
+          <div className="text-sm font-semibold mb-3">&#128161; ทำไมเรื่องนี้สำคัญ</div>
+          <ul className="space-y-2 text-sm leading-relaxed list-none m-0 p-0">
+            <li className="flex items-start gap-2"><span className="shrink-0">&bull;</span><span>Variable = ค่าใช้จ่ายที่ &lsquo;ขยับตามยอด&rsquo; (ขายเพิ่ม = จ่ายเพิ่ม) เท่านั้น</span></li>
+            <li className="flex items-start gap-2"><span className="shrink-0">&bull;</span><span>Operating Fixed Cost = ค่าเช่า + เงินเดือนประจำ + overhead &nbsp;&nbsp;ส่วนดอกเบี้ย + เงินต้นผ่อนหนี้ = Financing Cost — แยกกันคิด ไม่ปนกัน</span></li>
+            <li className="flex items-start gap-2"><span className="shrink-0">&bull;</span><span>Operating Break-even = จุดที่ธุรกิจเลี้ยงตัวเองได้จากการดำเนินงาน</span></li>
+            <li className="flex items-start gap-2"><span className="shrink-0">&bull;</span><span>Cash Break-even = จุดที่ขายพอจ่าย &lsquo;ทุกอย่างรวมหนี้&rsquo; — ถ้ามีหนี้ จะสูงกว่า Operating BE เสมอ</span></li>
+            <li className="flex items-start gap-2"><span className="shrink-0">&bull;</span><span>ก่อนรับงานใหม่ / ลดราคา / เพิ่มโปร — กลับมาเช็ค CM และ Break-Even ก่อนเสมอ</span></li>
+          </ul>
+        </div>
+
         <div className="mt-6">
           <WinTip page="s4-cm" />
         <SessionSave sessionType="s4-cm" getData={() => ({ price: unmaskCurrency(price), materials: unmaskCurrency(vc[0]), variableLabor: unmaskCurrency(vc[1]), commission: unmaskCurrency(vc[2]), shipping: unmaskCurrency(vc[3]), platformFee: unmaskCurrency(vc[4]), fixedCost: unmaskCurrency(fixedCost), financingCost: unmaskCurrency(financingCost) })} />

@@ -11,11 +11,19 @@ import { WinTip } from '@/components/ui/win-tip';
 import { SessionGuide } from '@/components/ui/session-guide';
 
 const DEFAULT_BUCKETS = [
-  { name: 'ต้นทุนสินค้า/วัตถุดิบ', pct: 40 },
-  { name: 'ค่าใช้จ่ายดำเนินงาน', pct: 25 },
-  { name: 'ชำระหนี้', pct: 15 },
-  { name: 'เงินเก็บ/สำรอง', pct: 10 },
-  { name: 'กำไร/เจ้าของ', pct: 10 },
+  { name: 'ต้นทุนสินค้า/บริการ', pct: 40 },
+  { name: 'ค่าใช้จ่ายดำเนินงาน (OPEX)', pct: 25 },
+  { name: 'ภาษี + ผ่อนหนี้', pct: 15 },
+  { name: 'เงินสำรอง (Reserve)', pct: 10 },
+  { name: 'เจ้าของ + ขยายธุรกิจ', pct: 10 },
+];
+
+const BUCKET_DESCRIPTIONS = [
+  'ซื้อวัตถุดิบ/สินค้าเพื่อขายรอบถัดไป',
+  'เงินเดือน ค่าเช่า ค่าน้ำไฟ การตลาด',
+  'กันไว้จ่ายภาษีและชำระหนี้ ไม่ผิดนัด',
+  'กันชนเวลาเดือนชะลอ/เหตุฉุกเฉิน',
+  'เงินเดือนเจ้าของ + ทุนสำหรับเติบโต',
 ];
 
 const BUCKET_COLORS = [
@@ -123,7 +131,7 @@ export default function S6FiveBucketsPage() {
         <div className="space-y-3">
           {buckets.map((bucket, i) => (
             <div key={i} className={`${BUCKET_COLORS[i]} rounded-2xl p-4`}>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1">
                 <input
                   value={bucket.name}
                   onChange={(e) => setBucketName(i, e.target.value)}
@@ -133,6 +141,7 @@ export default function S6FiveBucketsPage() {
                   {revNum > 0 ? money(Math.round(revNum * bucket.pct / 100)) : '—'} บาท
                 </span>
               </div>
+              <div className="text-xs text-text-secondary mb-2">{BUCKET_DESCRIPTIONS[i]}</div>
               <div className="flex items-center gap-3">
                 <input
                   type="range"

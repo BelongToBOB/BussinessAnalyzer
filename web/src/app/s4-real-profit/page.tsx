@@ -37,15 +37,6 @@ export default function S4RealProfitPage() {
 
   const hasInput = u(netProfit) > 0 || u(depreciation) > 0;
 
-  const CHECKLIST = [
-    'ลดลูกหนี้ (AR) — เก็บเงินให้เร็วขึ้น',
-    'ลดสต็อก — สั่งของเท่าที่ต้องใช้',
-    'เพิ่มเจ้าหนี้ (AP) — เจรจายืดเครดิตออก',
-    'ลดการถอนใช้ส่วนตัว',
-    'เจรจาปรับโครงสร้างหนี้',
-    'ชะลอ CAPEX ที่ยังไม่จำเป็น',
-  ];
-
   return (
     <div className="min-h-screen bg-bg-secondary">
       <header className="sticky top-0 z-10 bg-bg-primary/85 backdrop-blur-lg border-b border-border">
@@ -64,7 +55,8 @@ export default function S4RealProfitPage() {
         <SessionGuide page="s4-real-profit" />
 
         {/* Step 1 */}
-        <StepHeader num={1} title="กำไรสุทธิ + ค่าเสื่อม = เงินสดจากกำไร" />
+        <StepHeader num={1} title="เงินสดตั้งต้นจากกำไร" />
+        <div className="text-xs text-text-secondary bg-wash-info rounded-xl px-3 py-2 mb-2">ค่าเสื่อมคือรายจ่ายในงบ แต่ไม่ได้จ่ายเงินสดจริง &#8594; บวกกลับเข้ามา</div>
         <div className="bg-bg-card border border-border rounded-2xl p-4 mb-2 space-y-3">
           <Field label="กำไรสุทธิ (Net Profit)" value={netProfit} onChange={setNetProfit} />
           <Field label="+ ค่าเสื่อมราคา (Depreciation)" value={depreciation} onChange={setDepreciation} />
@@ -72,7 +64,8 @@ export default function S4RealProfitPage() {
         {hasInput && <RunningTotal label="เงินสดจากกำไร" value={cashFromProfit} />}
 
         {/* Step 2 */}
-        <StepHeader num={2} title="หัก Working Capital ที่เปลี่ยนแปลง" />
+        <StepHeader num={2} title="ลบ: เงินที่ยังไม่กลับมาเป็นเงินสด" />
+        <div className="text-xs text-text-secondary bg-wash-info rounded-xl px-3 py-2 mb-2">ใช้ &lsquo;ปลายงวด &#8722; ต้นงวด&rsquo; ของงวดที่วิเคราะห์เท่านั้น ห้ามนำยอดสะสมทั้งปีมาใส่ทุกเดือน</div>
         <div className="bg-bg-card border border-border rounded-2xl p-4 mb-2 space-y-3">
           <Field label="ลูกหนี้เพิ่มขึ้น (Delta AR)" value={deltaAR} onChange={setDeltaAR} />
           <Field label="สินค้าคงเหลือเพิ่มขึ้น (Delta Inventory)" value={deltaInventory} onChange={setDeltaInventory} />
@@ -82,7 +75,8 @@ export default function S4RealProfitPage() {
         {hasInput && <RunningTotal label="หลังหัก Working Capital" value={afterWC} />}
 
         {/* Step 3 */}
-        <StepHeader num={3} title="หักชำระหนี้ + ถอนเงิน" />
+        <StepHeader num={3} title="ลบ: เงินสดที่ต้องจ่ายจริง" />
+        <div className="text-xs text-text-secondary bg-wash-info rounded-xl px-3 py-2 mb-2">เริ่มจากกำไรสุทธิ (หลังหักดอกเบี้ย+ภาษีแล้ว) — ห้ามหักดอกเบี้ยหรือภาษีซ้ำอีก ใส่แค่เงินต้นหนี้ที่จ่ายจริง</div>
         <div className="bg-bg-card border border-border rounded-2xl p-4 mb-2 space-y-3">
           <Field label="ชำระเงินต้น (Debt Principal)" value={debtPrincipal} onChange={setDebtPrincipal} />
           <Field label="เจ้าของถอนใช้ส่วนตัว (Owner Draw)" value={ownerDraw} onChange={setOwnerDraw} />
@@ -90,7 +84,8 @@ export default function S4RealProfitPage() {
         {hasInput && <RunningTotal label="หลังชำระหนี้+ถอนเงิน" value={afterPayments} />}
 
         {/* Step 4 */}
-        <StepHeader num={4} title="หักลงทุนเพิ่ม = กำไรจริง" />
+        <StepHeader num={4} title="ลบ: เงินที่ต้องเก็บไว้ใช้ต่อ" />
+        <div className="text-xs text-text-secondary bg-wash-info rounded-xl px-3 py-2 mb-2">เช่น ซื้อเครื่องจักรเพิ่ม ซ่อมของสำคัญ เติมทุนหมุนเวียนที่จำเป็น</div>
         <div className="bg-bg-card border border-border rounded-2xl p-4 mb-2 space-y-3">
           <Field label="ลงทุนเพิ่ม (Reinvestment / CAPEX)" value={reinvestment} onChange={setReinvestment} />
         </div>
@@ -110,18 +105,27 @@ export default function S4RealProfitPage() {
 
         {/* Checklist if negative */}
         {hasInput && realProfit < 0 && (
-          <div className="bg-bg-card border border-border rounded-2xl p-4 mt-4">
-            <div className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-3">แนวทางแก้ไข</div>
-            <div className="space-y-2">
-              {CHECKLIST.map((item, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm">
-                  <span className="w-5 h-5 rounded-full bg-wash-warn flex items-center justify-center text-xs shrink-0">{i + 1}</span>
-                  <span>{item}</span>
-                </div>
-              ))}
+          <div className="bg-wash-warn rounded-2xl p-4 mt-4">
+            <div className="text-sm font-semibold mb-3">ถ้าติดลบ ให้ดู 3 จุดนี้ก่อน:</div>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2"><span>&#9744;</span><span>เก็บลูกหนี้ช้าเกินไป</span></div>
+              <div className="flex items-center gap-2"><span>&#9744;</span><span>สต็อกมากเกินไป</span></div>
+              <div className="flex items-center gap-2"><span>&#9744;</span><span>กำไรบาง / ภาระหนี้สูง / ต้องใช้เงินหมุนมาก</span></div>
             </div>
           </div>
         )}
+
+        {/* Formula Summary */}
+        {hasInput && (
+          <div className="bg-bg-card border border-border rounded-2xl p-4 mt-4">
+            <div className="text-sm font-semibold mb-2">สูตรสรุป:</div>
+            <div className="text-xs text-text-secondary leading-relaxed font-mono whitespace-pre-line">{`เงินสดที่เหลือจริง = กำไรสุทธิ + ค่าเสื่อม
+  \u2212 เงินที่ยังไม่เป็นเงินสดสุทธิ (\u0394ลูกหนี้ + \u0394สต็อก \u2212 \u0394เจ้าหนี้ \u2212 \u0394VAT)
+  \u2212 เงินต้นหนี้ที่จ่ายจริง \u2212 เงินเจ้าของถอนใช้
+  \u2212 เงินลงทุน/เงินหมุนต่อที่จำเป็น`}</div>
+          </div>
+        )}
+
         <div className="mt-6">
           <WinTip page="s4-real-profit" />
         <SessionSave sessionType="s4-real-profit" getData={() => ({ netProfit: unmaskCurrency(netProfit), depreciation: unmaskCurrency(depreciation), deltaAR: unmaskCurrency(deltaAR), deltaInventory: unmaskCurrency(deltaInventory), deltaAP: unmaskCurrency(deltaAP), deltaTax: unmaskCurrency(deltaTax), debtPrincipal: unmaskCurrency(debtPrincipal), ownerDraw: unmaskCurrency(ownerDraw), reinvestment: unmaskCurrency(reinvestment) })} />

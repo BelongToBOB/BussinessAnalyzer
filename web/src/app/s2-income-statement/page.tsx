@@ -111,6 +111,24 @@ export default function S2IncomeStatementPage() {
             </div>
           </div>
         )}
+
+        {/* 3 คำถามเช็คสุขภาพธุรกิจ */}
+        <div className="bg-bg-card border border-border rounded-2xl p-4 mt-4">
+          <div className="text-sm font-semibold mb-3">3 คำถามเช็คสุขภาพธุรกิจ (จากคอร์ส)</div>
+          <div className="space-y-3">
+            {[
+              'Fixed cost ต่อเดือนเท่าไร และต้นทุนคิดเป็นกี่ % ของยอดขาย?',
+              'ทรัพย์สิน หรือ หนี้สิน — อะไรมากกว่ากัน?',
+              'กำไร/ขาดทุน 1 ปีย้อนหลัง มากขึ้นหรือลดลง?',
+            ].map((q, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <span className="w-7 h-7 rounded-full bg-accent/15 text-accent flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
+                <span className="text-sm leading-relaxed pt-1">{q}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="mt-6">
           <WinTip page="s2-income-statement" />
         <SessionSave sessionType="s2-income-statement" getData={() => ({ revenue: unmaskCurrency(revenue), cogs: unmaskCurrency(cogs), sellingAdmin: unmaskCurrency(sellingAdmin), depreciation: unmaskCurrency(depreciation), interest: unmaskCurrency(interest), tax: unmaskCurrency(tax) })} />

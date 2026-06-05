@@ -16,13 +16,13 @@ interface DiagItem {
 }
 
 const DIAG_DEFAULTS: DiagItem[] = [
-  { label: 'รายรับเข้าจริงตรงกับยอดขายหรือไม่?', checked: false, note: '' },
-  { label: 'ต้นทุนจ่ายจริงสอดคล้องกับ COGS หรือไม่?', checked: false, note: '' },
-  { label: 'เงินเดือน+ค่าเช่าเกิน 30% ของรายรับหรือไม่?', checked: false, note: '' },
-  { label: 'มีค่าใช้จ่ายที่ตัดได้ทันทีหรือไม่?', checked: false, note: '' },
-  { label: 'ชำระหนี้เกินกำลังหรือไม่?', checked: false, note: '' },
-  { label: 'เจ้าของถอนใช้ส่วนตัวเท่าไร?', checked: false, note: '' },
-  { label: 'เหลือเงินพอเก็บสำรองหรือไม่?', checked: false, note: '' },
+  { label: 'ลูกหนี้เพิ่ม — ขายได้แต่ยังเก็บเงินไม่ได้', checked: false, note: '' },
+  { label: 'สต็อกเพิ่ม — เงินจมในของที่ยังขายไม่ออก', checked: false, note: '' },
+  { label: 'Fixed Cost สูง — ค่าใช้จ่ายประจำกินเงินสด', checked: false, note: '' },
+  { label: 'ผ่อนหนี้หนัก — เงินต้น + ดอกเบี้ยสูงเกินกระแสเงินสด', checked: false, note: '' },
+  { label: 'เจ้าของถอนเงินไปใช้ส่วนตัว — Owner Leakage', checked: false, note: '' },
+  { label: 'ลงทุนเกินตัว — ซื้อสินทรัพย์/ขยายเร็วกว่าที่เงินสดรองรับ', checked: false, note: '' },
+  { label: 'Margin ต่ำ — ขายได้แต่เหลือกำไรต่อหน่วยน้อย', checked: false, note: '' },
 ];
 
 export default function S3CashflowPage() {
@@ -122,6 +122,25 @@ export default function S3CashflowPage() {
         <p className="text-sm text-text-secondary mt-1 mb-6">ดูว่าเงินสดไหลผ่านธุรกิจอย่างไร ชั้นต่อชั้น</p>
 
         <SessionGuide page="s3-cashflow" />
+
+        {/* Cash Basis Warnings */}
+        <div className="bg-wash-warn rounded-2xl p-4 mb-6">
+          <div className="text-sm font-semibold mb-3">&#9888;&#65039; เช็คก่อนกรอก — ระวัง 3 จุดนี้ (Cash Basis)</div>
+          <div className="space-y-3 text-sm leading-relaxed">
+            <div className="flex items-start gap-2">
+              <span className="shrink-0 font-bold">{'\u2460'}</span>
+              <span>Cash In นับเฉพาะ &lsquo;เงินจากการขายจริง&rsquo; — ตัดออก: เงินกู้เข้า, เงินเจ้าของเติมทุน, เงินโอนระหว่างบัญชีตัวเอง, VAT, เงินคืนประกัน (เงินเข้าบัญชี &#8800; รายได้เสมอไป)</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="shrink-0 font-bold">{'\u2461'}</span>
+              <span>ต้นทุนขาย (COGS) ในชั้นที่ 2 ใช้ &lsquo;เงินสดที่จ่ายจริง&rsquo; ของเดือนนั้น ไม่ใช่ COGS ตามบัญชี — ถ้าซื้อเครดิตหรือซื้อสต็อกตุนไว้ ตัวเลขจะเพี้ยน</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="shrink-0 font-bold">{'\u2462'}</span>
+              <span>4 Layers คิดแบบ Cash Basis (เงินเข้า-ออกจริง) คนละชุดกับงบกำไรขาดทุนที่เป็น Accrual — อย่าเอา Net Profit หรือ EBITDA มาเทียบกับ Cash In ตรงๆ</span>
+            </div>
+          </div>
+        </div>
 
         {/* Layer 1: Cash In */}
         <LayerSection num={1} title="Cash In — เงินสดเข้า" color="bg-wash-good">
