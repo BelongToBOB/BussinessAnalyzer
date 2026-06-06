@@ -10,7 +10,7 @@ web/          Next.js 16 + Tailwind 4 + Auth.js v5   → tools.winwinwealth.co (
 server/       NestJS 11 + Prisma                      → tools-api.winwinwealth.co (VPS :3002)
 ```
 
-- **DB:** `insidebank_tools` on existing VPS Postgres (isolated DB, own user `insidebank_tools_user`)
+- **DB:** `winwin_analyzer` on existing VPS Postgres (isolated DB, own user `analyzer_user`)
 - **Auth:** LINE Login (primary) + email magic link (fallback) via Auth.js v5
 - **Formulas:** Server-side only. Never expose computation logic to the client.
 
@@ -32,7 +32,7 @@ server/       NestJS 11 + Prisma                      → tools-api.winwinwealth
 ## Landmines
 
 - **Do NOT run `prisma migrate deploy` on winwin or lms_platform DBs.** This project has its own DB.
-- **Do NOT share Postgres credentials** with winwin_user or lms_user. Use `insidebank_tools_user` only.
+- **Do NOT share Postgres credentials** with winwin_user or lms_user. Use `analyzer_user` only.
 - **Formulas are IP.** Never return formula expressions in API responses. Only return computed values.
 - **`monthlyDebtService` lives on Business model**, not MonthlyEntry. Set once per business.
 - **1 user = 1 business in MVP.** Enforced by `@@unique([userId])` on Business.

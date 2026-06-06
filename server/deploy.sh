@@ -2,7 +2,7 @@
 set -euo pipefail
 
 VPS="72.60.209.157"
-REMOTE_DIR="/opt/insidebank-tools/server"
+REMOTE_DIR="/opt/winwin-analyzer/server"
 
 echo "==> Syncing to VPS..."
 rsync -avz --exclude=node_modules --exclude=dist --exclude=.env \

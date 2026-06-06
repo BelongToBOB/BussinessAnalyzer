@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL || 'postgresql://insidebank_tools_user:devpassword123@localhost:5432/insidebank_tools',
+  connectionString: process.env.DATABASE_URL || 'postgresql://analyzer_user:devpassword123@localhost:5432/winwin_analyzer',
 });
 const prisma = new PrismaClient({ adapter });
 

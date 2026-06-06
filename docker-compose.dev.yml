@@ -5,8 +5,8 @@ services:
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: insidebank_tools
-      POSTGRES_USER: insidebank_tools_user
+      POSTGRES_DB: winwin_analyzer
+      POSTGRES_USER: analyzer_user
       POSTGRES_PASSWORD: devpassword123
     volumes:
       - pgdata:/var/lib/postgresql/data

@@ -19,13 +19,13 @@ echo -e "${GREEN}✓ Postgres running${NC}"
 # 2. Push schema if needed
 echo -e "${YELLOW}Pushing schema...${NC}"
 cd "$ROOT/server"
-export DATABASE_URL="postgresql://insidebank_tools_user:devpassword123@localhost:5432/insidebank_tools"
+export DATABASE_URL="postgresql://analyzer_user:devpassword123@localhost:5432/winwin_analyzer"
 pnpm prisma db push --url "$DATABASE_URL" --skip-generate 2>/dev/null || true
 pnpm prisma generate 2>/dev/null
 echo -e "${GREEN}✓ Schema synced${NC}"
 
 # 3. Seed if empty
-ROW_COUNT=$(/opt/homebrew/opt/postgresql@17/bin/psql -d insidebank_tools -tAc "SELECT count(*) FROM \"User\"" 2>/dev/null || echo "0")
+ROW_COUNT=$(/opt/homebrew/opt/postgresql@17/bin/psql -d winwin_analyzer -tAc "SELECT count(*) FROM \"User\"" 2>/dev/null || echo "0")
 if [ "$ROW_COUNT" = "0" ]; then
   echo -e "${YELLOW}Seeding database...${NC}"
   pnpm db:seed
