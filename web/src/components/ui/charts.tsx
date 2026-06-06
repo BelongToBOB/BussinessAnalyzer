@@ -6,6 +6,85 @@ import {
 } from 'recharts';
 import { money } from '@/lib/format';
 
+// ─── Gauge Card (single month) ─────────────────────────────
+
+interface GaugeThreshold {
+  pct: number; // 0-1 position on arc
+  color: string;
+}
+
+function GaugeCard({ label, value, max, min, format, thresholds }: {
+  label: string;
+  value: number;
+  max: number;
+  min: number;
+  format: 'currency' | 'months';
+  thresholds: GaugeThreshold[];
+}) {
+  const range = max - min;
+  const normalized = Math.max(0, Math.min(1, (value - min) / (range || 1)));
+
+  // Arc geometry
+  const cx = 80, cy = 72, r = 58;
+  const startAngle = Math.PI * 0.8;  // ~144°
+  const endAngle = Math.PI * 0.2;    // ~36°
+  const totalAngle = Math.PI * 1.6;  // 288° sweep
+
+  // Needle angle
+  const needleAngle = startAngle - normalized * totalAngle;
+  const needleX = cx + Math.cos(needleAngle) * (r - 12);
+  const needleY = cy - Math.sin(needleAngle) * (r - 12);
+
+  // Arc segments
+  const segments = thresholds.map((t, i) => {
+    const nextPct = i < thresholds.length - 1 ? thresholds[i + 1].pct : 1;
+    const a1 = startAngle - t.pct * totalAngle;
+    const a2 = startAngle - nextPct * totalAngle;
+    const x1 = cx + Math.cos(a1) * r;
+    const y1 = cy - Math.sin(a1) * r;
+    const x2 = cx + Math.cos(a2) * r;
+    const y2 = cy - Math.sin(a2) * r;
+    const large = (nextPct - t.pct) * totalAngle > Math.PI ? 1 : 0;
+    return `<path d="M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}" stroke="${t.color}" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.25"/>`;
+  }).join('');
+
+  // Active arc (filled portion)
+  const activeEnd = startAngle - normalized * totalAngle;
+  const ax1 = cx + Math.cos(startAngle) * r;
+  const ay1 = cy - Math.sin(startAngle) * r;
+  const ax2 = cx + Math.cos(activeEnd) * r;
+  const ay2 = cy - Math.sin(activeEnd) * r;
+  const activeLarge = normalized * totalAngle > Math.PI ? 1 : 0;
+
+  // Color based on position
+  const activeColor = normalized < 0.35 ? 'var(--status-bad)' : normalized < 0.5 ? 'var(--status-warn)' : 'var(--status-good)';
+
+  const displayValue = format === 'currency'
+    ? `${value >= 0 ? '+' : ''}${Math.round(value).toLocaleString('en-US')}`
+    : value.toFixed(1);
+  const unit = format === 'currency' ? 'บาท' : 'เดือน';
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width="160" height="100" viewBox="0 0 160 100">
+        <g dangerouslySetInnerHTML={{ __html: segments }} />
+        {normalized > 0 && (
+          <path d={`M ${ax1} ${ay1} A ${r} ${r} 0 ${activeLarge} 1 ${ax2} ${ay2}`}
+            stroke={activeColor} strokeWidth="8" fill="none" strokeLinecap="round" />
+        )}
+        {/* Needle */}
+        <line x1={cx} y1={cy} x2={needleX} y2={needleY}
+          stroke="var(--text-primary)" strokeWidth="2.5" strokeLinecap="round" />
+        <circle cx={cx} cy={cy} r="4" fill="var(--text-primary)" />
+      </svg>
+      <div className={`num text-lg font-semibold -mt-2 ${format === 'currency' && value < 0 ? 'text-status-bad' : format === 'months' && value < 3 ? 'text-status-bad' : ''}`}>
+        {displayValue} <span className="text-xs font-normal text-text-tertiary">{unit}</span>
+      </div>
+      <div className="text-[11px] text-text-secondary mt-1 text-center">{label}</div>
+    </div>
+  );
+}
+
 // ─── Dashboard Mini Trend (last 6 months) ─────────────────
 
 interface TrendPoint {
@@ -18,29 +97,39 @@ interface TrendPoint {
 export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
   if (data.length === 0) return null;
 
-  // 1 เดือน → แสดง metric cards แทนกราฟเส้น
+  // 1 เดือน → แสดง gauge chart แทนกราฟเส้น
   if (data.length === 1) {
     const d = data[0];
     return (
       <div className="bg-bg-card border border-border rounded-2xl p-4">
-        <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-3">
+        <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-4">
           ผลเดือนแรก — กรอกเพิ่มอีก 2 เดือนจะเห็นกราฟแนวโน้ม
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-bg-secondary rounded-xl p-3">
-            <div className="text-[11px] text-text-secondary">Net Profit (กำไรสุทธิ)</div>
-            <div className={`num text-xl font-semibold mt-1 ${d.np != null && d.np < 0 ? 'text-status-bad' : ''}`}>
-              {d.np != null ? `${d.np >= 0 ? '+' : ''}${Math.round(d.np).toLocaleString('en-US')}` : '—'}
-              <span className="text-xs font-normal text-text-tertiary ml-1">บาท</span>
-            </div>
-          </div>
-          <div className="bg-bg-secondary rounded-xl p-3">
-            <div className="text-[11px] text-text-secondary">Cash Runway (เงินสดอยู่ได้กี่เดือน)</div>
-            <div className={`num text-xl font-semibold mt-1 ${d.rw != null && d.rw < 3 ? 'text-status-bad' : ''}`}>
-              {d.rw != null ? d.rw.toFixed(1) : '—'}
-              <span className="text-xs font-normal text-text-tertiary ml-1">เดือน</span>
-            </div>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <GaugeCard
+            label="Net Profit (กำไรสุทธิ)"
+            value={d.np ?? 0}
+            max={Math.max(Math.abs(d.np ?? 0) * 2, 100000)}
+            min={-Math.max(Math.abs(d.np ?? 0), 50000)}
+            format="currency"
+            thresholds={[
+              { pct: 0, color: 'var(--status-bad)' },
+              { pct: 0.35, color: 'var(--status-warn)' },
+              { pct: 0.5, color: 'var(--status-good)' },
+            ]}
+          />
+          <GaugeCard
+            label="Cash Runway (อยู่ได้กี่เดือน)"
+            value={d.rw ?? 0}
+            max={12}
+            min={0}
+            format="months"
+            thresholds={[
+              { pct: 0, color: 'var(--status-bad)' },
+              { pct: 0.25, color: 'var(--status-warn)' },
+              { pct: 0.5, color: 'var(--status-good)' },
+            ]}
+          />
         </div>
       </div>
     );
