@@ -18,8 +18,36 @@ interface TrendPoint {
 export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
   if (data.length === 0) return null;
 
+  // 1 เดือน → แสดง metric cards แทนกราฟเส้น
+  if (data.length === 1) {
+    const d = data[0];
+    return (
+      <div className="bg-bg-card border border-border rounded-2xl p-4">
+        <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-3">
+          ผลเดือนแรก — กรอกเพิ่มอีก 2 เดือนจะเห็นกราฟแนวโน้ม
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-bg-secondary rounded-xl p-3">
+            <div className="text-[11px] text-text-secondary">Net Profit (กำไรสุทธิ)</div>
+            <div className={`num text-xl font-semibold mt-1 ${d.np != null && d.np < 0 ? 'text-status-bad' : ''}`}>
+              {d.np != null ? `${d.np >= 0 ? '+' : ''}${Math.round(d.np).toLocaleString('en-US')}` : '—'}
+              <span className="text-xs font-normal text-text-tertiary ml-1">บาท</span>
+            </div>
+          </div>
+          <div className="bg-bg-secondary rounded-xl p-3">
+            <div className="text-[11px] text-text-secondary">Cash Runway (เงินสดอยู่ได้กี่เดือน)</div>
+            <div className={`num text-xl font-semibold mt-1 ${d.rw != null && d.rw < 3 ? 'text-status-bad' : ''}`}>
+              {d.rw != null ? d.rw.toFixed(1) : '—'}
+              <span className="text-xs font-normal text-text-tertiary ml-1">เดือน</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const chartData = data.map((d) => ({
-    month: d.month.slice(5), // "05" from "2026-05"
+    month: d.month.slice(5),
     'Net Profit': d.np,
     'Cash Runway': d.rw,
   }));
