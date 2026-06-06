@@ -9,8 +9,8 @@ const providers: any[] = [
   }),
 ];
 
-// Dev credentials provider — login with any email (local dev only)
-if (!process.env.AUTH_GOOGLE_ID || process.env.AUTH_GOOGLE_ID === 'dummy') {
+// Dev credentials provider — always available in development
+if (process.env.NODE_ENV !== 'production') {
   providers.push(
     Credentials({
       id: 'dev-login',
