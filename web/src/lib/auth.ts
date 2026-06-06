@@ -14,9 +14,8 @@ if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
   );
 }
 
-// Dev credentials provider — always available in development
-if (process.env.NODE_ENV !== 'production') {
-  providers.push(
+// Credentials provider — always available (fallback login)
+providers.push(
     Credentials({
       id: 'dev-login',
       name: 'Dev Login',
@@ -48,8 +47,7 @@ if (process.env.NODE_ENV !== 'production') {
         return { id: 'dev-user', email, name: email.split('@')[0] };
       },
     })
-  );
-}
+);
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers,
