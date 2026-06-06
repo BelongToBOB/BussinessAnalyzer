@@ -112,7 +112,7 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     const result = await Swal.fire({
       title: 'ลบข้อมูลทั้งหมด?',
-      text: 'การกระทำนี้ย้อนกลับไม่ได้',
+      text: 'ข้อมูลธุรกิจ รายเดือน เครื่องมือทั้งหมดจะถูกลบถาวร ย้อนกลับไม่ได้',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#FF3B30',
@@ -120,7 +120,33 @@ export default function SettingsPage() {
       cancelButtonText: 'ยกเลิก',
     });
     if (!result.isConfirmed) return;
-    // TODO: implement DELETE /api/business (cascade)
+
+    const confirm2 = await Swal.fire({
+      title: 'ยืนยันอีกครั้ง',
+      text: 'กด "ยืนยันลบ" เพื่อลบข้อมูลทั้งหมดของคุณ',
+      icon: 'error',
+      showCancelButton: true,
+      confirmButtonColor: '#FF3B30',
+      confirmButtonText: 'ยืนยันลบ',
+      cancelButtonText: 'ไม่ลบ',
+    });
+    if (!confirm2.isConfirmed) return;
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const sessRes = await fetch('/api/auth/session');
+      const sess = await sessRes.json();
+      const userId = sess?.user?.id;
+      if (userId) {
+        await fetch(`${API_URL}/api/business`, {
+          method: 'DELETE',
+          headers: { 'X-User-Id': userId },
+        });
+      }
+      toast.success('ลบข้อมูลทั้งหมดแล้ว');
+    } catch {
+      toast.error('เกิดข้อผิดพลาด');
+    }
     await signOut({ callbackUrl: '/login' });
   };
 

@@ -42,4 +42,24 @@ export class BusinessService {
       data: dto,
     });
   }
+
+  async deleteAll(userId: string) {
+    // Business has onDelete: Cascade → deletes MonthlyEntry, ExpenseItem, LeakCheck, SessionData
+    const business = await this.prisma.business.findUnique({ where: { userId } });
+    if (business) {
+      await this.prisma.business.delete({ where: { id: business.id } });
+    }
+
+    // Delete activity logs
+    await this.prisma.activityLog.deleteMany({ where: { userId } });
+
+    // Delete user accounts + sessions
+    await this.prisma.account.deleteMany({ where: { userId } });
+    await this.prisma.session.deleteMany({ where: { userId } });
+
+    // Delete user
+    await this.prisma.user.deleteMany({ where: { id: userId } });
+
+    return { deleted: true };
+  }
 }
