@@ -20,7 +20,7 @@ export default function OnboardingPage() {
   }, []);
   const [name, setName] = useState('');
   const [debt, setDebt] = useState('');
-  const [useSample, setUseSample] = useState(true);
+  const [useSample, setUseSample] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const handleFinish = async () => {
