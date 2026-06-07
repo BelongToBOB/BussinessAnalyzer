@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { maskCurrency, unmaskCurrency, money } from '@/lib/format';
-import { getBusiness, updateBusiness } from '@/lib/api';
+import { getBusiness, updateBusiness, deleteBusiness } from '@/lib/api';
 import { toast } from 'sonner';
 import Swal from 'sweetalert2';
 import { BottomNav } from '@/components/ui/bottom-nav';
@@ -133,16 +133,7 @@ export default function SettingsPage() {
     if (!confirm2.isConfirmed) return;
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-      const sessRes = await fetch('/api/auth/session');
-      const sess = await sessRes.json();
-      const userId = sess?.user?.id;
-      if (userId) {
-        await fetch(`${API_URL}/api/business`, {
-          method: 'DELETE',
-          headers: { 'X-User-Id': userId },
-        });
-      }
+      await deleteBusiness();
       toast.success('ลบข้อมูลทั้งหมดแล้ว');
     } catch {
       toast.error('เกิดข้อผิดพลาด');

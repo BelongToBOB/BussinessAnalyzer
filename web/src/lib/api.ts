@@ -89,6 +89,8 @@ export const createBusiness = (data: { name: string; monthlyDebtService?: number
   fetchApi('/api/business', { method: 'POST', body: JSON.stringify(data) });
 export const updateBusiness = (data: { name?: string; monthlyDebtService?: number | null }) =>
   fetchApi('/api/business', { method: 'PATCH', body: JSON.stringify(data) });
+export const deleteBusiness = () =>
+  fetchApi('/api/business', { method: 'DELETE' });
 
 // Entries
 export const listEntries = (months = 12) => fetchApi(`/api/entries?months=${months}`);
