@@ -176,11 +176,23 @@ export default function EntryPage({ params }: { params: Promise<{ yyyyMm: string
                   <span className="text-sm font-semibold text-text-primary flex-1">{f.label}</span>
                 </div>
                 <p className="text-xs text-text-secondary mb-2">{f.helper}</p>
-                <NumberInput
-                  value={vals[f.id] || ''}
-                  onChange={set(f.id)}
-                  error={errors[f.id] || null}
-                />
+                <div className="flex gap-2 items-start">
+                  <div className="flex-1">
+                    <NumberInput
+                      value={vals[f.id] || ''}
+                      onChange={set(f.id)}
+                      error={errors[f.id] || null}
+                    />
+                  </div>
+                  {!vals[f.id] && (
+                    <button
+                      onClick={() => set(f.id)('0')}
+                      className="shrink-0 h-[52px] px-3 rounded-xl border border-border text-xs font-medium text-text-secondary bg-bg-card cursor-pointer hover:bg-bg-secondary transition-colors"
+                    >
+                      ไม่มี
+                    </button>
+                  )}
+                </div>
                 {f.help && (
                   <div className="mt-2">
                     <button

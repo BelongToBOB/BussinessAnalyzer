@@ -6,8 +6,7 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private auth: AuthService) {}
 
-  // Stricter limit: 10 requests per 15 minutes (login endpoint)
-  @Throttle({ default: { ttl: 900000, limit: 10 } })
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
   @Post('sync')
   sync(@Body() body: {
     provider: string;
@@ -17,5 +16,17 @@ export class AuthController {
     image?: string | null;
   }) {
     return this.auth.syncUser(body);
+  }
+
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
+  @Post('register')
+  register(@Body() body: { email: string; password: string; name: string }) {
+    return this.auth.register(body);
+  }
+
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
+  @Post('login')
+  login(@Body() body: { email: string; password: string }) {
+    return this.auth.login(body);
   }
 }

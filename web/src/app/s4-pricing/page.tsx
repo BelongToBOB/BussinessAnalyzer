@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
+import { getSession } from '@/lib/api';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
@@ -20,6 +21,18 @@ export default function S4PricingPage() {
   // Section B: Markup vs Margin
   const [costB, setCostB] = useState('');
   const [sellingPrice, setSellingPrice] = useState('');
+
+  useEffect(() => {
+    getSession('s4-pricing').then((res: any) => {
+      const d = res?.data;
+      if (!d) return;
+      if (d.costPerUnit) setCostPerUnit(maskCurrency(String(d.costPerUnit)));
+      if (d.opexPct != null) setOpexPct(String(Math.round(d.opexPct * 100)));
+      if (d.profitPct != null) setProfitPct(String(Math.round(d.profitPct * 100)));
+      if (d.costPerUnit2) setCostB(maskCurrency(String(d.costPerUnit2)));
+      if (d.sellingPrice) setSellingPrice(maskCurrency(String(d.sellingPrice)));
+    }).catch(() => {});
+  }, []);
 
   const cost = unmaskCurrency(costPerUnit);
   const opex = Number(opexPct) || 0;

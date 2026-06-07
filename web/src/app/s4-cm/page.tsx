@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
+import { getSession } from '@/lib/api';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
@@ -25,6 +26,19 @@ export default function S4CMPage() {
   const [vc, setVc] = useState<string[]>(Array(6).fill(''));
   const [fixedCost, setFixedCost] = useState('');
   const [financingCost, setFinancingCost] = useState('');
+
+  useEffect(() => {
+    getSession('s4-cm').then((res: any) => {
+      const d = res?.data;
+      if (!d) return;
+      if (d.price) setPrice(maskCurrency(String(d.price)));
+      if (d.materials || d.variableLabor) {
+        setVc([d.materials, d.variableLabor, d.commission, d.shipping, d.platformFee, 0].map(v => v ? maskCurrency(String(v)) : ''));
+      }
+      if (d.fixedCost) setFixedCost(maskCurrency(String(d.fixedCost)));
+      if (d.financingCost) setFinancingCost(maskCurrency(String(d.financingCost)));
+    }).catch(() => {});
+  }, []);
 
   const priceNum = unmaskCurrency(price);
   const vcNums = vc.map(unmaskCurrency);

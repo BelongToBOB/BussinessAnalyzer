@@ -18,6 +18,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  passwordHash  String?
 
   // LINE Login
   lineUserId      String? @unique

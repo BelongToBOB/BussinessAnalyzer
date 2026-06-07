@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
+import { toast } from 'sonner';
 import { FiveBucketsChart } from '@/components/ui/charts';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
@@ -45,10 +46,20 @@ export default function S6FiveBucketsPage() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await getSession('s6-five-buckets') as any;
-        if (data) {
-          if (data.revenue) setRevenue(maskCurrency(String(data.revenue)));
-          if (data.buckets) setBuckets(data.buckets);
+        const res = await getSession('s6-five-buckets') as any;
+        const d = res?.data;
+        if (d) {
+          if (d.revenue) setRevenue(maskCurrency(String(d.revenue)));
+          if (d.buckets) {
+            // Normalize if total > 100 (legacy data)
+            const total = d.buckets.reduce((s: number, b: any) => s + (b.pct || 0), 0);
+            if (total > 100) {
+              const scale = 100 / total;
+              setBuckets(d.buckets.map((b: any) => ({ ...b, pct: Math.round(b.pct * scale) })));
+            } else {
+              setBuckets(d.buckets);
+            }
+          }
         }
       } catch { /* new session */ }
     }
@@ -60,7 +71,11 @@ export default function S6FiveBucketsPage() {
   const isBalanced = Math.abs(totalPct - 100) < 0.01;
 
   const setBucketPct = (i: number, pct: number) => {
-    setBuckets((old) => old.map((b, idx) => idx === i ? { ...b, pct } : b));
+    setBuckets((old) => {
+      const othersTotal = old.reduce((s, b, idx) => idx === i ? s : s + b.pct, 0);
+      const clamped = Math.min(Math.max(pct, 0), 100 - othersTotal);
+      return old.map((b, idx) => idx === i ? { ...b, pct: clamped } : b);
+    });
   };
   const setBucketName = (i: number, name: string) => {
     setBuckets((old) => old.map((b, idx) => idx === i ? { ...b, name } : b));
@@ -73,7 +88,11 @@ export default function S6FiveBucketsPage() {
         revenue: unmaskCurrency(revenue),
         buckets,
       });
-    } catch { /* ignore */ }
+      toast.success('บันทึกสำเร็จ');
+    } catch (e: any) {
+      console.error('S6 save error:', e);
+      toast.error(e.message || 'บันทึกไม่สำเร็จ');
+    }
     setSaving(false);
   };
 
@@ -146,7 +165,7 @@ export default function S6FiveBucketsPage() {
                 <input
                   type="range"
                   min={0}
-                  max={100}
+                  max={100 - buckets.reduce((s, b, idx) => idx === i ? s : s + b.pct, 0)}
                   value={bucket.pct}
                   onChange={(e) => setBucketPct(i, Number(e.target.value))}
                   className="flex-1 accent-current"

@@ -52,7 +52,7 @@ export default function OnboardingPage() {
       window.location.href = '/dashboard';
     } catch (err) {
       console.error('Onboarding error:', err);
-      alert(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
       setSaving(false);
     }
   };

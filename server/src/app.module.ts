@@ -13,8 +13,8 @@ import { AdminModule } from './admin/admin.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // Global rate limit: 100 requests per 15 minutes per IP
-    ThrottlerModule.forRoot([{ ttl: 900000, limit: 100 }]),
+    // Global rate limit: 120 requests per minute per IP
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 120 }]),
     PrismaModule,
     AuthModule,
     BusinessModule,

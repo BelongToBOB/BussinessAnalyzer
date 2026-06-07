@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
+import { toast } from 'sonner';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionGuide } from '@/components/ui/session-guide';
@@ -25,9 +26,15 @@ const DIAG_DEFAULTS: DiagItem[] = [
   { label: 'Margin ต่ำ — ขายได้แต่เหลือกำไรต่อหน่วยน้อย', checked: false, note: '' },
 ];
 
+function currentMonth() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
 export default function S3CashflowPage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const month = currentMonth();
 
   // Layer 1
   const [cashSales, setCashSales] = useState('');
@@ -52,21 +59,22 @@ export default function S3CashflowPage() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await getSession('s3-cashflow') as any;
-        if (data) {
-          if (data.cashSales) setCashSales(maskCurrency(String(data.cashSales)));
-          if (data.arCollected) setArCollected(maskCurrency(String(data.arCollected)));
-          if (data.cogsPaid) setCogsPaid(maskCurrency(String(data.cogsPaid)));
-          if (data.salary) setSalary(maskCurrency(String(data.salary)));
-          if (data.rent) setRent(maskCurrency(String(data.rent)));
-          if (data.marketing) setMarketing(maskCurrency(String(data.marketing)));
-          if (data.otherOpex) setOtherOpex(maskCurrency(String(data.otherOpex)));
-          if (data.debtPrincipal) setDebtPrincipal(maskCurrency(String(data.debtPrincipal)));
-          if (data.interest) setInterest(maskCurrency(String(data.interest)));
-          if (data.tax) setTax(maskCurrency(String(data.tax)));
-          if (data.capex) setCapex(maskCurrency(String(data.capex)));
-          if (data.ownerDraw) setOwnerDraw(maskCurrency(String(data.ownerDraw)));
-          if (data.diag) setDiag(data.diag);
+        const res = await getSession('s3-cashflow', month) as any;
+        const d = res?.data;
+        if (d) {
+          if (d.cashSales) setCashSales(maskCurrency(String(d.cashSales)));
+          if (d.arCollected) setArCollected(maskCurrency(String(d.arCollected)));
+          if (d.cogsPaid) setCogsPaid(maskCurrency(String(d.cogsPaid)));
+          if (d.salary) setSalary(maskCurrency(String(d.salary)));
+          if (d.rent) setRent(maskCurrency(String(d.rent)));
+          if (d.marketing) setMarketing(maskCurrency(String(d.marketing)));
+          if (d.otherOpex) setOtherOpex(maskCurrency(String(d.otherOpex)));
+          if (d.debtPrincipal) setDebtPrincipal(maskCurrency(String(d.debtPrincipal)));
+          if (d.interest) setInterest(maskCurrency(String(d.interest)));
+          if (d.tax) setTax(maskCurrency(String(d.tax)));
+          if (d.capex) setCapex(maskCurrency(String(d.capex)));
+          if (d.ownerDraw) setOwnerDraw(maskCurrency(String(d.ownerDraw)));
+          if (d.diag) setDiag(d.diag);
         }
       } catch { /* new session */ }
     }
@@ -94,8 +102,12 @@ export default function S3CashflowPage() {
         salary: u(salary), rent: u(rent), marketing: u(marketing), otherOpex: u(otherOpex),
         debtPrincipal: u(debtPrincipal), interest: u(interest), tax: u(tax), capex: u(capex), ownerDraw: u(ownerDraw),
         diag,
-      });
-    } catch { /* ignore */ }
+      }, month);
+      toast.success('บันทึกสำเร็จ');
+    } catch (e: any) {
+      console.error('S3 save error:', e);
+      toast.error(e.message || 'บันทึกไม่สำเร็จ');
+    }
     setSaving(false);
   };
 

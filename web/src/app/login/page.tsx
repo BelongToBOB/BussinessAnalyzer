@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 
 const TOOLS = [
@@ -30,11 +30,15 @@ function ToolIcon({ icon, color }: { icon: string; color: string }) {
 }
 
 export default function LoginPage() {
-  const [showEmail, setShowEmail] = useState(false);
-  const [email, setEmail] = useState('');
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
   const toolsRef = useRef<HTMLDivElement>(null);
+
+  // If already logged in, redirect to dashboard
+  useEffect(() => {
+    fetch('/api/auth/session')
+      .then(r => r.json())
+      .then(s => { if (s?.user?.id) window.location.href = '/dashboard'; })
+      .catch(() => {});
+  }, []);
 
   // Scroll-triggered animation
   useEffect(() => {
@@ -59,43 +63,6 @@ export default function LoginPage() {
     signIn('google', { callbackUrl: '/dashboard' });
   };
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setSending(true);
-    const result = await signIn('dev-login', { email, redirect: false });
-    setSending(false);
-    if (result && !result.error) {
-      window.location.href = '/dashboard';
-    } else {
-      setSent(true);
-    }
-  };
-
-  if (sent) {
-    return (
-      <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-full bg-wash-info text-accent inline-flex items-center justify-center mb-6">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="4" y="6" width="20" height="16" rx="2"/>
-              <path d="M4 8l10 7 10-7"/>
-            </svg>
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight mb-2.5">เช็คอีเมลของคุณ</h1>
-          <p className="text-text-secondary text-[15px] leading-relaxed">
-            เราส่งลิงก์เข้าระบบไปที่<br/>
-            <span className="text-text-primary font-semibold">{email}</span><br/>
-            กดลิงก์ในอีเมลภายใน 15 นาที
-          </p>
-          <div className="flex gap-2 justify-center mt-6">
-            <button onClick={() => setSent(false)} className="px-4 py-2.5 rounded-xl border border-border-strong text-sm font-semibold cursor-pointer bg-bg-card">เปลี่ยนอีเมล</button>
-            <button onClick={() => handleEmailLogin({ preventDefault: () => {} } as any)} className="px-4 py-2.5 rounded-xl bg-text-primary text-bg-primary text-sm font-semibold cursor-pointer">ส่งใหม่</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden">
@@ -129,38 +96,21 @@ export default function LoginPage() {
             </p>
 
             <div className="animate-fade-up" style={{ animationDelay: '0.4s' }}>
-              {!showEmail ? (
-                <>
-                  <button onClick={handleGoogleLogin}
-                    className="w-full h-[52px] rounded-xl bg-bg-card border border-border-strong text-text-primary font-semibold text-base flex items-center justify-center gap-3 mb-3 cursor-pointer hover:bg-bg-secondary transition">
-                    <svg width="20" height="20" viewBox="0 0 48 48">
-                      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                    </svg>
-                    เข้าสู่ระบบด้วย Google
-                  </button>
-                  <div className="text-center">
-                    <button onClick={() => setShowEmail(true)} className="text-accent text-sm font-medium cursor-pointer bg-transparent border-none p-2">
-                      ใช้อีเมลแทน →
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <form onSubmit={handleEmailLogin} className="flex flex-col gap-3">
-                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="อีเมลที่ใช้สมัครคอร์ส" required autoFocus
-                    className="w-full h-[52px] rounded-xl border border-border-strong px-4 text-[15px] bg-bg-card text-text-primary outline-none focus:border-accent font-thai" />
-                  <button type="submit" disabled={sending} className="w-full h-[52px] rounded-xl bg-text-primary text-bg-primary font-semibold text-base cursor-pointer disabled:opacity-50">
-                    {sending ? 'กำลังส่ง...' : 'ส่งลิงก์เข้าระบบ'}
-                  </button>
-                  <button type="button" onClick={() => setShowEmail(false)} className="text-text-secondary text-sm font-medium cursor-pointer bg-transparent border-none p-2">
-                    ← กลับ
-                  </button>
-                </form>
-              )}
-              <div className="text-xs text-text-tertiary mt-4 text-center">
-                ไม่มีรหัสผ่าน · เข้าผ่าน Google หรืออีเมล
+              <button onClick={handleGoogleLogin}
+                className="w-full h-[52px] rounded-xl bg-bg-card border border-border-strong text-text-primary font-semibold text-base flex items-center justify-center gap-3 mb-3 cursor-pointer hover:bg-bg-secondary transition">
+                <svg width="20" height="20" viewBox="0 0 48 48">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                เข้าสู่ระบบด้วย Google
+              </button>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <a href="/login/email" className="text-accent text-sm font-medium no-underline">เข้าด้วยอีเมล / รหัสผ่าน →</a>
+              </div>
+              <div className="text-center text-sm text-text-secondary">
+                ยังไม่มีบัญชี? <a href="/register" className="text-accent font-medium no-underline">สมัครสมาชิก</a>
               </div>
             </div>
           </div>
@@ -185,7 +135,7 @@ export default function LoginPage() {
               ทุกเครื่องมือที่เจ้าของธุรกิจต้องมี
             </h2>
             <p className="text-text-secondary text-base md:text-lg max-w-xl mx-auto">
-              จากคอร์ส Inside Bank · Inside Business Finance — เปลี่ยนจาก Excel เป็น Web App ที่ปกป้องสูตร เก็บ history และวินิจฉัยให้อัตโนมัติ
+              จากคอร์ส Inside Bank · Inside Business Finance — เปลี่ยนจาก Excel เป็น Web App ที่เก็บข้อมูลปลอดภัย เก็บ history และวินิจฉัยให้อัตโนมัติ
             </p>
           </div>
 
@@ -216,7 +166,7 @@ export default function LoginPage() {
             { value: '10', label: 'ช่อง Dashboard', suffix: '' },
             { value: '8', label: 'เครื่องมือวิเคราะห์', suffix: '' },
             { value: '5', label: 'นาที / เดือน', suffix: '' },
-            { value: '100', label: 'ปกป้องสูตร', suffix: '%' },
+            { value: '100', label: 'ข้อมูลเป็นความลับ', suffix: '%' },
           ].map((s) => (
             <div key={s.label}>
               <div className="num text-3xl md:text-4xl font-bold tracking-tight text-text-primary">
@@ -252,7 +202,7 @@ export default function LoginPage() {
           <div className="flex items-center gap-4 text-xs text-text-tertiary">
             <a href="/terms" className="hover:text-text-secondary no-underline text-text-tertiary">ข้อกำหนด</a>
             <a href="/privacy" className="hover:text-text-secondary no-underline text-text-tertiary">ความเป็นส่วนตัว</a>
-            <span>© 2024</span>
+            <span>© 2025</span>
           </div>
         </div>
       </footer>

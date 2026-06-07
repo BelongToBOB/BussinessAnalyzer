@@ -95,7 +95,16 @@ interface TrendPoint {
 }
 
 export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
-  if (data.length === 0) return null;
+  if (data.length === 0) {
+    return (
+      <div className="bg-bg-card border border-border rounded-2xl p-4">
+        <div className="h-[120px] flex flex-col items-center justify-center text-center">
+          <div className="text-sm text-text-secondary mb-1">ยังไม่มีข้อมูล</div>
+          <div className="text-xs text-text-tertiary">กรอกข้อมูลรายเดือนอย่างน้อย 3 เดือนย้อนหลัง เพื่อเห็นกราฟแนวโน้ม</div>
+        </div>
+      </div>
+    );
+  }
 
   // 1 เดือน → แสดง metric cards แทนกราฟเส้น
   if (data.length === 1) {
@@ -103,7 +112,7 @@ export function DashboardTrendChart({ data }: { data: TrendPoint[] }) {
     return (
       <div className="bg-bg-card border border-border rounded-2xl p-4">
         <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary mb-3">
-          ผลเดือนแรก — กรอกเพิ่มอีก 2 เดือนจะเห็นกราฟแนวโน้ม
+          ผลเดือนแรก — กรอกย้อนหลังอีกอย่างน้อย 2 เดือน จะเห็นกราฟแนวโน้ม
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-bg-secondary rounded-xl p-3">

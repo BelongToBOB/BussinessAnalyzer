@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
+import { getSession } from '@/lib/api';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
@@ -25,6 +26,22 @@ export default function S4RealProfitPage() {
   const [ownerDraw, setOwnerDraw] = useState('');
   // Step 4
   const [reinvestment, setReinvestment] = useState('');
+
+  useEffect(() => {
+    getSession('s4-real-profit').then((res: any) => {
+      const d = res?.data;
+      if (!d) return;
+      if (d.netProfit) setNetProfit(maskCurrency(String(d.netProfit)));
+      if (d.depreciation) setDepreciation(maskCurrency(String(d.depreciation)));
+      if (d.deltaAR) setDeltaAR(maskCurrency(String(d.deltaAR)));
+      if (d.deltaInventory) setDeltaInventory(maskCurrency(String(d.deltaInventory)));
+      if (d.deltaAP) setDeltaAP(maskCurrency(String(d.deltaAP)));
+      if (d.deltaTax) setDeltaTax(maskCurrency(String(d.deltaTax)));
+      if (d.debtPrincipal) setDebtPrincipal(maskCurrency(String(d.debtPrincipal)));
+      if (d.ownerDraw) setOwnerDraw(maskCurrency(String(d.ownerDraw)));
+      if (d.reinvestment) setReinvestment(maskCurrency(String(d.reinvestment)));
+    }).catch(() => {});
+  }, []);
 
   const u = unmaskCurrency;
 

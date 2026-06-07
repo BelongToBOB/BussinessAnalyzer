@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
+import { getSession } from '@/lib/api';
 import { NumberInput } from '@/components/ui/number-input';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
@@ -62,6 +63,28 @@ export default function S2CashflowPage() {
   /* CFI asset sale fields */
   const [assetSaleNBV, setAssetSaleNBV] = useState('');
   const [assetSaleCash, setAssetSaleCash] = useState('');
+
+  useEffect(() => {
+    const maskObj = (obj: Record<string, any>): YearData => {
+      const out: YearData = {};
+      for (const [k, v] of Object.entries(obj)) out[k] = v ? maskCurrency(String(v)) : '';
+      return out;
+    };
+    getSession('s2-cashflow').then((res: any) => {
+      const d = res?.data;
+      if (!d) return;
+      if (d.prev) setPrev(maskObj(d.prev));
+      if (d.curr) setCurr(maskObj(d.curr));
+      if (d.netProfit) setNetProfit(maskCurrency(String(d.netProfit)));
+      if (d.depAmort) setDepAmort(maskCurrency(String(d.depAmort)));
+      if (d.netProfitPrev) setNetProfitPrev(maskCurrency(String(d.netProfitPrev)));
+      if (d.depAmortPrev) setDepAmortPrev(maskCurrency(String(d.depAmortPrev)));
+      if (d.ratioPrev) setRatioPrev(maskObj(d.ratioPrev));
+      if (d.ratioCurr) setRatioCurr(maskObj(d.ratioCurr));
+      if (d.assetSaleNBV) setAssetSaleNBV(maskCurrency(String(d.assetSaleNBV)));
+      if (d.assetSaleCash) setAssetSaleCash(maskCurrency(String(d.assetSaleCash)));
+    }).catch(() => {});
+  }, []);
 
   const setField = (year: 'prev' | 'curr', key: string, val: string) => {
     const setter = year === 'prev' ? setPrev : setCurr;
@@ -469,12 +492,20 @@ export default function S2CashflowPage() {
 
         <div className="mt-6">
           <WinTip page="s2-cashflow" />
-          <SessionSave sessionType="s2-cashflow" getData={() => ({
-            prev, curr, netProfit: unmaskCurrency(netProfit), depAmort: unmaskCurrency(depAmort),
-            netProfitPrev: unmaskCurrency(netProfitPrev), depAmortPrev: unmaskCurrency(depAmortPrev),
-            ratioPrev, ratioCurr,
-            assetSaleNBV: unmaskCurrency(assetSaleNBV), assetSaleCash: unmaskCurrency(assetSaleCash),
-          })} />
+          <SessionSave sessionType="s2-cashflow" getData={() => {
+            const unmaskObj = (obj: YearData) => {
+              const out: Record<string, number> = {};
+              for (const [k, v] of Object.entries(obj)) out[k] = unmaskCurrency(v);
+              return out;
+            };
+            return {
+              prev: unmaskObj(prev), curr: unmaskObj(curr),
+              netProfit: unmaskCurrency(netProfit), depAmort: unmaskCurrency(depAmort),
+              netProfitPrev: unmaskCurrency(netProfitPrev), depAmortPrev: unmaskCurrency(depAmortPrev),
+              ratioPrev: unmaskObj(ratioPrev), ratioCurr: unmaskObj(ratioCurr),
+              assetSaleNBV: unmaskCurrency(assetSaleNBV), assetSaleCash: unmaskCurrency(assetSaleCash),
+            };
+          }} />
         </div>
       </main>
 

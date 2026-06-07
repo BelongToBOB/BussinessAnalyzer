@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
+import { toast } from 'sonner';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionGuide } from '@/components/ui/session-guide';
@@ -58,23 +59,24 @@ export default function S7BusinessPlanPage() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await getSession('s7-business-plan') as any;
-        if (data) {
-          if (data.bizName) setBizName(data.bizName);
-          if (data.bizType) setBizType(data.bizType);
-          if (data.bizAge) setBizAge(data.bizAge);
-          if (data.bizProduct) setBizProduct(data.bizProduct);
-          if (data.bizCustomer) setBizCustomer(data.bizCustomer);
-          if (data.bizStrength) setBizStrength(data.bizStrength);
-          if (data.purpose) setPurpose(data.purpose);
-          if (data.cashFlow) setCashFlow(maskCurrency(String(data.cashFlow)));
-          if (data.monthlyPayment) setMonthlyPayment(maskCurrency(String(data.monthlyPayment)));
-          if (data.repaymentNote) setRepaymentNote(data.repaymentNote);
-          if (data.risk1) setRisk1(data.risk1);
-          if (data.risk2) setRisk2(data.risk2);
-          if (data.risk3) setRisk3(data.risk3);
-          if (data.control) setControl(data.control);
-          if (data.readiness) setReadiness(data.readiness);
+        const res = await getSession('s7-business-plan') as any;
+        const d = res?.data;
+        if (d) {
+          if (d.bizName) setBizName(d.bizName);
+          if (d.bizType) setBizType(d.bizType);
+          if (d.bizAge) setBizAge(d.bizAge);
+          if (d.bizProduct) setBizProduct(d.bizProduct);
+          if (d.bizCustomer) setBizCustomer(d.bizCustomer);
+          if (d.bizStrength) setBizStrength(d.bizStrength);
+          if (d.purpose) setPurpose(d.purpose);
+          if (d.cashFlow) setCashFlow(maskCurrency(String(d.cashFlow)));
+          if (d.monthlyPayment) setMonthlyPayment(maskCurrency(String(d.monthlyPayment)));
+          if (d.repaymentNote) setRepaymentNote(d.repaymentNote);
+          if (d.risk1) setRisk1(d.risk1);
+          if (d.risk2) setRisk2(d.risk2);
+          if (d.risk3) setRisk3(d.risk3);
+          if (d.control) setControl(d.control);
+          if (d.readiness) setReadiness(d.readiness);
         }
       } catch { /* new session */ }
     }
@@ -100,7 +102,11 @@ export default function S7BusinessPlanPage() {
         control,
         readiness,
       });
-    } catch { /* ignore */ }
+      toast.success('บันทึกสำเร็จ');
+    } catch (e: any) {
+      console.error('S7 save error:', e);
+      toast.error(e.message || 'บันทึกไม่สำเร็จ');
+    }
     setSaving(false);
   };
 

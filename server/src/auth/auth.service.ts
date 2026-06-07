@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
@@ -79,5 +80,35 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  async register(data: { email: string; password: string; name: string }) {
+    const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
+    if (existing) throw new ConflictException('อีเมลนี้ถูกใช้แล้ว');
+
+    const passwordHash = await bcrypt.hash(data.password, 10);
+    const user = await this.prisma.user.create({
+      data: { email: data.email, name: data.name, passwordHash },
+    });
+
+    await this.prisma.activityLog.create({
+      data: { userId: user.id, action: 'register', meta: { provider: 'credentials' } },
+    });
+
+    return { id: user.id, email: user.email, name: user.name };
+  }
+
+  async login(data: { email: string; password: string }) {
+    const user = await this.prisma.user.findUnique({ where: { email: data.email } });
+    if (!user || !user.passwordHash) throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+
+    const valid = await bcrypt.compare(data.password, user.passwordHash);
+    if (!valid) throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+
+    await this.prisma.activityLog.create({
+      data: { userId: user.id, action: 'login', meta: { provider: 'credentials' } },
+    });
+
+    return { id: user.id, email: user.email, name: user.name };
   }
 }

@@ -66,7 +66,7 @@ function MiniChart({ data, metric }: { data: TrendPoint[]; metric: Metric }) {
   const series = [...data].reverse();
   const values = series.map((d) => d[metric]).filter((v): v is number => v != null);
   if (values.length < 2) {
-    return <div className="h-[180px] flex items-center justify-center text-sm text-text-tertiary">ข้อมูลไม่เพียงพอสำหรับกราฟ</div>;
+    return <div className="h-[180px] flex flex-col items-center justify-center text-center"><div className="text-sm text-text-tertiary">ข้อมูลไม่เพียงพอสำหรับกราฟ</div><div className="text-xs text-text-tertiary mt-1">กรอกข้อมูลอย่างน้อย 2 เดือนย้อนหลัง</div></div>;
   }
 
   const min = Math.min(...values, 0);
@@ -170,7 +170,7 @@ export default function HistoryPage() {
         {!loading && trends.length === 0 && (
           <div className="py-20 text-center">
             <div className="text-xl font-semibold mb-2">ยังไม่มีข้อมูล</div>
-            <p className="text-sm text-text-secondary mb-4">กรอกข้อมูลอย่างน้อย 1 เดือนเพื่อเริ่มดูย้อนหลัง</p>
+            <p className="text-sm text-text-secondary mb-4">กรอกข้อมูลรายเดือนอย่างน้อย 3 เดือนย้อนหลัง เพื่อเห็นกราฟแนวโน้มและเปรียบเทียบ</p>
             <button onClick={() => router.push('/dashboard')} className="px-4 py-2.5 rounded-xl bg-text-primary text-bg-primary font-semibold text-sm cursor-pointer">
               กลับ Dashboard
             </button>
@@ -198,7 +198,7 @@ export default function HistoryPage() {
                 <div>
                   <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">{METRIC_CONFIG[metric].name} · ล่าสุด</div>
                   <div className="num text-[26px] font-semibold tracking-tight mt-1">
-                    {latestVal != null ? METRIC_CONFIG[metric].format(latestVal) + ' ' + METRIC_CONFIG[metric].suffix : '—'}
+                    {latestVal != null ? METRIC_CONFIG[metric].format(latestVal) + (metric === 'np' ? ' ' + METRIC_CONFIG[metric].suffix : '') : '—'}
                   </div>
                 </div>
               </div>

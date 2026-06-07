@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
+import { getSession } from '@/lib/api';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
@@ -16,6 +17,18 @@ export default function S1CheckCashPage() {
   const [cashStart, setCashStart] = useState('');
   const [cashEnd, setCashEnd] = useState('');
   const [ar, setAr] = useState('');
+
+  useEffect(() => {
+    const m = new Date().toISOString().slice(0, 7);
+    getSession('s1-check-cash', m).then((res: any) => {
+      const d = res?.data;
+      if (!d) return;
+      if (d.grossSales) setSales(maskCurrency(String(d.grossSales)));
+      if (d.cashStart) setCashStart(maskCurrency(String(d.cashStart)));
+      if (d.cashEnd) setCashEnd(maskCurrency(String(d.cashEnd)));
+      if (d.arBalance) setAr(maskCurrency(String(d.arBalance)));
+    }).catch(() => {});
+  }, []);
 
   const salesNum = unmaskCurrency(sales);
   const startNum = unmaskCurrency(cashStart);

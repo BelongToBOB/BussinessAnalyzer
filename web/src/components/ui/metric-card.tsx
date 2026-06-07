@@ -2,7 +2,22 @@
 
 type Status = 'good' | 'warn' | 'bad' | 'empty' | 'neutral';
 
-const CIRCLED = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+function CardIcon({ num, color }: { num: number; color: string }) {
+  const p = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: '1.8', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  switch (num) {
+    case 1: return <svg {...p}><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>; // ยอดขาย
+    case 2: return <svg {...p}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>; // สัดส่วน
+    case 3: return <svg {...p}><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>; // GM
+    case 4: return <svg {...p}><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>; // NP
+    case 5: return <svg {...p}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>; // ค่าใช้จ่าย
+    case 6: return <svg {...p}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/></svg>; // จุดรั่ว
+    case 7: return <svg {...p}><path d="M21 12V7H5a2 2 0 010-4h14v4"/><path d="M3 5v14a2 2 0 002 2h16v-5"/><path d="M18 12a2 2 0 000 4h4v-4h-4z"/></svg>; // Cash In
+    case 8: return <svg {...p}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>; // ลูกหนี้
+    case 9: return <svg {...p}><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>; // เจ้าหนี้
+    case 10: return <svg {...p}><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>; // Runway
+    default: return <svg {...p}><circle cx="12" cy="12" r="10"/></svg>;
+  }
+}
 
 const WASH_MAP: Record<Status, string> = {
   good: 'bg-wash-good',
@@ -61,9 +76,7 @@ export function MetricCard({
     >
       {/* Header: circled number + dot */}
       <div className="flex items-center justify-between">
-        <span className="num text-xs font-semibold text-text-tertiary">
-          {CIRCLED[cardNum - 1]}
-        </span>
+        <CardIcon num={cardNum} color="var(--text-tertiary)" />
         {hasDot && <span className={`w-[7px] h-[7px] rounded-full ${DOT_MAP[status]}`} />}
         {status === 'empty' && <span className="text-[11px] text-text-tertiary">—</span>}
       </div>

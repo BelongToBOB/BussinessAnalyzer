@@ -64,7 +64,39 @@ function computeSession(sessionType: SessionType, data: any): { computed: any; v
       return { computed: r.computed, verdict: r.verdict };
     }
     case SessionType.S2B_CASHFLOW_2YR: {
-      const r = computeS2b(data);
+      // Map flat frontend data to structured S2bInputs
+      const n = (obj: any, key: string) => Number(obj?.[key] || 0) || 0;
+      const prev = data.prev || {};
+      const curr = data.curr || {};
+      const rp = data.ratioPrev || {};
+      const rc = data.ratioCurr || {};
+      const mapped = {
+        year1: {
+          cash: n(prev, 'cash'), accountsReceivable: n(prev, 'ar'), inventory: n(prev, 'inventory'),
+          otherCurrentAssets: n(prev, 'otherCurrentAssets'), fixedAssets: n(prev, 'fixedAssets'),
+          accumulatedDepreciation: 0, otherNonCurrentAssets: 0,
+          accountsPayable: n(prev, 'ap'), shortTermDebt: 0,
+          otherCurrentLiabilities: n(prev, 'otherLiabilities'), longTermDebt: n(prev, 'loans'),
+          otherNonCurrentLiabilities: 0, paidUpCapital: n(prev, 'equity'), retainedEarnings: 0,
+        },
+        year2: {
+          cash: n(curr, 'cash'), accountsReceivable: n(curr, 'ar'), inventory: n(curr, 'inventory'),
+          otherCurrentAssets: n(curr, 'otherCurrentAssets'), fixedAssets: n(curr, 'fixedAssets'),
+          accumulatedDepreciation: 0, otherNonCurrentAssets: 0,
+          accountsPayable: n(curr, 'ap'), shortTermDebt: 0,
+          otherCurrentLiabilities: n(curr, 'otherLiabilities'), longTermDebt: n(curr, 'loans'),
+          otherNonCurrentLiabilities: 0, paidUpCapital: n(curr, 'equity'), retainedEarnings: 0,
+        },
+        income1: {
+          revenue: n(rp, 'revenue'), netProfit: Number(data.netProfitPrev) || 0,
+          depreciation: Number(data.depAmortPrev) || 0, interest: n(rp, 'interestExpense'), tax: n(rp, 'taxExpense'),
+        },
+        income2: {
+          revenue: n(rc, 'revenue'), netProfit: Number(data.netProfit) || 0,
+          depreciation: Number(data.depAmort) || 0, interest: n(rc, 'interestExpense'), tax: n(rc, 'taxExpense'),
+        },
+      };
+      const r = computeS2b(mapped);
       return { computed: r.computed, verdict: r.verdict };
     }
     case SessionType.S3_CASHFLOW_4LAYERS: {

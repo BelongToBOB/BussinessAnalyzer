@@ -1,52 +1,33 @@
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
 import Credentials from 'next-auth/providers/credentials';
+import type { Provider } from 'next-auth/providers';
 
-const providers: any[] = [];
+const providers: Provider[] = [
+  Google({
+    clientId: process.env.AUTH_GOOGLE_ID,
+    clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    authorization: { params: { prompt: 'select_account' } },
+  }),
+];
 
-// Google OAuth — only add if credentials are set
-if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
-  providers.push(
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
-  );
-}
-
-// Credentials provider — always available (fallback login)
 providers.push(
-    Credentials({
-      id: 'dev-login',
-      name: 'Dev Login',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-      },
-      async authorize(credentials) {
-        const email = credentials?.email as string;
-        if (!email) return null;
-
-        try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-          const res = await fetch(`${apiUrl}/api/auth/sync`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              provider: 'credentials',
-              providerAccountId: email,
-              email,
-              name: email.split('@')[0],
-            }),
-          });
-          if (res.ok) {
-            const user = await res.json();
-            return { id: user.id, email: user.email, name: user.name };
-          }
-        } catch { /* backend down */ }
-
-        return { id: 'dev-user', email, name: email.split('@')[0] };
-      },
-    })
+  Credentials({
+    id: 'credentials',
+    name: 'Email & Password',
+    credentials: {
+      email: { label: 'Email', type: 'email' },
+      password: { label: 'Password', type: 'password' },
+    },
+    async authorize(credentials) {
+      const email = credentials?.email as string;
+      const password = credentials?.password as string;
+      if (!email || !password) return null;
+      // Auth is validated client-side via backend /api/auth/login
+      // This just passes through — userId is resolved by client-side sync
+      return { id: email, email, name: email.split('@')[0] };
+    },
+  }),
 );
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -56,36 +37,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async jwt({ token, user, account }) {
+      // Store provider info for client-side sync
       if (account && user) {
         token.userId = user.id;
-
-        // Sync with backend on initial sign-in (Google or any OAuth)
-        if (account.provider !== 'dev-login') {
-          try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-            const res = await fetch(`${apiUrl}/api/auth/sync`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                provider: account.provider,
-                providerAccountId: account.providerAccountId,
-                email: user.email,
-                name: user.name,
-                image: user.image,
-              }),
-            });
-            if (res.ok) {
-              const synced = await res.json();
-              token.userId = synced.id;
-            }
-          } catch { /* backend unavailable */ }
-        }
       }
       return token;
     },
     async session({ session, token }) {
       if (token.userId) {
         session.user.id = token.userId as string;
+      }
+      if (token.email) {
+        session.user.email = token.email as string;
+      }
+      if (token.name) {
+        session.user.name = token.name as string;
       }
       return session;
     },

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
+import { getSession } from '@/lib/api';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { WinTip } from '@/components/ui/win-tip';
 import { SessionSave } from '@/components/ui/session-save';
@@ -18,6 +19,19 @@ export default function S2IncomeStatementPage() {
   const [depreciation, setDepreciation] = useState('');
   const [interest, setInterest] = useState('');
   const [tax, setTax] = useState('');
+
+  useEffect(() => {
+    getSession('s2-income-statement').then((res: any) => {
+      const d = res?.data;
+      if (!d) return;
+      if (d.revenue) setRevenue(maskCurrency(String(d.revenue)));
+      if (d.cogs) setCogs(maskCurrency(String(d.cogs)));
+      if (d.sellingAdmin) setSellingAdmin(maskCurrency(String(d.sellingAdmin)));
+      if (d.depreciation) setDepreciation(maskCurrency(String(d.depreciation)));
+      if (d.interest) setInterest(maskCurrency(String(d.interest)));
+      if (d.tax) setTax(maskCurrency(String(d.tax)));
+    }).catch(() => {});
+  }, []);
 
   const rev = unmaskCurrency(revenue);
   const cogsNum = unmaskCurrency(cogs);
