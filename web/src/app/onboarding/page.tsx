@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import { maskCurrency, unmaskCurrency } from '@/lib/format';
 import { getBusiness, createBusiness, upsertEntry } from '@/lib/api';
 import { toast } from 'sonner';
@@ -66,6 +67,9 @@ export default function OnboardingPage() {
       <div className="w-full max-w-[520px] bg-bg-card rounded-[20px] border border-border p-6 md:p-10">
         {/* Header */}
         <div className="flex items-center gap-2.5 mb-7">
+          <button onClick={() => { signOut({ callbackUrl: '/login' }); }} className="p-1.5 -ml-1.5 cursor-pointer bg-transparent border-none text-text-secondary hover:text-text-primary">
+            <svg width="18" height="18" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 6l-5 5 5 5"/></svg>
+          </button>
           <img src="/logo-32.png" alt="WW" width={26} height={26} className="rounded" />
           <span className="text-sm font-semibold">WinWin Analyzer</span>
           <div className="flex-1" />
