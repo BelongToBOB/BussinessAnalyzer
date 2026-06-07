@@ -32,13 +32,7 @@ function ToolIcon({ icon, color }: { icon: string; color: string }) {
 export default function LoginPage() {
   const toolsRef = useRef<HTMLDivElement>(null);
 
-  // If already logged in, redirect to dashboard
-  useEffect(() => {
-    fetch('/api/auth/session')
-      .then(r => r.json())
-      .then(s => { if (s?.user?.id) window.location.href = '/dashboard'; })
-      .catch(() => {});
-  }, []);
+  // No auto-redirect — user came here intentionally (e.g. after logout)
 
   // Scroll-triggered animation
   useEffect(() => {
