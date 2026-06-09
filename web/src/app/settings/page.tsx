@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { logout } from '@/lib/logout';
 import { maskCurrency, unmaskCurrency, money } from '@/lib/format';
 import { getBusiness, updateBusiness, deleteBusiness } from '@/lib/api';
 import { toast } from 'sonner';
@@ -138,7 +138,7 @@ export default function SettingsPage() {
     } catch {
       toast.error('เกิดข้อผิดพลาด');
     }
-    await signOut({ callbackUrl: '/login' });
+    await logout();
   };
 
   if (loading) {
@@ -154,7 +154,7 @@ export default function SettingsPage() {
       {/* Top bar */}
       <header className="sticky top-0 z-10 bg-bg-primary/85 backdrop-blur-lg border-b border-border">
         <div className="max-w-3xl mx-auto px-4 md:px-6 h-14 flex items-center gap-2">
-          <button onClick={() => router.push('/dashboard')} className="p-2 cursor-pointer bg-transparent border-none text-text-primary">
+          <button onClick={() => router.push((business as any)?.template === 'ib' ? '/ib' : '/dashboard')} className="p-2 cursor-pointer bg-transparent border-none text-text-primary">
             <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 6l-5 5 5 5"/></svg>
           </button>
           <span className="text-[15px] font-semibold">ตั้งค่า</span>
@@ -235,7 +235,7 @@ export default function SettingsPage() {
         <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary px-1 pb-2">ข้อมูล</div>
         <div className="bg-bg-card border border-border rounded-[14px] overflow-hidden mb-7">
           <SettingsRow label="นำเข้าจาก CSV / Excel" value="Import ข้อมูลจากชีตเดิม" onTap={() => window.location.href = '/import'} trailing={<Chevron />} />
-          <SettingsRow label="ออกจากระบบ" onTap={() => signOut({ callbackUrl: '/login' })} last trailing={<Chevron />} />
+          <SettingsRow label="ออกจากระบบ" onTap={() => logout()} last trailing={<Chevron />} />
         </div>
 
         {/* Danger zone */}

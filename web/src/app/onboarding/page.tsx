@@ -1,14 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { logout } from '@/lib/logout';
 import { maskCurrency, unmaskCurrency } from '@/lib/format';
 import { getBusiness, createBusiness, upsertEntry } from '@/lib/api';
 import { toast } from 'sonner';
 
-export default function OnboardingPage() {
+export default function OnboardingWrapper() {
+  return <Suspense fallback={<div className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังโหลด...</div>}><OnboardingPage /></Suspense>;
+}
+
+function OnboardingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const template = searchParams.get('template') || 'ibf';
   const [step, setStep] = useState(1);
   const [checking, setChecking] = useState(true);
   const [consent, setConsent] = useState(false);
@@ -29,8 +35,9 @@ export default function OnboardingPage() {
     try {
       await createBusiness({
         name: name.trim(),
+        template,
         monthlyDebtService: debt ? unmaskCurrency(debt) : null,
-      });
+      } as any);
 
       if (useSample) {
         const now = new Date();
@@ -67,7 +74,7 @@ export default function OnboardingPage() {
       <div className="w-full max-w-[520px] bg-bg-card rounded-[20px] border border-border p-6 md:p-10">
         {/* Header */}
         <div className="flex items-center gap-2.5 mb-7">
-          <button onClick={() => { signOut({ callbackUrl: '/login' }); }} className="p-1.5 -ml-1.5 cursor-pointer bg-transparent border-none text-text-secondary hover:text-text-primary">
+          <button onClick={() => { logout(); }} className="p-1.5 -ml-1.5 cursor-pointer bg-transparent border-none text-text-secondary hover:text-text-primary">
             <svg width="18" height="18" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 6l-5 5 5 5"/></svg>
           </button>
           <img src="/logo-32.png" alt="WW" width={26} height={26} className="rounded" />

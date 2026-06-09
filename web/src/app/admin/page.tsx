@@ -8,6 +8,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
 interface OverviewData {
   totalUsers: number;
+  ibfUsers: number;
+  ibUsers: number;
   activeThisMonth: number;
   inactiveOver2Months: number;
   criticalCount: number;
@@ -156,9 +158,11 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
         <StatCard label="ผู้ใช้ทั้งหมด" value={overview.totalUsers} />
-        <StatCard label="ใช้งานเดือนนี้" value={overview.activeThisMonth} accent="text-accent" />
+        <StatCard label="IBF" value={overview.ibfUsers} accent="text-accent" />
+        <StatCard label="Inside Bank" value={overview.ibUsers} accent="text-status-good" />
+        <StatCard label="ใช้งานเดือนนี้" value={overview.activeThisMonth} />
         <StatCard label="วิกฤต" value={overview.criticalCount} accent="text-status-bad" />
         <StatCard label="ไม่ใช้งาน >2 เดือน" value={overview.inactiveOver2Months} accent="text-text-tertiary" />
       </div>

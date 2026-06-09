@@ -12,6 +12,7 @@ import { computeS4b } from './formulas/s4-cm';
 import { computeS4c } from './formulas/s4-real-profit';
 import { computeS6 } from './formulas/s6-five-buckets';
 import { computeS7 } from './formulas/s7-business-plan';
+import { computeIbIdentity, computeIbFinancial, computeIbCashDna, computeIbBankView, computeIbCapitalDesign, computeIbGrowth, computeIbLoanAction } from './formulas/mri-calc';
 
 // Map URL slugs to enum values (short + long forms)
 const TYPE_MAP: Record<string, SessionType> = {
@@ -39,6 +40,14 @@ const TYPE_MAP: Record<string, SessionType> = {
   's6-five-buckets': SessionType.S6_FIVE_BUCKETS,
   's7': SessionType.S7_BUSINESS_PLAN,
   's7-business-plan': SessionType.S7_BUSINESS_PLAN,
+  // Inside Bank
+  'ib-identity': SessionType.IB_IDENTITY,
+  'ib-financial': SessionType.IB_FINANCIAL_MRI,
+  'ib-cash-dna': SessionType.IB_CASH_DNA,
+  'ib-bank-view': SessionType.IB_BANK_VIEW,
+  'ib-capital': SessionType.IB_CAPITAL_DESIGN,
+  'ib-growth': SessionType.IB_GROWTH_CAPACITY,
+  'ib-loan-action': SessionType.IB_LOAN_ACTION,
 };
 
 // Sessions that require a month
@@ -123,6 +132,21 @@ function computeSession(sessionType: SessionType, data: any): { computed: any; v
       const r = computeS7(data);
       return { computed: r.computed, verdict: r.verdict };
     }
+    // Inside Bank
+    case SessionType.IB_IDENTITY:
+      return computeIbIdentity(data);
+    case SessionType.IB_FINANCIAL_MRI:
+      return computeIbFinancial(data);
+    case SessionType.IB_CASH_DNA:
+      return computeIbCashDna(data);
+    case SessionType.IB_BANK_VIEW:
+      return computeIbBankView(data);
+    case SessionType.IB_CAPITAL_DESIGN:
+      return computeIbCapitalDesign(data);
+    case SessionType.IB_GROWTH_CAPACITY:
+      return computeIbGrowth(data);
+    case SessionType.IB_LOAN_ACTION:
+      return computeIbLoanAction(data);
     default:
       throw new BadRequestException(`No formula for session type: ${sessionType}`);
   }

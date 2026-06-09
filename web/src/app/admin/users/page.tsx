@@ -9,6 +9,8 @@ interface UserItem {
   userId: string;
   businessId: string;
   businessName: string;
+  template: string;
+  email: string | null;
   verdictLevel: string;
   netProfit: number | null;
   runway: number | null;
@@ -17,6 +19,9 @@ interface UserItem {
   lastActiveDate: string | null;
   toolsCompleted: number;
   alerts: { level: string; message: string }[];
+  ibScore: number | null;
+  ibDscr: number | null;
+  ibGrowthCash: number | null;
 }
 
 function money(n: number | null | undefined): string {
@@ -58,6 +63,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [templateFilter, setTemplateFilter] = useState('');
   const [sort, setSort] = useState('');
 
   useEffect(() => {
@@ -75,10 +81,14 @@ export default function AdminUsersPage() {
   }, [statusFilter, sort]);
 
   const filtered = useMemo(() => {
-    if (!search) return users;
-    const q = search.toLowerCase();
-    return users.filter((u) => u.businessName.toLowerCase().includes(q));
-  }, [users, search]);
+    let result = users;
+    if (templateFilter) result = result.filter(u => u.template === templateFilter);
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter((u) => u.businessName.toLowerCase().includes(q) || (u.email && u.email.toLowerCase().includes(q)));
+    }
+    return result;
+  }, [users, search, templateFilter]);
 
   return (
     <div>
@@ -90,12 +100,22 @@ export default function AdminUsersPage() {
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="ค้นหาชื่อธุรกิจ..."
+          placeholder="ค้นหาชื่อธุรกิจ หรือ อีเมล..."
           className="w-full max-w-md px-4 py-2.5 bg-bg-card border border-border rounded-xl text-sm text-text-primary placeholder:text-text-tertiary outline-none focus:border-accent"
         />
       </div>
 
-      {/* Filter tabs */}
+      {/* Template filter */}
+      <div className="flex gap-1.5 mb-3">
+        {[{ key: '', label: 'ทั้งหมด' }, { key: 'ibf', label: 'IBF' }, { key: 'ib', label: 'Inside Bank' }].map(t => (
+          <button key={t.key} onClick={() => setTemplateFilter(t.key)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer border transition-colors ${
+              templateFilter === t.key ? 'bg-accent text-white border-transparent' : 'bg-bg-card border-border text-text-secondary'
+            }`}>{t.label}</button>
+        ))}
+      </div>
+
+      {/* Status filter tabs */}
       <div className="flex gap-1.5 flex-wrap mb-3">
         {FILTER_TABS.map((tab) => (
           <button
@@ -150,9 +170,14 @@ export default function AdminUsersPage() {
 
                 {/* Business name & status */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-text-primary truncate">{u.businessName}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-text-primary truncate">{u.businessName}</span>
+                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${u.template === 'ib' ? 'bg-wash-good text-status-good' : 'bg-wash-info text-accent'}`}>
+                      {u.template === 'ib' ? 'IB' : 'IBF'}
+                    </span>
+                  </div>
                   <div className="text-[11px] text-text-tertiary">
-                    {dot.label} | กรอกล่าสุด {daysAgo(u.lastActiveDate)}
+                    {u.email ? `${u.email} · ` : ''}{dot.label} | กรอกล่าสุด {daysAgo(u.lastActiveDate)}
                   </div>
                 </div>
 

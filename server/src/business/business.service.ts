@@ -29,7 +29,7 @@ export class BusinessService {
     if (existing) throw new ConflictException('Business already exists. Use PATCH to update.');
 
     return this.prisma.business.create({
-      data: { userId, name: dto.name, monthlyDebtService: dto.monthlyDebtService },
+      data: { userId, name: dto.name, template: dto.template || 'ibf', monthlyDebtService: dto.monthlyDebtService },
     });
   }
 

@@ -54,7 +54,7 @@ export default function RegisterPage() {
         return;
       }
 
-      window.location.href = '/onboarding';
+      window.location.href = '/select';
     } catch {
       setError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาลองใหม่');
       setLoading(false);
@@ -142,7 +142,7 @@ export default function RegisterPage() {
           </div>
 
           <button
-            onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+            onClick={() => signIn('google', { callbackUrl: '/select' })}
             className="w-full h-12 rounded-xl bg-bg-card border border-border-strong text-text-primary font-semibold text-sm flex items-center justify-center gap-3 cursor-pointer hover:bg-bg-secondary transition"
           >
             <svg width="18" height="18" viewBox="0 0 48 48">

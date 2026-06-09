@@ -252,7 +252,12 @@ function DashboardPage() {
     if (!hasLoadedOnce.current) setLoading(true);
     setError(false);
     try {
-      const biz = await getBusiness();
+      const biz = await getBusiness() as any;
+      // Redirect to IB dashboard if template is 'ib'
+      if (biz.template === 'ib') {
+        window.location.href = '/ib';
+        return;
+      }
       setBusiness(biz);
 
       // Check which sessions are completed
@@ -315,9 +320,9 @@ function DashboardPage() {
         return;
       }
 
-      // Logged in but no business → go to onboarding
+      // Logged in but no business → go to template selection
       if (msg.includes('No business') || msg.includes('Not Found')) {
-        window.location.href = '/onboarding';
+        window.location.href = '/select';
         return;
       }
 

@@ -1,10 +1,21 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
 let cachedUserId: string | null = null;
-let syncAttempts = 0;
+
+function getStoredUserId(): string | null {
+  try { return localStorage.getItem('_uid'); } catch { return null; }
+}
+function storeUserId(id: string) {
+  try { localStorage.setItem('_uid', id); } catch { /* ignore */ }
+}
 
 async function getUserId(): Promise<string | null> {
   if (cachedUserId) return cachedUserId;
+
+  // Check localStorage first (survives page navigations)
+  const stored = getStoredUserId();
+  if (stored) { cachedUserId = stored; return stored; }
+
   try {
     const res = await fetch('/api/auth/session');
     if (!res.ok) return null;
@@ -12,43 +23,28 @@ async function getUserId(): Promise<string | null> {
     if (!session?.user) return null;
     const email = session.user.email;
     const name = session.user.name;
-    console.log('[auth] session:', { id: session.user.id, email, name });
 
     if (!email) {
-      console.warn('[auth] no email in session, using id as fallback');
       cachedUserId = session.user.id || null;
       return cachedUserId;
     }
 
-    // Sync with backend from browser (CF Worker can't reach backend due to same-zone issue)
-    if (syncAttempts < 3) {
-      syncAttempts++;
-      try {
-        const syncRes = await fetch(`${API_URL}/api/auth/sync`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            provider: 'credentials',
-            providerAccountId: email,
-            email,
-            name,
-            image: session.user.image,
-          }),
-        });
-        if (syncRes.ok) {
-          const synced = await syncRes.json();
-          console.log('[auth] sync OK, userId:', synced.id);
-          cachedUserId = synced.id;
-          return cachedUserId;
-        }
-        const errText = await syncRes.text().catch(() => '');
-        console.error('[auth] sync failed:', syncRes.status, errText);
-      } catch (e) {
-        console.error('[auth] sync error:', e);
+    // Sync with backend (only needed once — result cached in localStorage)
+    try {
+      const syncRes = await fetch(`${API_URL}/api/auth/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider: 'credentials', providerAccountId: email, email, name, image: session.user.image }),
+      });
+      if (syncRes.ok) {
+        const synced = await syncRes.json();
+        cachedUserId = synced.id;
+        storeUserId(synced.id);
+        return cachedUserId;
       }
-    }
+    } catch { /* backend down */ }
 
-    console.warn('[auth] using fallback id:', session.user.id);
+    // Fallback — don't cache UUID
     return session.user.id || null;
   } catch { /* ignore */ }
   return null;
@@ -56,6 +52,7 @@ async function getUserId(): Promise<string | null> {
 
 export function clearUserCache() {
   cachedUserId = null;
+  try { localStorage.removeItem('_uid'); } catch { /* ignore */ }
 }
 
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
@@ -85,7 +82,7 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
 
 // Business
 export const getBusiness = () => fetchApi('/api/business');
-export const createBusiness = (data: { name: string; monthlyDebtService?: number | null }) =>
+export const createBusiness = (data: { name: string; template?: string; monthlyDebtService?: number | null }) =>
   fetchApi('/api/business', { method: 'POST', body: JSON.stringify(data) });
 export const updateBusiness = (data: { name?: string; monthlyDebtService?: number | null }) =>
   fetchApi('/api/business', { method: 'PATCH', body: JSON.stringify(data) });

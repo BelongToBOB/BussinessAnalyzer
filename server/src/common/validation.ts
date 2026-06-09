@@ -22,6 +22,7 @@ export const upsertEntrySchema = z.object({
 
 export const createBusinessSchema = z.object({
   name: z.string().min(1).max(200),
+  template: z.enum(['ibf', 'ib']).optional(),
   monthlyDebtService: z.number().min(0).nullable().optional(),
 });
 

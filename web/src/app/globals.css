@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 /* ─── InsideBank Design Tokens (from prototype) ─────────── */
@@ -12,10 +12,10 @@
   --bg-card:       #FFFFFF;
   --bg-elevated:   #FFFFFF;
   --text-primary:  #1D1D1F;
-  --text-secondary:#86868B;
-  --text-tertiary: #B0B0B5;
-  --border:        #E5E5EA;
-  --border-strong: #D2D2D7;
+  --text-secondary:#6E6E73;
+  --text-tertiary: #8E8E93;
+  --border:        #D1D1D6;
+  --border-strong: #C7C7CC;
   --accent:        #007AFF;
   --accent-soft:   rgba(0, 122, 255, 0.10);
 
@@ -26,11 +26,11 @@
   --status-empty:  #C7C7CC;
 
   /* Status washes (card backgrounds) */
-  --wash-good:    rgba(52, 199, 89, 0.10);
-  --wash-warn:    rgba(255, 149, 0, 0.10);
-  --wash-bad:     rgba(255, 59, 48, 0.10);
-  --wash-empty:   rgba(199, 199, 204, 0.18);
-  --wash-info:    rgba(0, 122, 255, 0.08);
+  --wash-good:    rgba(52, 199, 89, 0.14);
+  --wash-warn:    rgba(255, 149, 0, 0.14);
+  --wash-bad:     rgba(255, 59, 48, 0.12);
+  --wash-empty:   rgba(199, 199, 204, 0.22);
+  --wash-info:    rgba(0, 122, 255, 0.10);
 
   /* Radius */
   --r-sm: 8px;
@@ -39,8 +39,8 @@
   --r-xl: 20px;
 
   /* Shadow */
-  --shadow-card: 0 1px 2px rgba(20, 20, 30, 0.04);
-  --shadow-pop:  0 8px 24px rgba(20, 20, 30, 0.10), 0 2px 4px rgba(20, 20, 30, 0.04);
+  --shadow-card: 0 1px 3px rgba(20, 20, 30, 0.08);
+  --shadow-pop:  0 8px 24px rgba(20, 20, 30, 0.12), 0 2px 6px rgba(20, 20, 30, 0.06);
 }
 
 [data-theme="dark"] {
@@ -66,6 +66,72 @@
 
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-pop:  0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── InsideBank Theme (IB pages only) ────────────────── */
+
+[data-theme-ib] {
+  /* Light: Banking palette — trust navy + premium gold (WCAG safe) */
+  --bg-primary-rgb: 248, 250, 252;
+  --bg-primary:    #F8FAFC;
+  --bg-secondary:  #F1F5F9;
+  --bg-tertiary:   #FAFBFD;
+  --bg-card:       #FFFFFF;
+  --bg-elevated:   #FFFFFF;
+  --text-primary:  #0F172A;
+  --text-secondary:#64748B;
+  --text-tertiary: #94A3B8;
+  --border:        #E2E8F0;
+  --border-strong: #CBD5E1;
+  --accent:        #A16207;
+  --accent-soft:   rgba(161, 98, 7, 0.08);
+
+  --status-good:   #16A34A;
+  --status-warn:   #CA8A04;
+  --status-bad:    #DC2626;
+  --status-empty:  #94A3B8;
+
+  --wash-good:    rgba(22, 163, 74, 0.10);
+  --wash-warn:    rgba(202, 138, 4, 0.10);
+  --wash-bad:     rgba(220, 38, 38, 0.08);
+  --wash-empty:   rgba(148, 163, 184, 0.15);
+  --wash-info:    rgba(161, 98, 7, 0.06);
+
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-pop:  0 10px 25px rgba(15, 23, 42, 0.10), 0 4px 10px rgba(15, 23, 42, 0.05);
+
+  font-family: 'Sarabun', 'IBM Plex Sans Thai', sans-serif;
+}
+
+[data-theme-ib][data-theme="dark"] {
+  /* Dark: InsideBank navy + gold */
+  --bg-primary-rgb: 15, 23, 42;
+  --bg-primary:    #0F172A;
+  --bg-secondary:  #0B1120;
+  --bg-tertiary:   #131C30;
+  --bg-card:       #1E293B;
+  --bg-elevated:   #334155;
+  --text-primary:  #F8FAFC;
+  --text-secondary:#94A3B8;
+  --text-tertiary: #64748B;
+  --border:        rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --accent:        #CA8A04;
+  --accent-soft:   rgba(202, 138, 4, 0.12);
+
+  --status-good:   #22C55E;
+  --status-warn:   #EAB308;
+  --status-bad:    #EF4444;
+  --status-empty:  #64748B;
+
+  --wash-good:   rgba(34, 197, 94, 0.12);
+  --wash-warn:   rgba(234, 179, 8, 0.10);
+  --wash-bad:    rgba(239, 68, 68, 0.10);
+  --wash-empty:  rgba(255, 255, 255, 0.04);
+  --wash-info:   rgba(202, 138, 4, 0.08);
+
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-pop:  0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
 /* ─── Tailwind theme integration ───────────────────────── */
@@ -117,7 +183,18 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.01em;
 }
 
-/* ─── Page animations ──────────────────────────────────── */
+/* ─── Page transition — every page fades in ───────────── */
+
+main {
+  animation: pageIn 0.35s ease-out both;
+}
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Element animations ──────────────────────────────── */
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
@@ -137,6 +214,11 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes scaleIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .anim-fade-up {
@@ -166,3 +248,93 @@ h1, h2, h3, h4, h5, h6 {
 .anim-d8 { animation-delay: 0.40s; }
 .anim-d9 { animation-delay: 0.45s; }
 .anim-d10 { animation-delay: 0.50s; }
+
+/* ─── Interactive polish ──────────────────────────────── */
+
+/* Button press effect */
+button:not(:disabled):active,
+a:active {
+  transform: scale(0.97);
+}
+
+/* Card hover lift */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-pop);
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, var(--bg-secondary) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* Smooth scroll for whole page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ─── Gradient accents ────────────────────────────────── */
+
+.gradient-header {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+.gradient-score-good {
+  background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+}
+
+.gradient-score-warn {
+  background: linear-gradient(135deg, #FF9500 0%, #FFB340 100%);
+}
+
+.gradient-score-bad {
+  background: linear-gradient(135deg, #FF3B30 0%, #FF6961 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #007AFF 0%, #0A84FF 100%);
+  color: #fff;
+}
+
+[data-theme-ib] .gradient-accent {
+  background: linear-gradient(135deg, #A16207 0%, #CA8A04 100%);
+  color: #FFFFFF;
+}
+
+/* IB nav — always navy regardless of light/dark */
+[data-theme-ib] header {
+  background: rgba(15, 23, 42, 0.97) !important;
+  backdrop-filter: blur(16px);
+  border-color: rgba(255,255,255,0.06) !important;
+}
+[data-theme-ib] header,
+[data-theme-ib] header *,
+[data-theme-ib] header button {
+  color: #F8FAFC !important;
+}
+
+/* ─── Better focus ring ───────────────────────────────── */
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ─── Number counter animation ────────────────────────── */
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.num-animate {
+  animation: countUp 0.4s ease-out both;
+}

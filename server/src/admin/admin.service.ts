@@ -12,6 +12,8 @@ export interface UserRow {
   userId: string;
   businessId: string;
   businessName: string;
+  template: string;
+  email: string | null;
   createdAt: Date;
   verdictLevel: VerdictLevel | 'inactive';
   netProfit: number | null;
@@ -21,6 +23,10 @@ export interface UserRow {
   lastActiveDate: Date | null;
   toolsCompleted: number;
   alerts: Alert[];
+  // IB-specific
+  ibScore: number | null;
+  ibDscr: number | null;
+  ibGrowthCash: number | null;
 }
 
 function moneyThai(n: number): string {
@@ -194,8 +200,13 @@ export class AdminService {
       .sort(([, a], [, b]) => b - a)
       .map(([tool, count]) => ({ tool, count }));
 
+    const ibfCount = businesses.filter(b => (b as any).template !== 'ib').length;
+    const ibCount = businesses.filter(b => (b as any).template === 'ib').length;
+
     return {
       totalUsers: businesses.length,
+      ibfUsers: ibfCount,
+      ibUsers: ibCount,
       activeThisMonth,
       inactiveOver2Months: inactiveCount,
       criticalCount,
@@ -252,10 +263,27 @@ export class AdminService {
       // Add expense map if has items
       const toolsCompleted = sessionTypes.size + (biz.expenseItems.length > 0 ? 1 : 0);
 
+      // IB-specific data
+      let ibScore: number | null = null;
+      let ibDscr: number | null = null;
+      let ibGrowthCash: number | null = null;
+      const ibFinancial = biz.sessionData.find((s: any) => s.sessionType === 'IB_FINANCIAL_MRI');
+      const ibCash = biz.sessionData.find((s: any) => s.sessionType === 'IB_CASH_DNA');
+      if (ibFinancial?.computed) {
+        const c = ibFinancial.computed as any;
+        ibDscr = c.dscr ?? null;
+        ibScore = c.score ?? null;
+      }
+      if (ibCash?.computed) {
+        ibGrowthCash = (ibCash.computed as any).growthCash ?? null;
+      }
+
       rows.push({
         userId: biz.userId,
         businessId: biz.id,
         businessName: biz.name,
+        template: (biz as any).template || 'ibf',
+        email: biz.user?.email ?? null,
         createdAt: biz.createdAt,
         verdictLevel: verdict,
         netProfit: typeof np === 'number' ? np : null,
@@ -265,6 +293,9 @@ export class AdminService {
         lastActiveDate: lastEntryDate,
         toolsCompleted,
         alerts,
+        ibScore,
+        ibDscr,
+        ibGrowthCash,
       });
     }
 
@@ -409,10 +440,24 @@ export class AdminService {
     const completedTypes = new Set((business.sessionData as any[]).map((s: any) => s.sessionType));
     if (expenseItems.length > 0) completedTypes.add('EXPENSE_MAP');
 
+    // IB metrics
+    const ibFinancial = (business.sessionData as any[]).find((s: any) => s.sessionType === 'IB_FINANCIAL_MRI');
+    const ibCash = (business.sessionData as any[]).find((s: any) => s.sessionType === 'IB_CASH_DNA');
+    const ibMetrics = {
+      dscr: (ibFinancial?.computed as any)?.dscr ?? null,
+      de: (ibFinancial?.computed as any)?.de ?? null,
+      ebitdaMargin: (ibFinancial?.computed as any)?.ebitdaMargin ?? null,
+      financialScore: (ibFinancial?.computed as any)?.score ?? null,
+      growthCash: (ibCash?.computed as any)?.growthCash ?? null,
+      cashDnaScore: (ibCash?.computed as any)?.score ?? null,
+    };
+
     return {
       userId: business.userId,
       businessId: business.id,
       businessName: business.name,
+      template: business.template || 'ibf',
+      email: business.user?.email ?? null,
       userName: business.user?.name ?? business.user?.lineDisplayName ?? null,
       createdAt: business.createdAt,
       monthlyDebtService: bizConfig.monthlyDebtService,
@@ -440,6 +485,7 @@ export class AdminService {
         itemCount: expenseItems.length,
       },
       lastActiveDate: lastEntryDate,
+      ibMetrics,
     };
   }
 

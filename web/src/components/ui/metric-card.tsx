@@ -72,7 +72,8 @@ export function MetricCard({
   return (
     <div
       onClick={onTap}
-      className={`${wash} rounded-2xl p-3.5 pb-4 min-h-[130px] flex flex-col justify-between transition-transform overflow-hidden ${onTap ? 'cursor-pointer hover:shadow-[var(--shadow-pop)]' : ''}`}
+      className={`${wash} rounded-2xl p-3.5 pb-4 min-h-[130px] flex flex-col justify-between overflow-hidden anim-fade-up ${onTap ? 'cursor-pointer card-hover' : ''}`}
+      style={{ animationDelay: `${cardNum * 0.04}s` }}
     >
       {/* Header: circled number + dot */}
       <div className="flex items-center justify-between">

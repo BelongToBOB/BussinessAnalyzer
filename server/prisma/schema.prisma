@@ -74,9 +74,10 @@ model VerificationToken {
 // ─── Business domain ───────────────────────────────────────
 
 model Business {
-  id     String @id @default(cuid())
-  userId String
-  name   String
+  id       String @id @default(cuid())
+  userId   String
+  name     String
+  template String @default("ibf") // "ibf" = Inside Business Finance, "ib" = Inside Bank
 
   // C17 — "set once" per business, not per month
   monthlyDebtService Decimal? @db.Decimal(15, 2)
@@ -174,6 +175,14 @@ enum SessionType {
   S4C_REAL_PROFIT
   S6_FIVE_BUCKETS
   S7_BUSINESS_PLAN
+  // Inside Bank — Business MRI
+  IB_IDENTITY
+  IB_FINANCIAL_MRI
+  IB_CASH_DNA
+  IB_BANK_VIEW
+  IB_CAPITAL_DESIGN
+  IB_GROWTH_CAPACITY
+  IB_LOAN_ACTION
 }
 
 model SessionData {
