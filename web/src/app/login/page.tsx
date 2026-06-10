@@ -58,7 +58,7 @@ export default function LoginPage() {
     });
   };
 
-  // Scroll-triggered reveal
+  // Scroll-triggered reveal — observe entire page, not just one ref
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -66,9 +66,9 @@ export default function LoginPage() {
           if (entry.isIntersecting) entry.target.classList.add('revealed');
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.08 }
     );
-    sectionsRef.current?.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
+    document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
