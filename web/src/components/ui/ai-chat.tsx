@@ -37,14 +37,18 @@ function MdMessage({ content }: { content: string }) {
 
 export function AiChat() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(() => {
-    try { const s = localStorage.getItem('_chat'); return s ? JSON.parse(s) : []; } catch { return []; }
-  });
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [streaming, setStreaming] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    try { const s = localStorage.getItem('_chat'); if (s) setMessages(JSON.parse(s)); } catch {}
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (open && inputRef.current) setTimeout(() => inputRef.current?.focus(), 300);
@@ -55,8 +59,8 @@ export function AiChat() {
   }, [messages, loading, streaming]);
 
   useEffect(() => {
-    try { localStorage.setItem('_chat', JSON.stringify(messages)); } catch {}
-  }, [messages]);
+    if (hydrated) try { localStorage.setItem('_chat', JSON.stringify(messages)); } catch {}
+  }, [messages, hydrated]);
 
   const sendMessage = async (text?: string) => {
     const msg = text || input.trim();
