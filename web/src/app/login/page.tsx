@@ -18,27 +18,31 @@ const FEATURES_IBF = [
   { icon: FileText, label: 'แผนธุรกิจ 1 หน้า' },
 ];
 
+// Theme colors
+const IB_COLOR = { accent: '#60A5FA', bg: 'rgba(96, 165, 250, 0.1)', bgHover: 'rgba(96, 165, 250, 0.15)', text: 'text-blue-400', tagText: 'text-blue-400/60' };
+const IBF_COLOR = { accent: '#CA8A04', bg: 'rgba(202, 138, 4, 0.1)', bgHover: 'rgba(202, 138, 4, 0.15)', text: 'text-amber-500', tagText: 'text-amber-500/60' };
+
 interface ToolItem { tag: string; label: string; desc: string; icon: LucideIcon; color: string }
 
 const TOOLS_IB: ToolItem[] = [
-  { tag: 'Step 1', label: 'ข้อมูลธุรกิจ', desc: 'ประเภท ยอดขาย พนักงาน อายุธุรกิจ', icon: ClipboardList, color: '#10B981' },
-  { tag: 'Step 2', label: 'สแกนงบการเงิน', desc: 'กำไรขาดทุน · งบดุล · ตารางหนี้ → DSCR, D/E', icon: Stethoscope, color: '#10B981' },
-  { tag: 'Step 3', label: 'กระแสเงินสด 4 ชั้น', desc: 'เงินเข้า → เงินจริง → เงินเหลือ → เงินโต', icon: Layers, color: '#10B981' },
-  { tag: 'Step 4', label: 'มุมมองธนาคาร', desc: 'ธนาคารมองคุณยังไง — ประเมิน 4 มิติ', icon: Eye, color: '#10B981' },
-  { tag: 'Step 5', label: 'ออกแบบวงเงินกู้', desc: 'วัตถุประสงค์ · ทุนตัวเอง · หลักประกัน · LTV', icon: Calculator, color: '#10B981' },
-  { tag: 'Step 6', label: 'กู้ได้เท่าไหร่', desc: 'วงเงิน 3 ระดับ — ปลอดภัย / สูงสุด / อันตราย', icon: Rocket, color: '#10B981' },
-  { tag: 'Step 7', label: 'เตรียมยื่นกู้', desc: 'เอกสาร · คำถามธนาคาร · แผนปฏิบัติ', icon: FileText, color: '#10B981' },
+  { tag: 'Step 1', label: 'ข้อมูลธุรกิจ', desc: 'ประเภท ยอดขาย พนักงาน อายุธุรกิจ', icon: ClipboardList, color: '#60A5FA' },
+  { tag: 'Step 2', label: 'สแกนงบการเงิน', desc: 'กำไรขาดทุน · งบดุล · ตารางหนี้ → DSCR, D/E', icon: Stethoscope, color: '#60A5FA' },
+  { tag: 'Step 3', label: 'กระแสเงินสด 4 ชั้น', desc: 'เงินเข้า → เงินจริง → เงินเหลือ → เงินโต', icon: Layers, color: '#60A5FA' },
+  { tag: 'Step 4', label: 'มุมมองธนาคาร', desc: 'ธนาคารมองคุณยังไง — ประเมิน 4 มิติ', icon: Eye, color: '#60A5FA' },
+  { tag: 'Step 5', label: 'ออกแบบวงเงินกู้', desc: 'วัตถุประสงค์ · ทุนตัวเอง · หลักประกัน · LTV', icon: Calculator, color: '#60A5FA' },
+  { tag: 'Step 6', label: 'กู้ได้เท่าไหร่', desc: 'วงเงิน 3 ระดับ — ปลอดภัย / สูงสุด / อันตราย', icon: Rocket, color: '#60A5FA' },
+  { tag: 'Step 7', label: 'เตรียมยื่นกู้', desc: 'เอกสาร · คำถามธนาคาร · แผนปฏิบัติ', icon: FileText, color: '#60A5FA' },
 ];
 
 const TOOLS_IBF: ToolItem[] = [
-  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'ยอดขายสูงแต่เงินไม่เพิ่ม? เช็คได้ทันที', icon: Search, color: '#6366F1' },
-  { tag: 'S2', label: 'อ่านงบกำไรขาดทุน', desc: 'ดู margin แต่ละชั้น รู้ว่ากำไรจริงเท่าไหร่', icon: BarChart3, color: '#6366F1' },
-  { tag: 'S3', label: 'Cashflow 4 ชั้น', desc: 'ไล่เงินจริง 4 ชั้น หาว่าเงินหายตรงไหน', icon: Layers, color: '#6366F1' },
-  { tag: 'S4', label: 'ตั้งราคา + CM', desc: 'คำนวณราคาที่ได้กำไรจริง + จุดคุ้มทุน', icon: Tag, color: '#6366F1' },
-  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย อุดรอยรั่วก่อนเร่งยอด', icon: Map, color: '#6366F1' },
-  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด ไม่ปนกันอีกต่อไป', icon: Grid3X3, color: '#6366F1' },
-  { tag: 'S7', label: 'แผนธุรกิจ 1 หน้า', desc: 'ตอบ 4 คำถามธนาคาร พร้อมยื่นกู้', icon: FileText, color: '#6366F1' },
-  { tag: '10 ช่อง', label: 'Owner Dashboard', desc: 'กรอก 9 ตัวเลข เห็นสุขภาพธุรกิจครบ 10 ช่อง', icon: Wallet, color: '#6366F1' },
+  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'ยอดขายสูงแต่เงินไม่เพิ่ม? เช็คได้ทันที', icon: Search, color: '#CA8A04' },
+  { tag: 'S2', label: 'อ่านงบกำไรขาดทุน', desc: 'ดู margin แต่ละชั้น รู้ว่ากำไรจริงเท่าไหร่', icon: BarChart3, color: '#CA8A04' },
+  { tag: 'S3', label: 'Cashflow 4 ชั้น', desc: 'ไล่เงินจริง 4 ชั้น หาว่าเงินหายตรงไหน', icon: Layers, color: '#CA8A04' },
+  { tag: 'S4', label: 'ตั้งราคา + CM', desc: 'คำนวณราคาที่ได้กำไรจริง + จุดคุ้มทุน', icon: Tag, color: '#CA8A04' },
+  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย อุดรอยรั่วก่อนเร่งยอด', icon: Map, color: '#CA8A04' },
+  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด ไม่ปนกันอีกต่อไป', icon: Grid3X3, color: '#CA8A04' },
+  { tag: 'S7', label: 'แผนธุรกิจ 1 หน้า', desc: 'ตอบ 4 คำถามธนาคาร พร้อมยื่นกู้', icon: FileText, color: '#CA8A04' },
+  { tag: '10 ช่อง', label: 'Owner Dashboard', desc: 'กรอก 9 ตัวเลข เห็นสุขภาพธุรกิจครบ 10 ช่อง', icon: Wallet, color: '#CA8A04' },
 ];
 
 const FLOATING_TAGS = ['DSCR', 'D/E', 'LTV', 'EBITDA', 'Cash Flow', 'MRI'];
@@ -186,17 +190,17 @@ export default function LoginPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {/* IB Card */}
+            {/* IB Card — Navy */}
             <div
               className="lp-product-card reveal-on-scroll lp-reveal group"
               style={{
                 transform: `perspective(800px) rotateY(${mousePos.x * 3}deg) rotateX(${-mousePos.y * 3}deg)`,
               }}
             >
-              <div className="lp-card-glow lp-glow-green" />
+              <div className="lp-card-glow lp-glow-navy" />
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400 text-xs font-bold">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-blue-400 text-xs font-bold" style={{ background: IB_COLOR.bg }}>
                     IB
                   </div>
                   <div>
@@ -210,7 +214,7 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   {FEATURES_IB.map((f, i) => (
                     <div key={i} className="flex items-center gap-2.5 text-white/60 text-xs group-hover:text-white/80 transition-colors" style={{ transitionDelay: `${i * 50}ms` }}>
-                      <f.icon size={14} className="text-emerald-400/70" />
+                      <f.icon size={14} className="text-blue-400/70" />
                       {f.label}
                     </div>
                   ))}
@@ -218,7 +222,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* IBF Card */}
+            {/* IBF Card — Gold */}
             <div
               className="lp-product-card reveal-on-scroll lp-reveal group"
               style={{
@@ -226,10 +230,10 @@ export default function LoginPage() {
                 animationDelay: '0.1s',
               }}
             >
-              <div className="lp-card-glow lp-glow-blue" />
+              <div className="lp-card-glow lp-glow-gold" />
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-11 h-11 rounded-xl bg-blue-500/15 flex items-center justify-center text-blue-400 text-xs font-bold">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-amber-500 text-xs font-bold" style={{ background: IBF_COLOR.bg }}>
                     IBF
                   </div>
                   <div>
@@ -243,7 +247,7 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   {FEATURES_IBF.map((f, i) => (
                     <div key={i} className="flex items-center gap-2.5 text-white/60 text-xs group-hover:text-white/80 transition-colors" style={{ transitionDelay: `${i * 50}ms` }}>
-                      <f.icon size={14} className="text-blue-400/70" />
+                      <f.icon size={14} className="text-amber-500/70" />
                       {f.label}
                     </div>
                   ))}
@@ -257,10 +261,10 @@ export default function LoginPage() {
       {/* ====== TOOLS BY TEMPLATE ====== */}
       <section className="bg-[#070714] py-20 px-5 md:px-12">
         <div className="max-w-5xl mx-auto">
-          {/* IB Tools */}
+          {/* IB Tools — Navy */}
           <div className="mb-20">
             <div className="flex items-center gap-3 mb-8 reveal-on-scroll lp-reveal">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-sm font-bold">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-blue-400 text-sm font-bold" style={{ background: IB_COLOR.bg }}>
                 IB
               </div>
               <div>
@@ -276,11 +280,10 @@ export default function LoginPage() {
                   style={{ transitionDelay: `${i * 60}ms` }}
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                      style={{ background: 'rgba(16, 185, 129, 0.1)' }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: IB_COLOR.bg }}>
                       <t.icon size={16} style={{ color: t.color }} className="opacity-70 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-400/60">{t.tag}</span>
+                    <span className={`text-[10px] font-bold tracking-wider uppercase ${IB_COLOR.tagText}`}>{t.tag}</span>
                   </div>
                   <div className="text-[14px] font-semibold text-white/90 leading-tight mb-1.5">{t.label}</div>
                   <div className="text-[11px] text-white/35 leading-relaxed group-hover:text-white/55 transition-colors">{t.desc}</div>
@@ -289,10 +292,10 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* IBF Tools */}
+          {/* IBF Tools — Gold */}
           <div>
             <div className="flex items-center gap-3 mb-8 reveal-on-scroll lp-reveal">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 text-sm font-bold">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-amber-500 text-sm font-bold" style={{ background: IBF_COLOR.bg }}>
                 IBF
               </div>
               <div>
@@ -308,11 +311,10 @@ export default function LoginPage() {
                   style={{ transitionDelay: `${i * 60}ms` }}
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-                      style={{ background: 'rgba(99, 102, 241, 0.1)' }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: IBF_COLOR.bg }}>
                       <t.icon size={16} style={{ color: t.color }} className="opacity-70 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <span className="text-[10px] font-bold tracking-wider uppercase text-indigo-400/60">{t.tag}</span>
+                    <span className={`text-[10px] font-bold tracking-wider uppercase ${IBF_COLOR.tagText}`}>{t.tag}</span>
                   </div>
                   <div className="text-[14px] font-semibold text-white/90 leading-tight mb-1.5">{t.label}</div>
                   <div className="text-[11px] text-white/35 leading-relaxed group-hover:text-white/55 transition-colors">{t.desc}</div>
@@ -507,11 +509,11 @@ export default function LoginPage() {
         .lp-product-card:hover .lp-card-glow {
           opacity: 1;
         }
-        .lp-glow-green {
-          background: radial-gradient(ellipse at 30% 20%, rgba(16, 185, 129, 0.08), transparent 70%);
+        .lp-glow-navy {
+          background: radial-gradient(ellipse at 30% 20%, rgba(96, 165, 250, 0.1), transparent 70%);
         }
-        .lp-glow-blue {
-          background: radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.08), transparent 70%);
+        .lp-glow-gold {
+          background: radial-gradient(ellipse at 30% 20%, rgba(202, 138, 4, 0.1), transparent 70%);
         }
 
         /* Scroll reveal */
