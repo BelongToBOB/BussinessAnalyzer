@@ -87,21 +87,23 @@ export default function LoginPage() {
         {/* Animated mesh gradient background */}
         <div className="lp-gradient-bg" />
 
-        {/* Floating metric tags */}
-        {FLOATING_TAGS.map((tag, i) => (
-          <div
-            key={tag}
-            className="lp-floating-tag"
-            style={{
-              left: `${12 + (i % 3) * 30 + Math.random() * 10}%`,
-              top: `${18 + Math.floor(i / 3) * 35 + Math.random() * 10}%`,
-              animationDelay: `${i * 0.7}s`,
-              animationDuration: `${5 + i * 0.8}s`,
-            }}
-          >
-            {tag}
-          </div>
-        ))}
+        {/* Floating metric tags — contained within hero */}
+        <div className="absolute inset-0 z-[2] overflow-hidden pointer-events-none">
+          {FLOATING_TAGS.map((tag, i) => (
+            <div
+              key={tag}
+              className="lp-floating-tag"
+              style={{
+                left: `${15 + (i % 3) * 28}%`,
+                top: `${20 + Math.floor(i / 3) * 30}%`,
+                animationDelay: `${i * 0.7}s`,
+                animationDuration: `${5 + i * 0.8}s`,
+              }}
+            >
+              {tag}
+            </div>
+          ))}
+        </div>
 
         {/* Grid overlay */}
         <div className="absolute inset-0 z-[1] opacity-[0.03]"
@@ -362,20 +364,18 @@ export default function LoginPage() {
         /* Floating tags */
         .lp-floating-tag {
           position: absolute;
-          z-index: 2;
-          font-size: 11px;
+          font-size: 12px;
           font-weight: 600;
-          letter-spacing: 0.05em;
-          color: rgba(255, 255, 255, 0.08);
+          letter-spacing: 0.08em;
+          color: rgba(255, 255, 255, 0.06);
           font-family: var(--font-num);
-          pointer-events: none;
-          animation: floatTag linear infinite;
+          animation: floatTag ease-in-out infinite;
         }
         @keyframes floatTag {
-          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.06; }
-          25% { transform: translateY(-18px) rotate(2deg); opacity: 0.12; }
-          50% { transform: translateY(-8px) rotate(-1deg); opacity: 0.08; }
-          75% { transform: translateY(-22px) rotate(1.5deg); opacity: 0.1; }
+          0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.04; }
+          25% { transform: translateY(-16px) rotate(1.5deg); opacity: 0.09; }
+          50% { transform: translateY(-6px) rotate(-1deg); opacity: 0.06; }
+          75% { transform: translateY(-20px) rotate(1deg); opacity: 0.08; }
         }
 
         /* Badge */
