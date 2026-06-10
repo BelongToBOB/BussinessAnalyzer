@@ -62,18 +62,36 @@ export default function LoginPage() {
     });
   };
 
-  // Scroll-triggered reveal — observe entire page, not just one ref
+  // Scroll-triggered reveal — also handles browser back (bfcache)
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('revealed');
-        });
-      },
-      { threshold: 0.08 }
-    );
-    document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+    const reveal = () => {
+      const els = document.querySelectorAll('.reveal-on-scroll');
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add('revealed');
+          });
+        },
+        { threshold: 0.08 }
+      );
+      els.forEach((el) => observer.observe(el));
+      return observer;
+    };
+
+    const observer = reveal();
+
+    // Handle bfcache (back/forward navigation)
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) {
+        document.querySelectorAll('.reveal-on-scroll').forEach((el) => el.classList.add('revealed'));
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('pageshow', handlePageShow);
+    };
   }, []);
 
   return (
