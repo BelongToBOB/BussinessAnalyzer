@@ -9,6 +9,7 @@ import { EntriesModule } from './entries/entries.module';
 import { ExpenseMapModule } from './expense-map/expense-map.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { AdminModule } from './admin/admin.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AdminModule } from './admin/admin.module';
     ExpenseMapModule,
     SessionsModule,
     AdminModule,
+    ChatModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

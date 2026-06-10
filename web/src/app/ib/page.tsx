@@ -6,6 +6,7 @@ import { money } from '@/lib/format';
 import { getBusiness, getSession } from '@/lib/api';
 import { calcBusinessScore } from '@/lib/ib-score';
 import { BusinessScoreBar } from '@/components/ui/business-score';
+import { ScoreRing } from '@/components/ui/score-ring';
 import { BottomNav } from '@/components/ui/bottom-nav';
 import { IbWelcomeTour } from '@/components/ui/ib-welcome-tour';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
@@ -137,9 +138,15 @@ export default function IbDashboardPage() {
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-1">Inside Bank</h1>
         <p className="text-sm text-text-secondary mb-6">สแกนธุรกิจพร้อมกู้ — เห็นภาพรวมและจุดที่ต้องแก้จากมุมมองธนาคาร</p>
 
-        {/* Score */}
-        <div data-tour="ib-score">
-          <BusinessScoreBar score={score} stepsCompleted={completed} totalSteps={STEPS.length} />
+        {/* Score Ring */}
+        <div data-tour="ib-score" className="bg-bg-card border border-border rounded-2xl p-5 flex flex-col items-center anim-fade-up">
+          <ScoreRing score={score} size={180} />
+          <div className="flex gap-1.5 mt-3">
+            {Array.from({ length: STEPS.length }).map((_, i) => (
+              <div key={i} className={`w-2.5 h-2.5 rounded-full transition-colors ${i < completed ? 'bg-accent' : 'bg-border'}`} />
+            ))}
+          </div>
+          <div className="text-[10px] text-text-tertiary mt-1.5">{completed}/{STEPS.length} steps</div>
         </div>
 
         {/* Report button */}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { AiChat } from '@/components/ui/ai-chat';
 
 export default function IbLayout({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState('');
@@ -13,6 +14,7 @@ export default function IbLayout({ children }: { children: React.ReactNode }) {
   return (
     <div data-theme-ib="" data-theme={theme === 'dark' ? 'dark' : undefined}>
       {children}
+      <AiChat />
     </div>
   );
 }

@@ -56,8 +56,7 @@ function OnboardingPage() {
       }
 
       toast.success('สร้างธุรกิจสำเร็จ');
-      // Full page reload to reset all state
-      window.location.href = '/dashboard';
+      window.location.href = template === 'ib' ? '/ib' : '/dashboard';
     } catch (err) {
       console.error('Onboarding error:', err);
       toast.error('เกิดข้อผิดพลาด กรุณาลองใหม่');
@@ -138,11 +137,11 @@ function OnboardingPage() {
 
             <div className="mt-6 flex justify-end">
               <button
-                onClick={() => setStep(2)}
-                disabled={!name.trim() || !consent}
+                onClick={() => template === 'ib' ? handleFinish() : setStep(2)}
+                disabled={!name.trim() || !consent || saving}
                 className="h-12 px-6 rounded-xl bg-text-primary text-bg-primary font-semibold text-[15px] cursor-pointer disabled:opacity-40"
               >
-                ต่อไป →
+                {template === 'ib' ? (saving ? 'กำลังสร้าง...' : 'เริ่มสแกนธุรกิจ →') : 'ต่อไป →'}
               </button>
             </div>
           </>

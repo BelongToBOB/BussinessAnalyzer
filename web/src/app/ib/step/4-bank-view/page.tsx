@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { money } from '@/lib/format';
 import { getSession, saveSession } from '@/lib/api';
 import { toast } from 'sonner';
-import { ChevronLeft, TrendingUp, Target, FileCheck, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, TrendingUp, Target, Settings, Check } from 'lucide-react';
 
 const QUESTIONS = [
   {
-    key: 'revenueStability', label: 'รายได้สม่ำเสมอแค่ไหน', Icon: TrendingUp,
+    key: 'revenueStability', label: 'รายได้สม่ำเสมอแค่ไหน',
     desc: 'ย้อนดู 6-12 เดือน — ยอดขายขึ้นลงมากไหม',
     options: [
       { value: 0.3, label: 'ผันผวนมาก', desc: 'ต่างกัน >30%', color: 'bad' as const },
@@ -18,7 +18,7 @@ const QUESTIONS = [
     ],
   },
   {
-    key: 'salesGrowth', label: 'ยอดขายเติบโตไหม', Icon: TrendingUp,
+    key: 'salesGrowth', label: 'ยอดขายเติบโตไหม',
     desc: 'เทียบปีนี้กับปีที่แล้ว',
     options: [
       { value: 0.2, label: 'ลดลง', desc: 'ลดจากปีก่อน', color: 'bad' as const },
@@ -27,7 +27,7 @@ const QUESTIONS = [
     ],
   },
   {
-    key: 'useOfFundClear', label: 'รู้ชัดว่าจะกู้ทำอะไร', Icon: Target,
+    key: 'useOfFundClear', label: 'รู้ชัดว่าจะกู้ทำอะไร',
     desc: 'กู้ไปทำอะไร กี่บาท เมื่อไหร่ เงินกลับมายังไง',
     options: [
       { value: 0, label: 'ยังไม่ชัด', desc: 'ยังไม่มีแผน', color: 'bad' as const },
@@ -36,7 +36,7 @@ const QUESTIONS = [
     ],
   },
   {
-    key: 'structureCorrect', label: 'เลือกสินเชื่อถูกประเภทไหม', Icon: Settings,
+    key: 'structureCorrect', label: 'เลือกสินเชื่อถูกประเภทไหม',
     desc: 'เงินทุนหมุนเวียน vs สินเชื่อระยะยาว vs เช่าซื้อ',
     options: [
       { value: 0, label: 'ไม่แน่ใจ', desc: 'ไม่รู้ควรกู้แบบไหน', color: 'bad' as const },
@@ -52,9 +52,11 @@ const optText = { good: 'text-status-good', warn: 'text-status-warn', bad: 'text
 export default function IbStep4Page() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [prevData, setPrevData] = useState<any>(null);
+  const [done, setDone] = useState(false);
+  const [animDir, setAnimDir] = useState<'in' | 'out'>('in');
 
   useEffect(() => {
     Promise.all([
@@ -70,31 +72,60 @@ export default function IbStep4Page() {
         const a: Record<string, number> = {};
         QUESTIONS.forEach(q => { if (d[q.key] != null) a[q.key] = d[q.key]; });
         setAnswers(a);
+        if (Object.keys(a).length === 4) setDone(true);
       }
     });
   }, []);
 
-  const answered = Object.keys(answers).length;
+  const selectAnswer = useCallback((value: number) => {
+    const q = QUESTIONS[currentQ];
+    setAnswers(a => ({ ...a, [q.key]: value }));
+    // Auto advance after short delay
+    setTimeout(() => {
+      if (currentQ < QUESTIONS.length - 1) {
+        setAnimDir('out');
+        setTimeout(() => { setCurrentQ(c => c + 1); setAnimDir('in'); }, 200);
+      } else {
+        setDone(true);
+      }
+    }, 400);
+  }, [currentQ]);
 
-  // Compute live verdict per question
-  const getQStatus = (key: string) => {
-    const v = answers[key];
-    if (v == null) return null;
-    const q = QUESTIONS.find(q => q.key === key);
-    return q?.options.find(o => o.value === v)?.color || null;
-  };
-  const goodCount = QUESTIONS.filter(q => getQStatus(q.key) === 'good').length;
-  const warnCount = QUESTIONS.filter(q => getQStatus(q.key) === 'warn').length;
-  const badCount = QUESTIONS.filter(q => getQStatus(q.key) === 'bad').length;
+  // Keyboard: Enter = confirm, arrow keys = navigate
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (done) return;
+      if (e.key === 'ArrowRight' && currentQ < QUESTIONS.length - 1) {
+        setAnimDir('out');
+        setTimeout(() => { setCurrentQ(c => c + 1); setAnimDir('in'); }, 200);
+      }
+      if (e.key === 'ArrowLeft' && currentQ > 0) {
+        setAnimDir('out');
+        setTimeout(() => { setCurrentQ(c => c - 1); setAnimDir('in'); }, 200);
+      }
+      if (e.key >= '1' && e.key <= '3') {
+        const idx = parseInt(e.key) - 1;
+        const q = QUESTIONS[currentQ];
+        if (q.options[idx]) selectAnswer(q.options[idx].value);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [currentQ, done, selectAnswer]);
+
+  const answered = Object.keys(answers).length;
+  const goodCount = QUESTIONS.filter(q => { const v = answers[q.key]; return q.options.find(o => o.value === v)?.color === 'good'; }).length;
+  const warnCount = QUESTIONS.filter(q => { const v = answers[q.key]; return q.options.find(o => o.value === v)?.color === 'warn'; }).length;
+  const badCount = QUESTIONS.filter(q => { const v = answers[q.key]; return q.options.find(o => o.value === v)?.color === 'bad'; }).length;
 
   let verdict = '';
   let verdictColor = 'var(--text-tertiary)';
   let verdictBg = 'bg-bg-card border border-border';
   if (answered === 4) {
-    if (badCount >= 2) { verdict = 'ยังไม่พร้อม — ต้องเตรียมตัวก่อนเสนอแบงก์'; verdictColor = 'var(--status-bad)'; verdictBg = 'bg-wash-bad'; }
-    else if (badCount >= 1) { verdict = 'มีจุดอ่อน — ต้องปรับก่อนยื่น'; verdictColor = 'var(--status-warn)'; verdictBg = 'bg-wash-warn'; }
+    if (badCount >= 2) { verdict = 'ยังไม่พร้อม — ต้องเตรียมตัวก่อน'; verdictColor = 'var(--status-bad)'; verdictBg = 'bg-wash-bad'; }
+    else if (badCount >= 1) { verdict = 'มีจุดอ่อน — ปรับก่อนยื่น'; verdictColor = 'var(--status-warn)'; verdictBg = 'bg-wash-warn'; }
     else if (warnCount >= 2) { verdict = 'พอใช้ — เตรียมเพิ่มอีกหน่อย'; verdictColor = 'var(--status-warn)'; verdictBg = 'bg-wash-warn'; }
-    else { verdict = 'พร้อม — ธนาคารน่าจะมองบวก'; verdictColor = 'var(--status-good)'; verdictBg = 'bg-wash-good'; }
+    else { verdict = 'พร้อม — ธนาคารมองบวก'; verdictColor = 'var(--status-good)'; verdictBg = 'bg-wash-good'; }
   }
 
   const handleSave = async () => {
@@ -107,10 +138,12 @@ export default function IbStep4Page() {
         growthCash: prevData?.growthCash || 0,
       });
       toast.success('บันทึกสำเร็จ');
-      setSaved(true);
+      setTimeout(() => router.push('/ib/step/5-capital'), 800);
     } catch (e: any) { toast.error(e.message || 'บันทึกไม่สำเร็จ'); }
     setSaving(false);
   };
+
+  const q = QUESTIONS[currentQ];
 
   return (
     <div className="min-h-screen bg-bg-secondary">
@@ -120,109 +153,138 @@ export default function IbStep4Page() {
             <ChevronLeft size={20} strokeWidth={2} />
           </button>
           <span className="text-[15px] font-semibold">Step 4 · มุมมองธนาคาร</span>
+          <div className="flex-1" />
+          <span className="num text-xs text-text-tertiary">{answered}/4</span>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
-        <div className="mb-4 anim-fade-up">
-          <div className="text-[11px] font-semibold tracking-wide uppercase" style={{ color: 'var(--accent)' }}>Step 4 of 7</div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mt-1">ธนาคารมองคุณยังไง</h1>
-          <p className="text-sm text-text-secondary mt-1">ตอบ 4 คำถาม — ดูว่าธนาคารจะมองธุรกิจคุณอย่างไร</p>
-        </div>
-
+        {/* Step progress */}
         <div className="flex gap-1 mb-6">
           {[1,2,3,4,5,6,7].map(s => (
             <div key={s} className="h-1 flex-1 rounded-full transition-all duration-500" style={{ background: s <= 4 ? 'var(--accent)' : 'var(--border)' }} />
           ))}
         </div>
 
-        {/* Auto metrics from Step 2-3 */}
-        {prevData && (
-          <div className="bg-bg-card border border-border rounded-2xl p-4 mb-5 anim-fade-up">
-            <div className="text-[11px] font-semibold tracking-wide uppercase text-text-tertiary mb-3">ตัวเลขจริงจากงบ (Step 2-3)</div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="text-center">
-                <div className="text-[10px] text-text-tertiary">ชำระหนี้</div>
-                <div className={`num text-base font-bold ${prevData.dscr >= 1.5 ? 'text-status-good' : prevData.dscr >= 1.25 ? 'text-status-warn' : 'text-status-bad'}`}>{prevData.dscr?.toFixed(2) || '—'}</div>
+        {/* Not done — Typeform style: one question at a time */}
+        {!done && (
+          <div className="flex flex-col items-center justify-center" style={{ minHeight: '60vh' }}>
+            {/* Question progress dots */}
+            <div className="flex gap-2 mb-8">
+              {QUESTIONS.map((_, i) => (
+                <button key={i} onClick={() => { setAnimDir('out'); setTimeout(() => { setCurrentQ(i); setAnimDir('in'); }, 200); }}
+                  className={`w-3 h-3 rounded-full cursor-pointer border-none transition-all ${
+                    i === currentQ ? 'scale-125' : ''
+                  }`}
+                  style={{ background: answers[QUESTIONS[i].key] != null
+                    ? (QUESTIONS[i].options.find(o => o.value === answers[QUESTIONS[i].key])?.color === 'good' ? 'var(--status-good)' : QUESTIONS[i].options.find(o => o.value === answers[QUESTIONS[i].key])?.color === 'warn' ? 'var(--status-warn)' : 'var(--status-bad)')
+                    : i === currentQ ? 'var(--accent)' : 'var(--border)'
+                  }} />
+              ))}
+            </div>
+
+            {/* Question card */}
+            <div className={`w-full max-w-lg transition-all duration-200 ${animDir === 'in' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+              <div className="text-center mb-8">
+                <div className="text-[11px] font-semibold tracking-wide uppercase" style={{ color: 'var(--accent)' }}>คำถามที่ {currentQ + 1} จาก 4</div>
+                <h2 className="text-xl md:text-2xl font-bold mt-2">{q.label}</h2>
+                <p className="text-sm text-text-secondary mt-1">{q.desc}</p>
               </div>
-              <div className="text-center">
-                <div className="text-[10px] text-text-tertiary">หนี้ต่อทุน</div>
-                <div className={`num text-base font-bold ${prevData.de <= 2 ? 'text-status-good' : prevData.de <= 3 ? 'text-status-warn' : 'text-status-bad'}`}>{prevData.de?.toFixed(2) || '—'}</div>
+
+              <div className="space-y-3">
+                {q.options.map((opt, oi) => {
+                  const selected = answers[q.key] === opt.value;
+                  return (
+                    <button key={opt.value} onClick={() => selectAnswer(opt.value)}
+                      className={`w-full p-5 rounded-2xl text-left cursor-pointer transition-all border ${
+                        selected ? optBg[opt.color] + ' scale-[1.02] shadow-lg' : 'border-border bg-bg-card hover:border-border-strong hover:shadow-md'
+                      }`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${selected ? '' : 'bg-bg-secondary'}`}
+                          style={selected ? { background: opt.color === 'good' ? 'var(--status-good)' : opt.color === 'warn' ? 'var(--status-warn)' : 'var(--status-bad)' } : {}}>
+                          {selected
+                            ? <Check size={16} strokeWidth={3} color="#fff" />
+                            : <span className="num text-xs font-bold text-text-tertiary">{oi + 1}</span>}
+                        </div>
+                        <div>
+                          <div className={`text-base font-semibold ${selected ? optText[opt.color] : 'text-text-primary'}`}>{opt.label}</div>
+                          <div className="text-xs text-text-tertiary mt-0.5">{opt.desc}</div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
-              <div className="text-center">
-                <div className="text-[10px] text-text-tertiary">เงินเหลือเติบโต</div>
-                <div className={`num text-base font-bold ${prevData.growthCash >= 0 ? 'text-status-good' : 'text-status-bad'}`}>{money(prevData.growthCash)}</div>
+
+              <div className="text-center text-[10px] text-text-tertiary mt-6">
+                กด 1, 2, 3 เพื่อเลือก · ← → เปลี่ยนคำถาม
               </div>
+            </div>
+
+            {/* Nav arrows */}
+            <div className="flex gap-4 mt-6">
+              {currentQ > 0 && (
+                <button onClick={() => { setAnimDir('out'); setTimeout(() => { setCurrentQ(c => c - 1); setAnimDir('in'); }, 200); }}
+                  className="w-10 h-10 rounded-xl border border-border bg-bg-card flex items-center justify-center cursor-pointer">
+                  <ChevronLeft size={18} color="var(--text-tertiary)" />
+                </button>
+              )}
+              {currentQ < QUESTIONS.length - 1 && answers[q.key] != null && (
+                <button onClick={() => { setAnimDir('out'); setTimeout(() => { setCurrentQ(c => c + 1); setAnimDir('in'); }, 200); }}
+                  className="w-10 h-10 rounded-xl border border-border bg-bg-card flex items-center justify-center cursor-pointer">
+                  <ChevronRight size={18} color="var(--text-tertiary)" />
+                </button>
+              )}
             </div>
           </div>
         )}
 
-        {!prevData && (
-          <div className="bg-wash-warn rounded-xl p-4 mb-5 text-sm">กรุณาทำ Step 2-3 ก่อน เพื่อให้คะแนนแม่นยำ</div>
-        )}
+        {/* Done — Result */}
+        {done && (
+          <div className="anim-fade-up">
+            <div className="text-center mb-6">
+              <div className="text-[11px] font-semibold tracking-wide uppercase" style={{ color: 'var(--accent)' }}>Step 4 of 7</div>
+              <h1 className="text-2xl font-bold mt-1">ธนาคารมองคุณยังไง</h1>
+            </div>
 
-        {/* Questions */}
-        <div className="space-y-4 mb-5">
-          {QUESTIONS.map((q, qi) => {
-            const qStatus = getQStatus(q.key);
-            return (
-              <div key={q.key} className={`bg-bg-card rounded-2xl p-4 anim-fade-up transition-colors border ${qStatus ? (qStatus === 'good' ? 'border-status-good/30' : qStatus === 'warn' ? 'border-status-warn/30' : 'border-status-bad/30') : 'border-border'}`}>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${qStatus ? (qStatus === 'good' ? 'bg-wash-good' : qStatus === 'warn' ? 'bg-wash-warn' : 'bg-wash-bad') : 'bg-bg-secondary'}`}>
-                    {qStatus
-                      ? <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke={qStatus === 'good' ? 'var(--status-good)' : qStatus === 'warn' ? 'var(--status-warn)' : 'var(--status-bad)'} strokeWidth="2.5" strokeLinecap="round"><path d="M3 7l3 3 5-6"/></svg>
-                      : <span className="num text-[10px] font-bold text-text-tertiary">{qi + 1}</span>
-                    }
+            {/* Verdict */}
+            <div className={`rounded-2xl p-6 mb-4 text-center ${verdictBg}`}>
+              <div className="text-xl font-bold" style={{ color: verdictColor }}>{verdict}</div>
+              <div className="flex gap-1.5 justify-center mt-3">
+                {goodCount > 0 && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-wash-good text-status-good">{goodCount} ดี</span>}
+                {warnCount > 0 && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-wash-warn text-status-warn">{warnCount} ระวัง</span>}
+                {badCount > 0 && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-wash-bad text-status-bad">{badCount} ต้องปรับ</span>}
+              </div>
+            </div>
+
+            {/* Answers summary */}
+            <div className="bg-bg-card border border-border rounded-2xl p-4 mb-4">
+              {QUESTIONS.map((q, i) => {
+                const v = answers[q.key];
+                const opt = q.options.find(o => o.value === v);
+                return (
+                  <div key={i} className={`flex items-center gap-3 py-2.5 ${i > 0 ? 'border-t border-border' : ''}`}>
+                    <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${opt?.color === 'good' ? 'bg-status-good' : opt?.color === 'warn' ? 'bg-status-warn' : 'bg-status-bad'}`} />
+                    <span className="text-sm text-text-secondary flex-1">{q.label}</span>
+                    <span className={`text-sm font-semibold ${opt?.color === 'good' ? 'text-status-good' : opt?.color === 'warn' ? 'text-status-warn' : 'text-status-bad'}`}>{opt?.label}</span>
                   </div>
-                  <span className="text-sm font-semibold">{q.label}</span>
-                </div>
-                <div className="text-xs text-text-tertiary mb-3 ml-8">{q.desc}</div>
-                <div className="grid grid-cols-3 gap-2 ml-8">
-                  {q.options.map((opt) => {
-                    const selected = answers[q.key] === opt.value;
-                    return (
-                      <button key={opt.value}
-                        onClick={() => { setAnswers(a => ({ ...a, [q.key]: opt.value })); setSaved(false); }}
-                        className={`p-2.5 rounded-xl text-left cursor-pointer transition-all border ${selected ? optBg[opt.color] : 'border-border bg-bg-secondary hover:border-border-strong'}`}>
-                        <div className={`text-xs font-semibold ${selected ? optText[opt.color] : 'text-text-primary'}`}>{opt.label}</div>
-                        <div className="text-[10px] text-text-tertiary mt-0.5">{opt.desc}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
 
-        {/* Live verdict */}
-        {answered === 4 && (
-          <div className={`rounded-2xl p-5 mb-5 ${verdictBg}`}>
-            <div className="text-[11px] font-semibold tracking-wide uppercase text-text-tertiary mb-2">ผลประเมิน</div>
-            <div className="text-lg font-bold" style={{ color: verdictColor }}>{verdict}</div>
-            <div className="flex gap-1.5 mt-3">
-              {goodCount > 0 && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-wash-good text-status-good">{goodCount} ดี</span>}
-              {warnCount > 0 && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-wash-warn text-status-warn">{warnCount} ระวัง</span>}
-              {badCount > 0 && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-wash-bad text-status-bad">{badCount} ต้องปรับ</span>}
+            {/* Redo + Save */}
+            <div className="flex gap-2">
+              <button onClick={() => { setDone(false); setCurrentQ(0); setAnimDir('in'); }}
+                className="flex-1 h-12 rounded-xl border border-border bg-bg-card text-sm font-semibold cursor-pointer text-text-primary">
+                ตอบใหม่
+              </button>
+              <button onClick={handleSave} disabled={saving}
+                className="flex-1 h-12 rounded-xl font-semibold cursor-pointer border-none text-sm gradient-accent disabled:opacity-50">
+                {saving ? 'กำลังบันทึก...' : 'บันทึก · ไป Step 5 →'}
+              </button>
             </div>
           </div>
         )}
-
-        {/* Save + Next */}
-        <div className="flex gap-2">
-          <button onClick={handleSave} disabled={saving || answered < 4}
-            className="flex-1 rounded-xl font-semibold cursor-pointer border-none text-sm disabled:opacity-40 transition-all gradient-accent"
-            style={{ height: 48 }}>
-            {saving ? 'กำลังบันทึก...' : answered < 4 ? `ตอบอีก ${4 - answered} ข้อ` : saved ? 'บันทึกแล้ว' : 'บันทึก'}
-          </button>
-          {saved && (
-            <button onClick={() => router.push('/ib/step/5-capital')}
-              className="flex-1 rounded-xl border border-border bg-bg-card font-semibold cursor-pointer text-sm text-text-primary"
-              style={{ height: 48 }}>
-              ไป Step 5 →
-            </button>
-          )}
-        </div>
       </main>
     </div>
   );
