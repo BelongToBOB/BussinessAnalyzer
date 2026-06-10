@@ -25,24 +25,24 @@ const IBF_COLOR = { accent: '#CA8A04', bg: 'rgba(202, 138, 4, 0.1)', bgHover: 'r
 interface ToolItem { tag: string; label: string; desc: string; icon: LucideIcon; color: string }
 
 const TOOLS_IB: ToolItem[] = [
-  { tag: 'Step 1', label: 'ข้อมูลธุรกิจ', desc: 'ประเภท ยอดขาย พนักงาน อายุธุรกิจ', icon: ClipboardList, color: '#60A5FA' },
-  { tag: 'Step 2', label: 'สแกนงบการเงิน', desc: 'กำไรขาดทุน · งบดุล · ตารางหนี้ → DSCR, D/E', icon: Stethoscope, color: '#60A5FA' },
-  { tag: 'Step 3', label: 'กระแสเงินสด 4 ชั้น', desc: 'เงินเข้า → เงินจริง → เงินเหลือ → เงินโต', icon: Layers, color: '#60A5FA' },
-  { tag: 'Step 4', label: 'มุมมองธนาคาร', desc: 'ธนาคารมองคุณยังไง — ประเมิน 4 มิติ', icon: Eye, color: '#60A5FA' },
-  { tag: 'Step 5', label: 'ออกแบบวงเงินกู้', desc: 'วัตถุประสงค์ · ทุนตัวเอง · หลักประกัน · LTV', icon: Calculator, color: '#60A5FA' },
-  { tag: 'Step 6', label: 'กู้ได้เท่าไหร่', desc: 'วงเงิน 3 ระดับ — ปลอดภัย / สูงสุด / อันตราย', icon: Rocket, color: '#60A5FA' },
-  { tag: 'Step 7', label: 'เตรียมยื่นกู้', desc: 'เอกสาร · คำถามธนาคาร · แผนปฏิบัติ', icon: FileText, color: '#60A5FA' },
+  { tag: 'Step 1', label: 'ข้อมูลธุรกิจ', desc: 'ประเภท ยอดขาย พนักงาน อายุธุรกิจ', icon: ClipboardList, color: '#34C759' },
+  { tag: 'Step 2', label: 'สแกนงบการเงิน', desc: 'กำไรขาดทุน · งบดุล · ตารางหนี้ → DSCR, D/E', icon: Stethoscope, color: '#007AFF' },
+  { tag: 'Step 3', label: 'กระแสเงินสด 4 ชั้น', desc: 'เงินเข้า → เงินจริง → เงินเหลือ → เงินโต', icon: Layers, color: '#8B5CF6' },
+  { tag: 'Step 4', label: 'มุมมองธนาคาร', desc: 'ธนาคารมองคุณยังไง — ประเมิน 4 มิติ', icon: Eye, color: '#FF9500' },
+  { tag: 'Step 5', label: 'ออกแบบวงเงินกู้', desc: 'วัตถุประสงค์ · ทุนตัวเอง · หลักประกัน · LTV', icon: Calculator, color: '#06B6D4' },
+  { tag: 'Step 6', label: 'กู้ได้เท่าไหร่', desc: 'วงเงิน 3 ระดับ — ปลอดภัย / สูงสุด / อันตราย', icon: Rocket, color: '#EC4899' },
+  { tag: 'Step 7', label: 'เตรียมยื่นกู้', desc: 'เอกสาร · คำถามธนาคาร · แผนปฏิบัติ', icon: FileText, color: '#FF3B30' },
 ];
 
 const TOOLS_IBF: ToolItem[] = [
-  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'ยอดขายสูงแต่เงินไม่เพิ่ม? เช็คได้ทันที', icon: Search, color: '#CA8A04' },
-  { tag: 'S2', label: 'อ่านงบกำไรขาดทุน', desc: 'ดู margin แต่ละชั้น รู้ว่ากำไรจริงเท่าไหร่', icon: BarChart3, color: '#CA8A04' },
-  { tag: 'S3', label: 'Cashflow 4 ชั้น', desc: 'ไล่เงินจริง 4 ชั้น หาว่าเงินหายตรงไหน', icon: Layers, color: '#CA8A04' },
-  { tag: 'S4', label: 'ตั้งราคา + CM', desc: 'คำนวณราคาที่ได้กำไรจริง + จุดคุ้มทุน', icon: Tag, color: '#CA8A04' },
-  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย อุดรอยรั่วก่อนเร่งยอด', icon: Map, color: '#CA8A04' },
-  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด ไม่ปนกันอีกต่อไป', icon: Grid3X3, color: '#CA8A04' },
-  { tag: 'S7', label: 'แผนธุรกิจ 1 หน้า', desc: 'ตอบ 4 คำถามธนาคาร พร้อมยื่นกู้', icon: FileText, color: '#CA8A04' },
-  { tag: '10 ช่อง', label: 'Owner Dashboard', desc: 'กรอก 9 ตัวเลข เห็นสุขภาพธุรกิจครบ 10 ช่อง', icon: Wallet, color: '#CA8A04' },
+  { tag: 'S1', label: 'เช็คเงินจริง', desc: 'ยอดขายสูงแต่เงินไม่เพิ่ม? เช็คได้ทันที', icon: Search, color: '#34C759' },
+  { tag: 'S2', label: 'อ่านงบกำไรขาดทุน', desc: 'ดู margin แต่ละชั้น รู้ว่ากำไรจริงเท่าไหร่', icon: BarChart3, color: '#007AFF' },
+  { tag: 'S3', label: 'Cashflow 4 ชั้น', desc: 'ไล่เงินจริง 4 ชั้น หาว่าเงินหายตรงไหน', icon: Layers, color: '#8B5CF6' },
+  { tag: 'S4', label: 'ตั้งราคา + CM', desc: 'คำนวณราคาที่ได้กำไรจริง + จุดคุ้มทุน', icon: Tag, color: '#FF9500' },
+  { tag: 'S5', label: 'Expense Map', desc: 'แผนที่ค่าใช้จ่าย อุดรอยรั่วก่อนเร่งยอด', icon: Map, color: '#FF3B30' },
+  { tag: 'S6', label: 'ระบบ 5 ช่อง', desc: 'แยกเงินให้ชัด ไม่ปนกันอีกต่อไป', icon: Grid3X3, color: '#06B6D4' },
+  { tag: 'S7', label: 'แผนธุรกิจ 1 หน้า', desc: 'ตอบ 4 คำถามธนาคาร พร้อมยื่นกู้', icon: FileText, color: '#EC4899' },
+  { tag: '10 ช่อง', label: 'Owner Dashboard', desc: 'กรอก 9 ตัวเลข เห็นสุขภาพธุรกิจครบ 10 ช่อง', icon: Wallet, color: '#1D1D1F' },
 ];
 
 const FLOATING_TAGS = ['DSCR', 'D/E', 'LTV', 'EBITDA', 'Cash Flow', 'MRI'];
@@ -274,20 +274,7 @@ export default function LoginPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {TOOLS_IB.map((t, i) => (
-                <div
-                  key={t.tag}
-                  className="lp-tool-card reveal-on-scroll lp-reveal group"
-                  style={{ transitionDelay: `${i * 60}ms` }}
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: IB_COLOR.bg }}>
-                      <t.icon size={16} style={{ color: t.color }} className="opacity-70 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <span className={`text-[10px] font-bold tracking-wider uppercase ${IB_COLOR.tagText}`}>{t.tag}</span>
-                  </div>
-                  <div className="text-[14px] font-semibold text-white/90 leading-tight mb-1.5">{t.label}</div>
-                  <div className="text-[11px] text-white/35 leading-relaxed group-hover:text-white/55 transition-colors">{t.desc}</div>
-                </div>
+                <ToolCard key={t.tag} tool={t} delay={i * 60} />
               ))}
             </div>
           </div>
@@ -305,20 +292,7 @@ export default function LoginPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {TOOLS_IBF.map((t, i) => (
-                <div
-                  key={t.tag}
-                  className="lp-tool-card reveal-on-scroll lp-reveal group"
-                  style={{ transitionDelay: `${i * 60}ms` }}
-                >
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: IBF_COLOR.bg }}>
-                      <t.icon size={16} style={{ color: t.color }} className="opacity-70 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <span className={`text-[10px] font-bold tracking-wider uppercase ${IBF_COLOR.tagText}`}>{t.tag}</span>
-                  </div>
-                  <div className="text-[14px] font-semibold text-white/90 leading-tight mb-1.5">{t.label}</div>
-                  <div className="text-[11px] text-white/35 leading-relaxed group-hover:text-white/55 transition-colors">{t.desc}</div>
-                </div>
+                <ToolCard key={t.tag} tool={t} delay={i * 60} />
               ))}
             </div>
           </div>
@@ -561,6 +535,26 @@ export default function LoginPage() {
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+    </div>
+  );
+}
+
+/* ── Tool card with individual color ── */
+function ToolCard({ tool: t, delay }: { tool: ToolItem; delay: number }) {
+  return (
+    <div
+      className="lp-tool-card reveal-on-scroll lp-reveal group"
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+          style={{ background: `color-mix(in srgb, ${t.color} 12%, transparent)` }}>
+          <t.icon size={16} style={{ color: t.color }} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+        </div>
+        <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: t.color, opacity: 0.6 }}>{t.tag}</span>
+      </div>
+      <div className="text-[14px] font-semibold text-white/90 leading-tight mb-1.5">{t.label}</div>
+      <div className="text-[11px] text-white/35 leading-relaxed group-hover:text-white/55 transition-colors">{t.desc}</div>
     </div>
   );
 }
