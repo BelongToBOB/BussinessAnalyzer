@@ -385,6 +385,18 @@ select:focus-visible {
   75% { transform: translateY(-20px) rotate(1deg); opacity: 0.10; }
 }
 
+.lp-navbar {
+  background: linear-gradient(135deg, #4F46E5, #6366F1, #7C3AED);
+  border-radius: 0 0 16px 16px;
+  margin: 0 12px;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
+}
+@media (min-width: 768px) {
+  .lp-navbar { margin: 0 24px; padding-left: 24px; padding-right: 24px; }
+}
+
 .lp-badge-light {
   display: inline-flex;
   align-items: center;

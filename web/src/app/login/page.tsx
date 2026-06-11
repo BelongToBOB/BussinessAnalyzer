@@ -89,12 +89,12 @@ export default function LoginPage() {
         </div>
 
         {/* Header */}
-        <header className="relative z-10 flex items-center justify-between px-5 md:px-12 py-5">
+        <header className="lp-navbar relative z-10 flex items-center justify-between px-5 md:px-12 py-4">
           <div className="flex items-center gap-2.5">
-            <img src="/logo-64.png" alt="WW" width={32} height={32} className="rounded" />
-            <span className="text-[15px] font-semibold text-gray-900 tracking-tight">WinWin Analyzer</span>
+            <img src="/logo-64.png" alt="WW" width={28} height={28} className="rounded" />
+            <span className="text-[15px] font-semibold text-white tracking-tight">WinWin Analyzer</span>
           </div>
-          <a href="/register" className="text-sm text-gray-500 hover:text-gray-700 no-underline transition-colors">
+          <a href="/register" className="text-sm text-white/70 hover:text-white no-underline transition-colors px-4 py-1.5 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10">
             สมัครสมาชิก
           </a>
         </header>
