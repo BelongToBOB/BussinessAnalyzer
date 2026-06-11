@@ -154,7 +154,10 @@ export default function SettingsPage() {
       {/* Top bar */}
       <header className="sticky top-0 z-10 bg-bg-primary/85 backdrop-blur-lg border-b border-border">
         <div className="max-w-3xl mx-auto px-4 md:px-6 h-14 flex items-center gap-2">
-          <button onClick={() => router.push((business as any)?.template === 'ib' ? '/ib' : '/dashboard')} className="p-2 cursor-pointer bg-transparent border-none text-text-primary">
+          <button onClick={() => {
+            const t = (business as any)?.template || (typeof window !== 'undefined' && localStorage.getItem('_template')) || 'ibf';
+            router.push(t === 'ib' ? '/ib' : '/dashboard');
+          }} className="p-2 cursor-pointer bg-transparent border-none text-text-primary">
             <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14 6l-5 5 5 5"/></svg>
           </button>
           <span className="text-[15px] font-semibold">ตั้งค่า</span>
