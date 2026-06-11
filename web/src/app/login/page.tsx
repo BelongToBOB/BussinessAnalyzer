@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 import { Activity, BarChart3, Layers, PiggyBank, Shield, TrendingUp, Landmark, FileText, Search, Tag, Map, Grid3X3, Stethoscope, Wallet, Eye, Rocket, ClipboardList, Calculator, type LucideIcon } from 'lucide-react';
 
@@ -294,7 +294,7 @@ export default function LoginPage() {
             { value: 5, label: 'นาที ต่อ Step', suffix: '' },
             { value: 100, label: 'ข้อมูลเป็นความลับ', suffix: '%' },
           ].map((s, i) => (
-            <CountUpStat key={s.label} value={s.value} suffix={s.suffix} label={s.label} delay={i * 150} />
+            <StatItem key={s.label} value={s.value} suffix={s.suffix} label={s.label} delay={i} />
           ))}
         </div>
       </section>
@@ -351,33 +351,12 @@ function ToolCard({ tool: t, delay }: { tool: ToolItem; delay: number }) {
   );
 }
 
-/* ── Count-up stat component — animates on mount, no IntersectionObserver ── */
-function CountUpStat({ value, suffix, label, delay }: { value: number; suffix: string; label: string; delay: number }) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const duration = 1200;
-      const steps = 30;
-      const increment = value / steps;
-      let current = 0;
-      const interval = setInterval(() => {
-        current += increment;
-        if (current >= value) {
-          setCount(value);
-          clearInterval(interval);
-        } else {
-          setCount(Math.floor(current));
-        }
-      }, duration / steps);
-    }, delay + 500); // extra 500ms so user scrolls into view first
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
+/* ── Stat display — no count-up, just show value with fade animation ── */
+function StatItem({ value, suffix, label, delay }: { value: number; suffix: string; label: string; delay: number }) {
   return (
-    <div className="text-center anim-fade-up" style={{ animationDelay: `${delay}ms` }}>
+    <div className="text-center anim-fade-up" style={{ animationDelay: `${delay * 0.1}s` }}>
       <div className="num text-3xl md:text-4xl font-bold text-white tracking-tight">
-        {count}<span className="text-emerald-400">{suffix}</span>
+        {value}<span className="text-emerald-400">{suffix}</span>
       </div>
       <div className="text-xs text-white/35 mt-1.5">{label}</div>
     </div>
