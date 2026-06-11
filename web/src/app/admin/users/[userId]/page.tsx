@@ -18,6 +18,8 @@ interface UserDetail {
   businessId: string;
   businessName: string;
   userName: string | null;
+  email: string | null;
+  template: string;
   createdAt: string;
   monthlyDebtService: number;
   verdictLevel: string;
@@ -35,6 +37,14 @@ interface UserDetail {
   completedSessionTypes: string[];
   expenseSummary: { total: number; byCategory: { invest: number; operate: number; waste: number }; itemCount: number };
   lastActiveDate: string | null;
+  ibMetrics?: {
+    dscr: number | null;
+    de: number | null;
+    ebitdaMargin: number | null;
+    financialScore: number | null;
+    growthCash: number | null;
+    cashDnaScore: number | null;
+  };
 }
 
 const STATUS_MAP: Record<string, { emoji: string; label: string; bgClass: string; textClass: string }> = {
@@ -57,11 +67,23 @@ const SESSION_LABELS: Record<string, string> = {
   S7_BUSINESS_PLAN: 'S7 แผน 1 หน้า',
 };
 
-const ALL_TOOLS = [
+const ALL_TOOLS_IBF = [
   'S1_CHECK_CASH', 'S2A_INCOME_STATEMENT', 'S2B_CASHFLOW_2YR',
   'S3_CASHFLOW_4LAYERS', 'S4A_PRICING', 'S4B_CM', 'S4C_REAL_PROFIT',
   'EXPENSE_MAP', 'S6_FIVE_BUCKETS', 'S7_BUSINESS_PLAN',
 ];
+
+const IB_SESSION_LABELS: Record<string, string> = {
+  'ib-identity': 'Step 1 ข้อมูลธุรกิจ',
+  'ib-financial': 'Step 2 สแกนงบการเงิน',
+  'ib-cash-dna': 'Step 3 กระแสเงินสด 4 ชั้น',
+  'ib-bank-view': 'Step 4 มุมมองธนาคาร',
+  'ib-capital': 'Step 5 ออกแบบวงเงินกู้',
+  'ib-growth': 'Step 6 กู้ได้เท่าไหร่',
+  'ib-loan-action': 'Step 7 เตรียมยื่นกู้',
+};
+
+const ALL_TOOLS_IB = Object.keys(IB_SESSION_LABELS);
 
 function MetricBox({ label, value, unit, status }: { label: string; value: string; unit?: string; status: 'good' | 'warn' | 'bad' | 'neutral' }) {
   const bgMap = { good: 'bg-wash-good', warn: 'bg-wash-warn', bad: 'bg-wash-bad', neutral: 'bg-bg-card border border-border' };
@@ -139,11 +161,18 @@ export default function AdminUserDetailPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">{detail.businessName}</h1>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-2xl font-bold">{detail.businessName}</h1>
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+              detail.template === 'ib' ? 'bg-blue-500/10 text-blue-500' : 'bg-amber-500/10 text-amber-600'
+            }`}>{detail.template === 'ib' ? 'Inside Bank' : 'IBF'}</span>
+          </div>
           <div className="text-xs text-text-secondary mt-1">
             {detail.userName && <span>{detail.userName} | </span>}
+            {detail.email && <span>{detail.email} | </span>}
             สร้างเมื่อ {new Date(detail.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' })}
             {' | '}กรอกล่าสุด {daysAgoText(detail.lastActiveDate)}
+            {detail.monthlyDebtService > 0 && <span> | ภาระหนี้ {money(detail.monthlyDebtService)} บ./ด.</span>}
           </div>
           <div className={`inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full text-xs font-semibold ${st.bgClass} ${st.textClass}`}>
             {st.emoji} {st.label}
@@ -188,13 +217,39 @@ export default function AdminUserDetailPage() {
         </div>
       )}
 
-      {/* Tools checklist */}
+      {/* IB Metrics — only for IB users */}
+      {detail.template === 'ib' && detail.ibMetrics && (
+        <div className="bg-bg-card border border-border rounded-2xl p-4 mb-6">
+          <div className="text-sm font-semibold mb-3">Inside Bank — MRI Metrics</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {[
+              { label: 'Business Score', value: detail.ibMetrics.financialScore, fmt: (v: number) => `${v}/100` },
+              { label: 'DSCR', value: detail.ibMetrics.dscr, fmt: (v: number) => v.toFixed(2) },
+              { label: 'D/E Ratio', value: detail.ibMetrics.de, fmt: (v: number) => v.toFixed(2) },
+              { label: 'EBITDA Margin', value: detail.ibMetrics.ebitdaMargin, fmt: (v: number) => `${(v * 100).toFixed(0)}%` },
+              { label: 'Growth Cash', value: detail.ibMetrics.growthCash, fmt: (v: number) => money(v) },
+              { label: 'Cash DNA Score', value: detail.ibMetrics.cashDnaScore, fmt: (v: number) => `${v}/100` },
+            ].map((m) => (
+              <div key={m.label} className="p-3 rounded-xl bg-bg-secondary">
+                <div className="text-[10px] text-text-tertiary mb-1">{m.label}</div>
+                <div className="num text-base font-bold text-text-primary">
+                  {m.value != null ? m.fmt(m.value) : '-'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Tools / Steps checklist — adaptive per template */}
       <div className="bg-bg-card border border-border rounded-2xl p-4 mb-6">
-        <div className="text-sm font-semibold mb-3">เครื่องมือที่ทำ ({completedSet.size}/{ALL_TOOLS.length})</div>
+        <div className="text-sm font-semibold mb-3">
+          {detail.template === 'ib' ? `IB Steps (${completedSet.size}/${ALL_TOOLS_IB.length})` : `เครื่องมือที่ทำ (${completedSet.size}/${ALL_TOOLS_IBF.length})`}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-          {ALL_TOOLS.map((tool) => {
+          {(detail.template === 'ib' ? ALL_TOOLS_IB : ALL_TOOLS_IBF).map((tool) => {
             const done = completedSet.has(tool);
-            const label = SESSION_LABELS[tool] ?? tool;
+            const label = detail.template === 'ib' ? (IB_SESSION_LABELS[tool] ?? tool) : (SESSION_LABELS[tool] ?? tool);
             return (
               <div key={tool} className="flex items-center gap-2 text-sm py-1">
                 <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${done ? 'bg-status-good' : 'border border-border-strong'}`}>
@@ -210,6 +265,39 @@ export default function AdminUserDetailPage() {
           })}
         </div>
       </div>
+
+      {/* Session details — each session with date + verdict */}
+      {detail.sessions.length > 0 && (
+        <div className="bg-bg-card border border-border rounded-2xl p-4 mb-6">
+          <div className="text-sm font-semibold mb-3">Session Data ({detail.sessions.length} sessions)</div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left py-2 pr-3 text-text-secondary font-medium">Session</th>
+                  <th className="text-left py-2 px-2 text-text-secondary font-medium">เดือน</th>
+                  <th className="text-left py-2 px-2 text-text-secondary font-medium">Verdict</th>
+                  <th className="text-right py-2 pl-2 text-text-secondary font-medium">อัพเดท</th>
+                </tr>
+              </thead>
+              <tbody>
+                {detail.sessions.map((s, i) => {
+                  const label = SESSION_LABELS[s.sessionType] ?? IB_SESSION_LABELS[s.sessionType] ?? s.sessionType;
+                  const verdictColor = s.verdict === 'green' ? 'text-status-good' : s.verdict === 'yellow' ? 'text-status-warn' : s.verdict === 'red' ? 'text-status-bad' : 'text-text-tertiary';
+                  return (
+                    <tr key={i} className="border-b border-border last:border-b-0">
+                      <td className="py-2 pr-3 text-text-primary font-medium">{label}</td>
+                      <td className="py-2 px-2 text-text-secondary">{s.month ?? '-'}</td>
+                      <td className={`py-2 px-2 font-semibold ${verdictColor}`}>{s.verdict ?? '-'}</td>
+                      <td className="py-2 pl-2 text-right text-text-secondary">{new Date(s.updatedAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Expense summary */}
       {detail.expenseSummary.itemCount > 0 && (
