@@ -8,8 +8,8 @@ services:
     env_file:
       - .env
     networks:
-      - winwin-network
+      - winwin_net
 
 networks:
-  winwin-network:
+  winwin_net:
     external: true
