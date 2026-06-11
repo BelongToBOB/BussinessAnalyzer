@@ -48,9 +48,9 @@ export default function LoginPage() {
         </div>
       </header>
 
-      {/* ====== HERO — Navy bg, split layout ====== */}
-      <section className="lp-hero-navy relative overflow-hidden">
-        <div className="max-w-6xl mx-auto px-5 md:px-12 py-16 md:py-24">
+      {/* ====== HERO — Navy bg, split layout, fill viewport ====== */}
+      <section className="lp-hero-navy relative overflow-hidden min-h-[calc(100vh-52px)] flex items-center">
+        <div className="max-w-6xl mx-auto px-5 md:px-12 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text */}
             <div className="anim-fade-up">
