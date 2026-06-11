@@ -264,7 +264,7 @@ export default function IbDashboardPage() {
                 return (
                   <a key={step.slug} href={step.href}
                     className="group flex items-center gap-3 px-4 py-2.5 no-underline hover:bg-bg-secondary transition-colors border-b border-border last:border-b-0">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${done ? 'bg-accent' : 'border-[1.5px] border-border-strong'}`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${done ? 'bg-status-good' : 'border-[1.5px] border-border-strong'}`}>
                       {done ? (
                         <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M3 7l3 3 5-6"/></svg>
                       ) : (

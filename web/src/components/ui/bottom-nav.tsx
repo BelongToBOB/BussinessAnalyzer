@@ -1,6 +1,8 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { getBusiness } from '@/lib/api';
 
 function IconHome({ active }: { active: boolean }) {
   return (
@@ -26,24 +28,38 @@ function IconAccount({ active }: { active: boolean }) {
   );
 }
 
+function getInitialHome(): string {
+  try {
+    return localStorage.getItem('_template') === 'ib' ? '/ib' : '/dashboard';
+  } catch { return '/dashboard'; }
+}
+
 export function BottomNav() {
   const pathname = usePathname();
-  const [homeHref, setHomeHref] = useState('/dashboard');
+  const [homeHref, setHomeHref] = useState(getInitialHome);
 
   useEffect(() => {
-    // Detect template from URL or localStorage
+    // URL-based: immediate feedback
     if (pathname.startsWith('/ib')) {
       setHomeHref('/ib');
       try { localStorage.setItem('_template', 'ib'); } catch {}
-    } else if (pathname.startsWith('/dashboard')) {
+    } else if (pathname.startsWith('/dashboard') || pathname.startsWith('/entry') || pathname.startsWith('/s')) {
       setHomeHref('/dashboard');
       try { localStorage.setItem('_template', 'ibf'); } catch {}
     } else {
-      // On neutral pages (settings, etc.) — read from localStorage
+      // Neutral pages (settings, select) — read localStorage first, then verify from API
       try {
         const t = localStorage.getItem('_template');
         setHomeHref(t === 'ib' ? '/ib' : '/dashboard');
       } catch {}
+
+      getBusiness()
+        .then((biz: any) => {
+          const t = biz.template || 'ibf';
+          setHomeHref(t === 'ib' ? '/ib' : '/dashboard');
+          try { localStorage.setItem('_template', t); } catch {}
+        })
+        .catch(() => {});
     }
   }, [pathname]);
 
@@ -61,11 +77,11 @@ export function BottomNav() {
           ? pathname === homeHref || pathname.startsWith(homeHref + '/')
           : pathname.startsWith(tab.href);
         return (
-          <a key={tab.label} href={tab.href}
+          <Link key={tab.label} href={tab.href}
             className={`flex flex-col items-center gap-1 py-2 no-underline text-xs font-semibold transition-all duration-200 ${active ? 'text-accent scale-105' : 'text-text-tertiary'}`}>
             <tab.Icon active={active} />
             {tab.label}
-          </a>
+          </Link>
         );
       })}
       </div>

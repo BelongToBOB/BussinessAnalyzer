@@ -6,6 +6,7 @@ import { money } from '@/lib/format';
 import { getSession, saveSession } from '@/lib/api';
 import { toast } from 'sonner';
 import { ChevronLeft, ShieldCheck, AlertTriangle, XOctagon, TrendingUp, Landmark } from 'lucide-react';
+import { IbStepProgress } from '@/components/ui/ib-step-progress';
 
 const LEVELS = [
   { label: 'ปลอดภัย', desc: 'กู้แล้วยังชำระหนี้สบาย', Icon: ShieldCheck, color: '#22C55E', dscr: '≥ 1.5' },
@@ -80,11 +81,7 @@ export default function IbStep6Page() {
           <p className="text-sm text-text-secondary mt-1">ปรับสมมติฐาน แล้วดูวงเงิน 3 ระดับทันที</p>
         </div>
 
-        <div className="flex gap-1 mb-6">
-          {[1,2,3,4,5,6,7].map(s => (
-            <div key={s} className="h-1 flex-1 rounded-full transition-all duration-500" style={{ background: s <= 6 ? 'var(--accent)' : 'var(--border)' }} />
-          ))}
-        </div>
+        <IbStepProgress current={6} />
 
         {ebitda <= 0 && (
           <div className="bg-wash-warn rounded-xl p-4 mb-5 text-sm">กรุณาทำ Step 2 ก่อน เพื่อให้ได้ค่ากำไรก่อนหัก</div>

@@ -28,6 +28,7 @@ export const createBusinessSchema = z.object({
 
 export const updateBusinessSchema = z.object({
   name: z.string().min(1).max(200).optional(),
+  template: z.enum(['ibf', 'ib']).optional(),
   monthlyDebtService: z.number().min(0).nullable().optional(),
 });
 

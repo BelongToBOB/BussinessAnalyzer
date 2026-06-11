@@ -45,7 +45,7 @@ export default function EmailLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
+    <div data-theme-gate="" className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-[440px]">
         <div className="flex items-center gap-2.5 mb-8 justify-center">
           <img src="/logo-64.png" alt="WW" width={32} height={32} className="rounded" />

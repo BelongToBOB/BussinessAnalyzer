@@ -8,7 +8,7 @@ import { getBusiness, createBusiness, upsertEntry } from '@/lib/api';
 import { toast } from 'sonner';
 
 export default function OnboardingWrapper() {
-  return <Suspense fallback={<div className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังโหลด...</div>}><OnboardingPage /></Suspense>;
+  return <Suspense fallback={<div data-theme-gate="" className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังโหลด...</div>}><OnboardingPage /></Suspense>;
 }
 
 function OnboardingPage() {
@@ -65,11 +65,11 @@ function OnboardingPage() {
   };
 
   if (checking) {
-    return <div className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังตรวจสอบ...</div>;
+    return <div data-theme-gate="" className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังตรวจสอบ...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
+    <div data-theme-gate="" className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-[520px] bg-bg-card rounded-[20px] border border-border p-6 md:p-10">
         {/* Header */}
         <div className="flex items-center gap-2.5 mb-7">

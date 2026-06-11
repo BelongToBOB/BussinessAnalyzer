@@ -6,6 +6,7 @@ import { money } from '@/lib/format';
 import { getSession, saveSession } from '@/lib/api';
 import { toast } from 'sonner';
 import { ChevronLeft, ChevronRight, TrendingUp, Target, Settings, Check } from 'lucide-react';
+import { IbStepProgress } from '@/components/ui/ib-step-progress';
 
 const QUESTIONS = [
   {
@@ -160,11 +161,7 @@ export default function IbStep4Page() {
 
       <main className="max-w-4xl mx-auto px-4 md:px-6 py-5 pb-24">
         {/* Step progress */}
-        <div className="flex gap-1 mb-6">
-          {[1,2,3,4,5,6,7].map(s => (
-            <div key={s} className="h-1 flex-1 rounded-full transition-all duration-500" style={{ background: s <= 4 ? 'var(--accent)' : 'var(--border)' }} />
-          ))}
-        </div>
+        <IbStepProgress current={4} />
 
         {/* Not done — Typeform style: one question at a time */}
         {!done && (

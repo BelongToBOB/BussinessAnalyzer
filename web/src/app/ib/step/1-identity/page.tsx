@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { money, maskCurrency, unmaskCurrency } from '@/lib/format';
 import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
+import { IbStepProgress } from '@/components/ui/ib-step-progress';
 import { toast } from 'sonner';
 import { ShoppingCart, Factory, Users, Coffee, HardHat, Sprout, Cpu, MoreHorizontal, type LucideIcon , ChevronLeft } from 'lucide-react';
 
@@ -97,11 +98,7 @@ export default function IbStep1Page() {
         </div>
 
         {/* Step progress */}
-        <div className="flex gap-1 mb-6">
-          {[1,2,3,4,5,6,7].map(s => (
-            <div key={s} className="h-1 flex-1 rounded-full transition-all duration-500" style={{ background: s === 1 ? 'var(--accent)' : 'var(--border)' }} />
-          ))}
-        </div>
+        <IbStepProgress current={1} />
 
         {/* Business Type — visual cards */}
         <div className="mb-6 anim-fade-up anim-d1">

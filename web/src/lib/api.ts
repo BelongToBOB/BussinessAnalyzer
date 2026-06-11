@@ -84,7 +84,7 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
 export const getBusiness = () => fetchApi('/api/business');
 export const createBusiness = (data: { name: string; template?: string; monthlyDebtService?: number | null }) =>
   fetchApi('/api/business', { method: 'POST', body: JSON.stringify(data) });
-export const updateBusiness = (data: { name?: string; monthlyDebtService?: number | null }) =>
+export const updateBusiness = (data: { name?: string; template?: string; monthlyDebtService?: number | null }) =>
   fetchApi('/api/business', { method: 'PATCH', body: JSON.stringify(data) });
 export const deleteBusiness = () =>
   fetchApi('/api/business', { method: 'DELETE' });

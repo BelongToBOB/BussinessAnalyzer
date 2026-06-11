@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowDownToLine, Banknote, Wallet, Rocket, ChevronLeft } from 'lucide-react';
+import { IbStepProgress } from '@/components/ui/ib-step-progress';
 
 const LAYERS = [
   { Icon: ArrowDownToLine, color: '#3B82F6', label: 'เงินเข้าจริง', eng: 'Cash In' },
@@ -102,11 +103,7 @@ export default function IbStep3Page() {
           <p className="text-sm text-text-secondary mt-1">ไล่เงินจริงทีละชั้น — เงินเข้า → จริง → เหลือ → โต</p>
         </div>
 
-        <div className="flex gap-1 mb-6">
-          {[1,2,3,4,5,6,7].map(s => (
-            <div key={s} className="h-1 flex-1 rounded-full transition-all duration-500" style={{ background: s <= 3 ? 'var(--accent)' : 'var(--border)' }} />
-          ))}
-        </div>
+        <IbStepProgress current={3} />
 
         {/* ═══════════════ LIVE RESULTS (below input) ═══════════════ */}
 

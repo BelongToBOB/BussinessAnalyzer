@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
 import { toast } from 'sonner';
 import { ChevronLeft, RefreshCcw, Expand, Truck, Building, Landmark, PiggyBank, Shield } from 'lucide-react';
+import { IbStepProgress } from '@/components/ui/ib-step-progress';
 
 const PURPOSES = [
   { id: 'working', label: 'เงินทุนหมุนเวียน', desc: 'ซื้อวัตถุดิบ / จ่าย supplier', Icon: RefreshCcw, color: '#3B82F6' },
@@ -83,11 +84,7 @@ export default function IbStep5Page() {
           <p className="text-sm text-text-secondary mt-1">กู้ทำอะไร เท่าไหร่ มีทุนเท่าไหร่ หลักประกันอะไร</p>
         </div>
 
-        <div className="flex gap-1 mb-6">
-          {[1,2,3,4,5,6,7].map(s => (
-            <div key={s} className="h-1 flex-1 rounded-full transition-all duration-500" style={{ background: s <= 5 ? 'var(--accent)' : 'var(--border)' }} />
-          ))}
-        </div>
+        <IbStepProgress current={5} />
 
         {/* Purpose selection */}
         <div className="text-[11px] font-semibold tracking-wide uppercase text-text-tertiary px-1 pb-2">วัตถุประสงค์การกู้</div>

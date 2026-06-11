@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { logout } from '@/lib/logout';
-import { getBusiness } from '@/lib/api';
+import { getBusiness, updateBusiness } from '@/lib/api';
 
 const TEMPLATES = [
   {
@@ -10,7 +10,9 @@ const TEMPLATES = [
     name: 'Inside Business Finance',
     desc: 'เครื่องมือวิเคราะห์การเงินสำหรับเจ้าของ SME — กรอก 9 ตัวเลข เห็น Dashboard 10 ช่อง + เครื่องมือ 8 ตัว',
     icon: 'IBF',
-    color: '#007AFF',
+    color: '#CA8A04',
+    btnBg: 'linear-gradient(135deg, #78350F, #92400E)',
+    borderAccent: 'rgba(202, 138, 4, 0.25)',
     features: ['Owner Dashboard 10 ช่อง', 'Cashflow 4 Layers', 'Expense Map', 'แผนธุรกิจ 1 หน้า'],
     ready: true,
   },
@@ -19,7 +21,9 @@ const TEMPLATES = [
     name: 'Inside Bank — Business MRI',
     desc: 'สแกนธุรกิจจากมุมมองธนาคาร — 8 Steps ได้รายงาน MRI + Business Score + คำแนะนำเตรียมกู้',
     icon: 'IB',
-    color: '#34C759',
+    color: '#3B82F6',
+    btnBg: 'linear-gradient(135deg, #1E3A5F, #1E40AF)',
+    borderAccent: 'rgba(59, 130, 246, 0.25)',
     features: ['Business Score 0-100', 'Financial MRI + DSCR', 'Growth Capacity', 'Bank Simulation'],
     ready: true,
   },
@@ -37,11 +41,11 @@ export default function SelectTemplatePage() {
   }, []);
 
   if (checking) {
-    return <div className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังตรวจสอบ...</div>;
+    return <div data-theme-gate="" className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังตรวจสอบ...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
+    <div data-theme-gate="" className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-[720px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -64,21 +68,28 @@ export default function SelectTemplatePage() {
           {TEMPLATES.map((t) => (
             <button
               key={t.id}
-              onClick={() => {
+              onClick={async () => {
                 if (!t.ready) return;
                 if (hasBusiness) {
+                  if (bizTemplate !== t.id) {
+                    await updateBusiness({ template: t.id }).catch(() => {});
+                  }
+                  try { localStorage.setItem('_template', t.id); } catch {}
                   window.location.href = t.id === 'ib' ? '/ib' : '/dashboard';
                 } else {
                   window.location.href = `/onboarding?template=${t.id}`;
                 }
               }}
               disabled={!t.ready}
-              className={`text-left bg-bg-card border rounded-2xl p-6 transition-all cursor-pointer anim-fade-up ${
+              className={`text-left bg-bg-card rounded-2xl p-6 transition-all cursor-pointer anim-fade-up ${
                 t.ready
-                  ? 'border-border card-hover'
-                  : 'border-border opacity-60 cursor-not-allowed'
+                  ? 'card-hover'
+                  : 'opacity-60 cursor-not-allowed'
               }`}
-              style={{ animationDelay: `${0.1 + TEMPLATES.indexOf(t) * 0.1}s` }}
+              style={{
+                animationDelay: `${0.1 + TEMPLATES.indexOf(t) * 0.1}s`,
+                border: `1px solid ${t.borderAccent}`,
+              }}
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xs font-bold tracking-wide"
@@ -107,9 +118,8 @@ export default function SelectTemplatePage() {
               </div>
 
               {t.ready && (
-                <div className={`mt-5 w-full h-11 rounded-xl font-semibold text-sm flex items-center justify-center ${
-                  hasBusiness && bizTemplate === t.id ? 'bg-accent text-white' : 'bg-text-primary text-bg-primary'
-                }`}>
+                <div className="mt-5 w-full h-11 rounded-xl font-semibold text-sm flex items-center justify-center text-white"
+                  style={{ background: t.btnBg }}>
                   {hasBusiness && bizTemplate === t.id ? '← เข้าใช้งานต่อ' : hasBusiness ? 'เข้าใช้งาน →' : 'เริ่มใช้งาน →'}
                 </div>
               )}

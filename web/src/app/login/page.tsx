@@ -31,7 +31,7 @@ export default function LoginPage() {
   const [activeTab, setActiveTab] = useState<'ib' | 'ibf'>('ib');
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-white">
+    <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-[#121D2E]">
       {/* ====== NAVBAR — Navy full width ====== */}
       <header className="lp-navbar relative z-20 flex items-center justify-between px-5 md:px-12 py-3.5">
         <div className="flex items-center gap-2.5">
@@ -49,7 +49,7 @@ export default function LoginPage() {
       </header>
 
       {/* ====== HERO — Navy bg, split layout, fill viewport ====== */}
-      <section className="lp-hero-navy relative overflow-hidden min-h-[calc(100vh-52px)] flex items-center">
+      <section className="lp-hero-navy relative overflow-hidden min-h-[80vh] sm:min-h-[calc(100vh-52px)] flex items-center py-12 sm:py-0">
         <div className="max-w-6xl mx-auto px-5 md:px-12 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text */}
@@ -69,10 +69,10 @@ export default function LoginPage() {
                 รู้สุขภาพการเงิน เช็คความพร้อมขยาย เตรียมตัวก่อนเข้าธนาคาร
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 max-w-sm">
+              <div className="flex flex-col gap-3 sm:max-w-sm">
                 <button
                   onClick={() => signIn('google', { callbackUrl: '/select' })}
-                  className="lp-btn-hero group flex-1"
+                  className="lp-btn-hero group"
                 >
                   <svg width="18" height="18" viewBox="0 0 48 48" className="shrink-0">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -82,18 +82,22 @@ export default function LoginPage() {
                   </svg>
                   เข้าสู่ระบบด้วย Google
                 </button>
+                <a href="/login/email"
+                  className="w-full flex items-center justify-center h-12 sm:h-11 rounded-xl border border-white/15 bg-white/5 text-white/70 text-sm font-medium no-underline hover:bg-white/10 hover:text-white transition-all">
+                  เข้าสู่ระบบด้วยอีเมล
+                </a>
               </div>
 
               {/* Stats inline */}
-              <div className="flex gap-8 mt-10">
+              <div className="grid grid-cols-3 gap-4 sm:gap-8 mt-10 max-w-xs sm:max-w-none">
                 {[
                   { v: '7', l: 'Steps ครบวงจร' },
                   { v: '5 นาที', l: 'ต่อ Step' },
                   { v: '100%', l: 'ปลอดภัย' },
                 ].map((s) => (
-                  <div key={s.l}>
-                    <div className="num text-xl font-bold text-white">{s.v}</div>
-                    <div className="text-[11px] text-white/40">{s.l}</div>
+                  <div key={s.l} className="text-center sm:text-left">
+                    <div className="num text-lg sm:text-xl font-bold text-white">{s.v}</div>
+                    <div className="text-[10px] sm:text-[11px] text-white/55">{s.l}</div>
                   </div>
                 ))}
               </div>
@@ -150,35 +154,43 @@ export default function LoginPage() {
         </div>
       </section>
 
-      {/* ====== PRODUCT CARDS — White section, full-width cards ====== */}
-      <section className="bg-white py-20 px-5 md:px-12">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12 anim-fade-up">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 tracking-tight mb-3">
+      {/* ====== PRODUCT CARDS — Dark section with depth ====== */}
+      <section className="lp-products-section relative overflow-hidden pt-6 pb-14 sm:pt-10 sm:pb-20 px-4 sm:px-5 md:px-12">
+        {/* Decorative blobs */}
+        <div className="hidden sm:block absolute top-1/2 left-1/4 -translate-y-1/2 w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full bg-blue-500/8 blur-[80px] md:blur-[100px] pointer-events-none" />
+        <div className="hidden sm:block absolute top-1/2 right-1/4 -translate-y-1/2 w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full bg-amber-500/8 blur-[80px] md:blur-[100px] pointer-events-none" />
+
+        <div className="max-w-5xl mx-auto relative z-10">
+          <div className="text-center mb-14 anim-fade-up">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/8 border border-white/15 text-white/70 text-xs font-medium mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+              เลือกเครื่องมือที่ใช่
+            </div>
+            <h2 className="text-2xl md:text-4xl font-bold text-white tracking-tight mb-3">
               2 เครื่องมือ สำหรับ 2 เป้าหมาย
             </h2>
-            <p className="text-gray-500 text-base max-w-lg mx-auto">
+            <p className="text-white/60 text-base max-w-lg mx-auto">
               เลือกได้หลังเข้าสู่ระบบ
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 anim-fade-up">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 anim-fade-up">
             {/* IB Card */}
             <div className="lp-card-ib group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white text-xs font-bold">IB</div>
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white text-xs font-bold">IB</div>
                 <div>
                   <div className="text-white font-semibold">Inside Bank</div>
-                  <div className="text-white/50 text-xs">Business MRI — 7 Steps</div>
+                  <div className="text-white/70 text-xs">Business MRI — 7 Steps</div>
                 </div>
-                <ChevronRight size={16} className="ml-auto text-white/30 group-hover:text-white/60 group-hover:translate-x-1 transition-all" />
+                <ChevronRight size={16} className="ml-auto text-white/40 group-hover:text-white/70 group-hover:translate-x-1 transition-all" />
               </div>
-              <p className="text-white/60 text-sm leading-relaxed mb-4">
+              <p className="text-white/75 text-sm leading-relaxed mb-4">
                 สแกนธุรกิจจากมุมมองธนาคาร ได้ MRI Report + Business Score + คำแนะนำเตรียมกู้
               </p>
               <div className="flex flex-wrap gap-2">
                 {['Business Score', 'DSCR', 'Growth Capacity', 'Bank Simulation'].map((f) => (
-                  <span key={f} className="text-[10px] px-2.5 py-1 rounded-full bg-white/10 text-white/60">{f}</span>
+                  <span key={f} className="text-[10px] px-2.5 py-1 rounded-full bg-white/12 text-white/70">{f}</span>
                 ))}
               </div>
             </div>
@@ -186,19 +198,19 @@ export default function LoginPage() {
             {/* IBF Card */}
             <div className="lp-card-ibf group">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white text-xs font-bold">IBF</div>
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white text-xs font-bold">IBF</div>
                 <div>
                   <div className="text-white font-semibold">Inside Business Finance</div>
-                  <div className="text-white/50 text-xs">Owner Dashboard — 10 ช่อง + 8 เครื่องมือ</div>
+                  <div className="text-white/70 text-xs">Owner Dashboard — 10 ช่อง + 8 เครื่องมือ</div>
                 </div>
-                <ChevronRight size={16} className="ml-auto text-white/30 group-hover:text-white/60 group-hover:translate-x-1 transition-all" />
+                <ChevronRight size={16} className="ml-auto text-white/40 group-hover:text-white/70 group-hover:translate-x-1 transition-all" />
               </div>
-              <p className="text-white/60 text-sm leading-relaxed mb-4">
+              <p className="text-white/75 text-sm leading-relaxed mb-4">
                 เครื่องมือวิเคราะห์การเงินสำหรับเจ้าของ SME กรอก 9 ตัวเลข เห็น Dashboard ครบ
               </p>
               <div className="flex flex-wrap gap-2">
                 {['Cashflow 4 Layers', 'Expense Map', 'ระบบ 5 ช่อง', 'แผนธุรกิจ'].map((f) => (
-                  <span key={f} className="text-[10px] px-2.5 py-1 rounded-full bg-white/10 text-white/60">{f}</span>
+                  <span key={f} className="text-[10px] px-2.5 py-1 rounded-full bg-white/12 text-white/70">{f}</span>
                 ))}
               </div>
             </div>
@@ -207,46 +219,49 @@ export default function LoginPage() {
       </section>
 
       {/* ====== TOOLS — Tab switching IB / IBF ====== */}
-      <section className="bg-gray-50 py-20 px-5 md:px-12">
+      <section className="lp-tools-section py-14 sm:py-20 px-4 sm:px-5 md:px-12">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10 anim-fade-up">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-6">
               เครื่องมือทั้งหมด
             </h2>
             {/* Tab switcher */}
-            <div className="inline-flex items-center bg-white rounded-xl p-1 border border-gray-200 shadow-sm">
+            <div className="inline-flex items-center bg-white/8 rounded-xl p-1 border border-white/12 w-full sm:w-auto max-w-sm sm:max-w-none mx-auto">
               <button
                 onClick={() => setActiveTab('ib')}
-                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer border-none ${
-                  activeTab === 'ib' ? 'bg-[#0F172A] text-white shadow-md' : 'bg-transparent text-gray-500 hover:text-gray-700'
+                className={`flex-1 sm:flex-none px-3 sm:px-5 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer border-none ${
+                  activeTab === 'ib' ? 'bg-white/20 text-white shadow-md' : 'bg-transparent text-white/50 hover:text-white/70'
                 }`}
               >
-                Inside Bank (7 Steps)
+                Inside Bank
+                <span className="hidden sm:inline"> (7 Steps)</span>
               </button>
               <button
                 onClick={() => setActiveTab('ibf')}
-                className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer border-none ${
-                  activeTab === 'ibf' ? 'bg-[#92400E] text-white shadow-md' : 'bg-transparent text-gray-500 hover:text-gray-700'
+                className={`flex-1 sm:flex-none px-3 sm:px-5 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all cursor-pointer border-none ${
+                  activeTab === 'ibf' ? 'bg-white/20 text-white shadow-md' : 'bg-transparent text-white/50 hover:text-white/70'
                 }`}
               >
-                IBF (8 เครื่องมือ)
+                IBF
+                <span className="hidden sm:inline"> (8 เครื่องมือ)</span>
               </button>
             </div>
           </div>
 
           {/* Tool grid — animate on tab change */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" key={activeTab}>
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4" key={activeTab}>
             {(activeTab === 'ib' ? TOOLS_IB : TOOLS_IBF).map((t, i) => (
-              <div key={t.tag} className="lp-tool-card-light anim-fade-up group" style={{ animationDelay: `${i * 40}ms` }}>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-                    style={{ background: `color-mix(in srgb, ${t.color} 10%, transparent)` }}>
-                    <t.icon size={18} style={{ color: t.color }} className="opacity-80 group-hover:opacity-100 transition-opacity" />
+              <div key={t.tag} className="lp-tool-card-dark anim-fade-up group" style={{ animationDelay: `${i * 40}ms` }}>
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ background: `color-mix(in srgb, ${t.color} 12%, transparent)` }}>
+                    <t.icon size={16} style={{ color: t.color }} className="opacity-80 group-hover:opacity-100 transition-opacity sm:hidden" />
+                    <t.icon size={18} style={{ color: t.color }} className="opacity-80 group-hover:opacity-100 transition-opacity hidden sm:block" />
                   </div>
-                  <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: t.color, opacity: 0.8 }}>{t.tag}</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold tracking-wider uppercase" style={{ color: t.color, opacity: 0.8 }}>{t.tag}</span>
                 </div>
-                <div className="text-[14px] font-semibold text-gray-800 leading-tight mb-1.5">{t.label}</div>
-                <div className="text-[11px] text-gray-500 leading-relaxed group-hover:text-gray-600 transition-colors">{t.desc}</div>
+                <div className="text-[13px] sm:text-[14px] font-semibold text-white leading-tight mb-1">{t.label}</div>
+                <div className="text-[10px] sm:text-[11px] text-white/55 leading-relaxed group-hover:text-white/70 transition-colors">{t.desc}</div>
               </div>
             ))}
           </div>
@@ -254,31 +269,31 @@ export default function LoginPage() {
       </section>
 
       {/* ====== TRUST + FOOTER — Compact ====== */}
-      <footer className="bg-white border-t border-gray-100 py-8 px-5 md:px-12">
+      <footer className="bg-[#121D2E] border-t border-white/8 py-8 px-5 md:px-12">
         <div className="max-w-5xl mx-auto">
           {/* Trust */}
           <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
-            <div className="flex items-center gap-1.5 text-gray-400 text-xs">
+            <div className="flex items-center gap-1.5 text-white/45 text-xs">
               <Lock size={12} />
               <span>ข้อมูลเข้ารหัส</span>
             </div>
-            <span className="text-gray-200">·</span>
-            <div className="flex items-center gap-1.5 text-gray-400 text-xs">
+            <span className="text-white/15">·</span>
+            <div className="flex items-center gap-1.5 text-white/45 text-xs">
               <Shield size={12} />
               <span>ไม่แชร์กับบุคคลที่สาม</span>
             </div>
-            <span className="text-gray-200">·</span>
-            <span className="text-gray-300 text-xs">by WinWin Wealth Creation</span>
+            <span className="text-white/15">·</span>
+            <span className="text-white/35 text-xs">by WinWin Wealth Creation</span>
           </div>
           {/* Links */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-2">
-              <img src="/logo-32.png" alt="WW" width={16} height={16} className="rounded opacity-30" />
-              <span className="text-xs text-gray-300">WinWin Analyzer</span>
+              <img src="/logo-32.png" alt="WW" width={16} height={16} className="rounded opacity-40" />
+              <span className="text-xs text-white/35">WinWin Analyzer</span>
             </div>
-            <div className="flex items-center gap-4 text-xs text-gray-300">
-              <a href="/terms" className="hover:text-gray-500 no-underline text-gray-300 transition-colors">ข้อกำหนด</a>
-              <a href="/privacy" className="hover:text-gray-500 no-underline text-gray-300 transition-colors">ความเป็นส่วนตัว</a>
+            <div className="flex items-center gap-4 text-xs text-white/35">
+              <a href="/terms" className="hover:text-white/60 no-underline text-white/35 transition-colors">ข้อกำหนด</a>
+              <a href="/privacy" className="hover:text-white/60 no-underline text-white/35 transition-colors">ความเป็นส่วนตัว</a>
               <span>© 2026</span>
             </div>
           </div>

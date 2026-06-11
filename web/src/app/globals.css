@@ -68,6 +68,56 @@
   --shadow-pop:  0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
+/* ─── Gate Theme (pre-app: login, register, select, onboarding) ─── */
+
+[data-theme-gate] {
+  --bg-primary-rgb: 21, 34, 56;
+  --bg-primary:    #152238;
+  --bg-secondary:  #111C2E;
+  --bg-tertiary:   #1A2D4A;
+  --bg-card:       #1C3048;
+  --bg-elevated:   #243D5E;
+  --text-primary:  #F1F5F9;
+  --text-secondary:#B0BEC5;
+  --text-tertiary: #94A3B8;
+  --border:        rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.25);
+  --accent:        #818CF8;
+  --accent-soft:   rgba(129, 140, 248, 0.15);
+
+  --wash-good:   rgba(34, 197, 94, 0.15);
+  --wash-warn:   rgba(234, 179, 8, 0.12);
+  --wash-bad:    rgba(239, 68, 68, 0.12);
+  --wash-empty:  rgba(255, 255, 255, 0.05);
+  --wash-info:   rgba(129, 140, 248, 0.10);
+
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-pop:  0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Gate theme: force text/bg color inheritance */
+[data-theme-gate] {
+  color: var(--text-primary) !important;
+  background: var(--bg-secondary) !important;
+}
+
+/* Gate theme: inputs need darker bg than card for contrast */
+[data-theme-gate] input,
+[data-theme-gate] select,
+[data-theme-gate] textarea {
+  background: #152238 !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+[data-theme-gate] input::placeholder,
+[data-theme-gate] textarea::placeholder {
+  color: #6B7F95 !important;
+}
+[data-theme-gate] input:focus,
+[data-theme-gate] select:focus,
+[data-theme-gate] textarea:focus {
+  border-color: #818CF8 !important;
+}
+
 /* ─── InsideBank Theme (IB pages only) ────────────────── */
 
 [data-theme-ib] {
@@ -181,6 +231,21 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+}
+
+/* ─── Global navy header (all in-app pages) ──────────── */
+
+header.sticky {
+  background: rgba(15, 23, 42, 0.97) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  color: #F1F5F9 !important;
+}
+header.sticky * {
+  color: inherit;
+}
+header.sticky .text-text-tertiary,
+header.sticky .text-text-secondary {
+  color: #94A3B8 !important;
 }
 
 /* ─── Page transition — every page fades in ───────────── */
@@ -344,11 +409,11 @@ select:focus-visible {
 @layer base {
 
 .lp-navbar {
-  background: #0F172A;
+  background: #152238;
 }
 
 .lp-hero-navy {
-  background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+  background: linear-gradient(180deg, #152238 0%, #1E3A5F 100%);
 }
 
 .lp-text-gradient-light {
@@ -365,12 +430,12 @@ select:focus-visible {
 }
 
 .lp-btn-hero {
-  height: 48px;
-  border-radius: 12px;
+  height: 52px;
+  border-radius: 14px;
   background: #ffffff;
   color: #0F172A;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -378,8 +443,12 @@ select:focus-visible {
   cursor: pointer;
   border: none;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-  padding: 0 24px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  padding: 0 28px;
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .lp-btn-hero { width: auto; height: 48px; font-size: 14px; padding: 0 24px; border-radius: 12px; }
 }
 .lp-btn-hero:hover {
   transform: translateY(-2px);
@@ -405,42 +474,69 @@ select:focus-visible {
   background: rgba(15, 23, 42, 0.5);
 }
 
+.lp-products-section {
+  background-color: #1E3A5F;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
+  background-size: 32px 32px;
+}
+
+.lp-tools-section {
+  background-color: #172F4F;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+  background-size: 32px 32px;
+}
+
 .lp-card-ib {
-  padding: 24px;
-  border-radius: 20px;
+  padding: 20px;
+  border-radius: 16px;
   background: linear-gradient(135deg, #1E3A5F, #1E40AF);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   cursor: default;
+}
+@media (min-width: 640px) {
+  .lp-card-ib { padding: 28px; border-radius: 20px; }
 }
 .lp-card-ib:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(30, 64, 175, 0.25);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 16px 48px rgba(30, 64, 175, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.1);
 }
 
 .lp-card-ibf {
-  padding: 24px;
-  border-radius: 20px;
+  padding: 20px;
+  border-radius: 16px;
   background: linear-gradient(135deg, #78350F, #92400E);
+  border: 1px solid rgba(217, 119, 6, 0.2);
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   cursor: default;
 }
+@media (min-width: 640px) {
+  .lp-card-ibf { padding: 28px; border-radius: 20px; }
+}
 .lp-card-ibf:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(146, 64, 14, 0.25);
+  border-color: rgba(217, 119, 6, 0.4);
+  box-shadow: 0 16px 48px rgba(146, 64, 14, 0.3), 0 0 0 1px rgba(217, 119, 6, 0.1);
 }
 
-.lp-tool-card-light {
-  padding: 20px;
-  border-radius: 16px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+.lp-tool-card-dark {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.10);
   transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
-.lp-tool-card-light:hover {
-  border-color: #d1d5db;
-  transform: translateY(-5px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+@media (min-width: 640px) {
+  .lp-tool-card-dark { padding: 20px; border-radius: 16px; }
+}
+.lp-tool-card-dark:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
 }
 
 } /* end @layer base */

@@ -7,6 +7,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { getSession, saveSession } from '@/lib/api';
 import { toast } from 'sonner';
 import { TrendingUp, PlusCircle, Package, Users, Clock, Percent, FileText, ChevronLeft, ChevronDown, type LucideIcon } from 'lucide-react';
+import { IbStepProgress } from '@/components/ui/ib-step-progress';
 
 const PL_FIELDS: { key: string; label: string; Icon: LucideIcon; color: string; optional?: boolean }[] = [
   { key: 'revenue', label: 'รายได้จากการขาย', Icon: TrendingUp, color: '#22C55E' },
@@ -147,11 +148,7 @@ export default function IbStep2Page() {
           <p className="text-sm text-text-secondary mt-1">กรอก 3 ส่วน แล้วดูผลสแกนด้านล่าง</p>
         </div>
 
-        <div className="flex gap-1 mb-6">
-          {[1,2,3,4,5,6,7].map(s => (
-            <div key={s} className="h-1 flex-1 rounded-full transition-all duration-500" style={{ background: s <= 2 ? 'var(--accent)' : 'var(--border)' }} />
-          ))}
-        </div>
+        <IbStepProgress current={2} />
 
         {/* ═══════════════ INPUT ═══════════════ */}
 

@@ -62,7 +62,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
+    <div data-theme-gate="" className="min-h-screen bg-bg-secondary flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-[440px]">
         <div className="flex items-center gap-2.5 mb-8 justify-center">
           <img src="/logo-64.png" alt="WW" width={32} height={32} className="rounded" />
@@ -158,6 +158,9 @@ export default function RegisterPage() {
         <p className="text-center text-sm text-text-secondary mt-5">
           มีบัญชีอยู่แล้ว?{' '}
           <a href="/login" className="text-accent font-medium no-underline">เข้าสู่ระบบ</a>
+        </p>
+        <p className="text-center text-sm mt-2">
+          <a href="/login" className="text-text-tertiary no-underline">&larr; กลับหน้าหลัก</a>
         </p>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getSession, saveSession } from '@/lib/api';
 import { toast } from 'sonner';
 import { ChevronLeft, Target, MessageSquare, FolderCheck, Rocket, Check, FileText, Download } from 'lucide-react';
+import { IbStepProgress } from '@/components/ui/ib-step-progress';
 
 const STORY_PROMPTS = [
   { q: 'ธุรกิจของคุณทำอะไร', hint: 'เช่น ขายอาหารสำเร็จรูป B2B ให้โรงแรม 50 แห่ง' },
@@ -82,11 +83,8 @@ export default function IbStep7Page() {
           <p className="text-sm text-text-secondary mt-1">กรอก 4 ส่วน → ได้เอกสารพร้อมยื่นธนาคาร</p>
         </div>
 
-        <div className="flex gap-1 mb-4">
-          {[1,2,3,4,5,6,7].map(s => (
-            <div key={s} className="h-1 flex-1 rounded-full" style={{ background: 'var(--accent)' }} />
-          ))}
-        </div>
+        {/* Step progress */}
+        <IbStepProgress current={7} />
 
         {/* Document completion meter */}
         <div className="bg-bg-card border border-border rounded-2xl p-4 mb-5 anim-fade-up">
