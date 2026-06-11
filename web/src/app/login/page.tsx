@@ -155,8 +155,8 @@ export default function LoginPage() {
           </h1>
 
           <p className="text-white/50 text-base md:text-lg max-w-md mb-10 leading-relaxed">
-            เครื่องมือวิเคราะห์การเงินธุรกิจ สำหรับผู้เรียนคอร์ส
-            Inside Bank และ Inside Business Finance
+            วิเคราะห์สุขภาพการเงินธุรกิจ เห็นจุดแข็ง-จุดอ่อน
+            รู้ก่อนยื่นกู้ว่าธนาคารมองคุณยังไง
           </p>
 
           {/* Login buttons */}
