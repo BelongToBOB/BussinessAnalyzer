@@ -155,8 +155,8 @@ export default function LoginPage() {
           </h1>
 
           <p className="text-white/50 text-base md:text-lg max-w-md mb-10 leading-relaxed">
-            วิเคราะห์สุขภาพการเงินธุรกิจ เห็นจุดแข็ง-จุดอ่อน
-            รู้ก่อนยื่นกู้ว่าธนาคารมองคุณยังไง
+            รู้สุขภาพการเงิน เช็คความพร้อมขยาย
+            เตรียมตัวก่อนเข้าธนาคาร
           </p>
 
           {/* Login buttons */}
