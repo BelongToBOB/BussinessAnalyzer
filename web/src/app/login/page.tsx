@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { Activity, BarChart3, Layers, PiggyBank, Shield, TrendingUp, Landmark, FileText, Search, Tag, Map, Grid3X3, Stethoscope, Wallet, Eye, Rocket, ClipboardList, Calculator, type LucideIcon } from 'lucide-react';
 
@@ -50,7 +50,6 @@ const FLOATING_TAGS = ['DSCR', 'D/E', 'LTV', 'EBITDA', 'Cash Flow', 'MRI'];
 export default function LoginPage() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLElement>(null);
-  const sectionsRef = useRef<HTMLDivElement>(null);
 
   // Track mouse for 3D card tilt
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -61,38 +60,6 @@ export default function LoginPage() {
       y: ((e.clientY - rect.top) / rect.height - 0.5) * 2,
     });
   };
-
-  // Scroll-triggered reveal — also handles browser back (bfcache)
-  useEffect(() => {
-    const reveal = () => {
-      const els = document.querySelectorAll('.reveal-on-scroll');
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) entry.target.classList.add('revealed');
-          });
-        },
-        { threshold: 0.08 }
-      );
-      els.forEach((el) => observer.observe(el));
-      return observer;
-    };
-
-    const observer = reveal();
-
-    // Handle bfcache (back/forward navigation)
-    const handlePageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) {
-        document.querySelectorAll('.reveal-on-scroll').forEach((el) => el.classList.add('revealed'));
-      }
-    };
-    window.addEventListener('pageshow', handlePageShow);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('pageshow', handlePageShow);
-    };
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-[#050510]">
@@ -191,7 +158,7 @@ export default function LoginPage() {
       </section>
 
       {/* ====== PRODUCT CARDS — 3D tilt ====== */}
-      <section ref={sectionsRef} className="relative bg-[#050510] py-20 px-5 md:px-12">
+      <section className="relative bg-[#050510] py-20 px-5 md:px-12">
         {/* Wave divider */}
         <div className="absolute top-0 left-0 right-0 h-24 -translate-y-full overflow-hidden">
           <svg viewBox="0 0 1440 100" className="w-full h-full" preserveAspectRatio="none">
@@ -200,7 +167,7 @@ export default function LoginPage() {
         </div>
 
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14 reveal-on-scroll lp-reveal">
+          <div className="text-center mb-14 anim-fade-up">
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">
               เลือกเครื่องมือที่เหมาะกับคุณ
             </h2>
@@ -212,7 +179,7 @@ export default function LoginPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {/* IB Card — Navy */}
             <div
-              className="lp-product-card reveal-on-scroll lp-reveal group"
+              className="lp-product-card anim-fade-up group"
               style={{
                 transform: `perspective(800px) rotateY(${mousePos.x * 3}deg) rotateX(${-mousePos.y * 3}deg)`,
               }}
@@ -244,7 +211,7 @@ export default function LoginPage() {
 
             {/* IBF Card — Gold */}
             <div
-              className="lp-product-card reveal-on-scroll lp-reveal group"
+              className="lp-product-card anim-fade-up group"
               style={{
                 transform: `perspective(800px) rotateY(${mousePos.x * 3}deg) rotateX(${-mousePos.y * 3}deg)`,
                 animationDelay: '0.1s',
@@ -283,7 +250,7 @@ export default function LoginPage() {
         <div className="max-w-5xl mx-auto">
           {/* IB Tools — Navy */}
           <div className="mb-20">
-            <div className="flex items-center gap-3 mb-8 reveal-on-scroll lp-reveal">
+            <div className="flex items-center gap-3 mb-8 anim-fade-up">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center text-blue-400 text-sm font-bold" style={{ background: IB_COLOR.bg }}>
                 IB
               </div>
@@ -301,7 +268,7 @@ export default function LoginPage() {
 
           {/* IBF Tools — Gold */}
           <div>
-            <div className="flex items-center gap-3 mb-8 reveal-on-scroll lp-reveal">
+            <div className="flex items-center gap-3 mb-8 anim-fade-up">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center text-amber-500 text-sm font-bold" style={{ background: IBF_COLOR.bg }}>
                 IBF
               </div>
@@ -334,7 +301,7 @@ export default function LoginPage() {
 
       {/* ====== TRUST STRIP ====== */}
       <section className="bg-[#050510] pb-20 px-5 md:px-12">
-        <div className="max-w-2xl mx-auto reveal-on-scroll lp-reveal">
+        <div className="max-w-2xl mx-auto anim-fade-up">
           <div className="lp-trust-strip">
             <Shield size={16} className="text-emerald-400" />
             <span className="text-white/50 text-sm">ข้อมูลเข้ารหัส ปลอดภัย ไม่แชร์กับบุคคลที่สาม</span>
@@ -368,7 +335,7 @@ export default function LoginPage() {
 function ToolCard({ tool: t, delay }: { tool: ToolItem; delay: number }) {
   return (
     <div
-      className="lp-tool-card reveal-on-scroll lp-reveal group"
+      className="lp-tool-card anim-fade-up group"
       style={{ transitionDelay: `${delay}ms` }}
     >
       <div className="flex items-center gap-2 mb-3">
@@ -384,23 +351,11 @@ function ToolCard({ tool: t, delay }: { tool: ToolItem; delay: number }) {
   );
 }
 
-/* ── Count-up stat component ── */
+/* ── Count-up stat component — animates on mount, no IntersectionObserver ── */
 function CountUpStat({ value, suffix, label, delay }: { value: number; suffix: string; label: string; delay: number }) {
   const [count, setCount] = useState(0);
-  const [started, setStarted] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting && !started) setStarted(true); },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [started]);
-
-  useEffect(() => {
-    if (!started) return;
     const timer = setTimeout(() => {
       const duration = 1200;
       const steps = 30;
@@ -415,13 +370,12 @@ function CountUpStat({ value, suffix, label, delay }: { value: number; suffix: s
           setCount(Math.floor(current));
         }
       }, duration / steps);
-      return () => clearInterval(interval);
-    }, delay);
+    }, delay + 500); // extra 500ms so user scrolls into view first
     return () => clearTimeout(timer);
-  }, [started, value, delay]);
+  }, [value, delay]);
 
   return (
-    <div ref={ref} className="text-center reveal-on-scroll lp-reveal">
+    <div className="text-center anim-fade-up" style={{ animationDelay: `${delay}ms` }}>
       <div className="num text-3xl md:text-4xl font-bold text-white tracking-tight">
         {count}<span className="text-emerald-400">{suffix}</span>
       </div>

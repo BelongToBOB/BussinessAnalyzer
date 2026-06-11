@@ -482,15 +482,7 @@ select:focus-visible {
   background: radial-gradient(ellipse at 30% 20%, rgba(202, 138, 4, 0.1), transparent 70%);
 }
 
-.lp-reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-}
-.lp-reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* lp-reveal removed — replaced by anim-fade-up (pure CSS, no JS dependency) */
 
 .lp-tool-card {
   padding: 20px;
