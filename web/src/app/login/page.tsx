@@ -94,7 +94,7 @@ export default function LoginPage() {
             <img src="/logo-64.png" alt="WW" width={32} height={32} className="rounded" />
             <span className="text-[15px] font-semibold text-gray-900 tracking-tight">WinWin Analyzer</span>
           </div>
-          <a href="/register" className="text-sm text-gray-400 hover:text-gray-700 no-underline transition-colors">
+          <a href="/register" className="text-sm text-gray-500 hover:text-gray-700 no-underline transition-colors">
             สมัครสมาชิก
           </a>
         </header>
@@ -112,7 +112,7 @@ export default function LoginPage() {
             <span className="lp-text-gradient">เตรียมพร้อมกู้</span>
           </h1>
 
-          <p className="text-gray-400 text-base md:text-lg max-w-md mb-10 leading-relaxed">
+          <p className="text-gray-500 text-base md:text-lg max-w-md mb-10 leading-relaxed">
             รู้สุขภาพการเงิน เช็คความพร้อมขยาย
             เตรียมตัวก่อนเข้าธนาคาร
           </p>
@@ -131,7 +131,7 @@ export default function LoginPage() {
               <span>เข้าสู่ระบบด้วย Google</span>
               <div className="lp-shimmer-light" />
             </button>
-            <a href="/login/email" className="text-gray-400 text-sm hover:text-gray-600 no-underline transition-colors">
+            <a href="/login/email" className="text-gray-500 text-sm hover:text-gray-600 no-underline transition-colors">
               เข้าด้วยอีเมล / รหัสผ่าน
             </a>
           </div>
@@ -154,7 +154,7 @@ export default function LoginPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-3">
               เลือกเครื่องมือที่เหมาะกับคุณ
             </h2>
-            <p className="text-gray-400 text-base md:text-lg max-w-lg mx-auto">
+            <p className="text-gray-500 text-base md:text-lg max-w-lg mx-auto">
               2 Template สำหรับ 2 คอร์ส — เลือกได้หลังเข้าสู่ระบบ
             </p>
           </div>
@@ -171,7 +171,7 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <div className="text-gray-900 font-semibold text-[15px]">Inside Bank</div>
-                  <div className="text-gray-400 text-xs">Business MRI — 7 Steps</div>
+                  <div className="text-gray-500 text-xs">Business MRI — 7 Steps</div>
                 </div>
               </div>
               <p className="text-gray-500 text-sm leading-relaxed mb-5">
@@ -198,7 +198,7 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <div className="text-gray-900 font-semibold text-[15px]">Inside Business Finance</div>
-                  <div className="text-gray-400 text-xs">Owner Dashboard — 10 ช่อง</div>
+                  <div className="text-gray-500 text-xs">Owner Dashboard — 10 ช่อง</div>
                 </div>
               </div>
               <p className="text-gray-500 text-sm leading-relaxed mb-5">
@@ -218,7 +218,7 @@ export default function LoginPage() {
       </section>
 
       {/* ====== TOOLS BY TEMPLATE ====== */}
-      <section className="bg-white py-20 px-5 md:px-12">
+      <section className="bg-gray-50 py-20 px-5 md:px-12">
         <div className="max-w-5xl mx-auto">
           {/* IB Tools */}
           <div className="mb-20">
@@ -228,7 +228,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900">Inside Bank — Business MRI</h3>
-                <p className="text-gray-400 text-sm">สแกนธุรกิจ 7 Steps จากมุมมองธนาคาร</p>
+                <p className="text-gray-500 text-sm">สแกนธุรกิจ 7 Steps จากมุมมองธนาคาร</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -246,7 +246,7 @@ export default function LoginPage() {
               </div>
               <div>
                 <h3 className="text-xl md:text-2xl font-bold text-gray-900">Inside Business Finance</h3>
-                <p className="text-gray-400 text-sm">เครื่องมือ 8 ตัว ครบทุก Session สำหรับเจ้าของ SME</p>
+                <p className="text-gray-500 text-sm">เครื่องมือ 8 ตัว ครบทุก Session สำหรับเจ้าของ SME</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -259,7 +259,7 @@ export default function LoginPage() {
       </section>
 
       {/* ====== STATS ====== */}
-      <section className="bg-gray-50 py-16 px-5 md:px-12">
+      <section className="bg-white py-16 px-5 md:px-12">
         <div className="max-w-3xl mx-auto grid grid-cols-3 gap-6">
           {[
             { value: 7, label: 'Steps ครบวงจร', suffix: '' },
@@ -270,14 +270,14 @@ export default function LoginPage() {
               <div className="num text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
                 {s.value}<span className="text-emerald-600">{s.suffix}</span>
               </div>
-              <div className="text-xs text-gray-400 mt-1.5">{s.label}</div>
+              <div className="text-xs text-gray-500 mt-1.5">{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ====== TRUST STRIP ====== */}
-      <section className="bg-gray-50 pb-20 px-5 md:px-12">
+      <section className="bg-white pb-20 px-5 md:px-12">
         <div className="max-w-2xl mx-auto anim-fade-up">
           <div className="flex items-center justify-center gap-2.5 flex-wrap px-5 py-3.5 rounded-2xl bg-white border border-gray-100">
             <Shield size={16} className="text-emerald-500" />
@@ -318,7 +318,7 @@ function ToolCard({ tool: t, delay }: { tool: ToolItem; delay: number }) {
         <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: t.color, opacity: 0.7 }}>{t.tag}</span>
       </div>
       <div className="text-[14px] font-semibold text-gray-800 leading-tight mb-1.5">{t.label}</div>
-      <div className="text-[11px] text-gray-400 leading-relaxed group-hover:text-gray-600 transition-colors">{t.desc}</div>
+      <div className="text-[11px] text-gray-500 leading-relaxed group-hover:text-gray-600 transition-colors">{t.desc}</div>
     </div>
   );
 }
