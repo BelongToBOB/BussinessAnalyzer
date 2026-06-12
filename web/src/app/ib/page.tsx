@@ -149,12 +149,18 @@ export default function IbDashboardPage() {
           <div className="text-[10px] text-text-tertiary mt-1.5">{completed}/{STEPS.length} steps</div>
         </div>
 
-        {/* Report button */}
+        {/* Action buttons */}
         {completed >= 3 && (
-          <button data-tour="ib-report" onClick={() => router.push('/ib/report')}
-            className="w-full mt-4 h-12 rounded-xl gradient-accent text-white font-semibold cursor-pointer border-none text-sm hover:opacity-90 transition">
-            ดู MRI Report →
-          </button>
+          <div className="flex gap-3 mt-4">
+            <button data-tour="ib-report" onClick={() => router.push('/ib/report')}
+              className="flex-1 h-12 rounded-xl gradient-accent text-white font-semibold cursor-pointer border-none text-sm hover:opacity-90 transition">
+              ดู MRI Report →
+            </button>
+            <button onClick={() => router.push('/ib/bank-sim')}
+              className="flex-1 h-12 rounded-xl border-2 border-accent text-accent font-semibold cursor-pointer bg-transparent text-sm hover:bg-accent hover:text-white transition">
+              Bank Simulation
+            </button>
+          </div>
         )}
 
         {/* Health Summary + Radar Chart */}
