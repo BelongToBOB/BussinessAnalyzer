@@ -155,3 +155,11 @@ export const rdSaveKpi = (id: string, data: any) =>
 export const rdSwitchFrsProfile = (id: string, profile: 'learning' | 'bank') =>
   fetchApi(`/api/ib/assessments/${id}/frs-profile`, { method: 'PUT', body: JSON.stringify({ profile }) });
 export const rdGetConfig = () => fetchApi<any[]>('/api/ib/config');
+
+// WinBank AI
+export const rdWinBankAnalyze = (assessmentId: string) =>
+  fetchApi<any>('/api/ib/winbank/analyze', { method: 'POST', body: JSON.stringify({ assessmentId }) });
+export const rdWinBankLatest = (assessmentId: string) =>
+  fetchApi<any>(`/api/ib/winbank/${assessmentId}/latest`);
+export const rdWinBankHistory = (assessmentId: string) =>
+  fetchApi<any[]>(`/api/ib/winbank/${assessmentId}/history`);

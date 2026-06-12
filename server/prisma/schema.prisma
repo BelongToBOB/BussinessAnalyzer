@@ -250,6 +250,7 @@ enum RdReportType {
   business_plan
   loan_readiness
   deal_comparison
+  winbank
 }
 
 // ─── Assessment Hub ──────────────────────────────────────────
@@ -597,7 +598,8 @@ model RdReport {
   id           String       @id @default(cuid())
   assessmentId String
   type         RdReportType
-  format       String       @default("html") // "pdf" | "html"
+  format       String       @default("html") // "pdf" | "html" | "json"
+  content      String?      @db.Text // JSON content for winbank analysis etc.
   fileUrl      String?
 
   generatedAt DateTime @default(now())

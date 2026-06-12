@@ -1,18 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard, TrendingUp, FileText, MessageSquare, BarChart3,
-  GitCompare, Star, Settings, PanelLeft, ChevronLeft,
+  LayoutDashboard, TrendingUp, FileText, Bot, BarChart3,
+  GitCompare, Star, PanelLeft, ChevronLeft, ChevronsLeft, ChevronsRight,
   Brain, Heart, Waves, Building2, ClipboardList, Handshake,
 } from 'lucide-react';
 
 const MENU_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/ib' },
   { icon: TrendingUp, label: 'ประเมินใหม่', path: '/ib/session/1-mindset' },
-  { icon: MessageSquare, label: 'Bank Simulation', path: '/ib/bank-sim' },
+  { icon: Bot, label: 'RM WinBank', path: '/ib/winbank' },
   { icon: Star, label: 'สรุปความพร้อม', path: '/ib/summary' },
   { icon: FileText, label: 'FRS Report', path: '/ib/report' },
   { icon: BarChart3, label: 'Business Plan', path: '/ib/business-plan' },
@@ -30,17 +30,24 @@ const SESSION_ITEMS = [
 
 export function IbSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return localStorage.getItem('_ib_sidebar') === 'collapsed'; } catch { return false; }
+  });
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    try { localStorage.setItem('_ib_sidebar', collapsed ? 'collapsed' : 'open'); } catch {}
+  }, [collapsed]);
 
   const isActive = (path: string) => pathname === path;
 
   const NavItem = ({ icon: Icon, label, path }: { icon: any; label: string; path: string }) => (
     <Link href={path} onClick={() => setMobileOpen(false)}
-      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm no-underline transition-colors ${
+      title={collapsed ? label : undefined}
+      className={`flex items-center gap-3 rounded-lg text-[13px] no-underline transition-colors ${collapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2'} ${
         isActive(path)
-          ? 'bg-accent/10 text-accent font-semibold'
-          : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary'
+          ? 'bg-white/10 text-white font-semibold'
+          : 'text-white/60 hover:bg-white/5 hover:text-white/90'
       }`}>
       <Icon size={16} className="shrink-0" />
       {!collapsed && <span className="truncate">{label}</span>}
@@ -49,61 +56,70 @@ export function IbSidebar({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar — desktop */}
-      <aside className={`hidden md:flex flex-col border-r border-border bg-bg-primary shrink-0 transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
+      {/* Sidebar — desktop, navy */}
+      <aside className={`hidden md:flex flex-col shrink-0 transition-all duration-300 relative ${collapsed ? 'w-14' : 'w-60'}`}
+        style={{ background: '#0F172A' }}>
+        {/* Collapse triangle button — centered on right edge */}
+        <button onClick={() => setCollapsed(!collapsed)}
+          className="absolute top-1/2 -translate-y-1/2 -right-3 z-10 w-6 h-10 flex items-center justify-center cursor-pointer bg-[#0F172A] border border-white/10 border-l-0 rounded-r-md hover:bg-[#1E293B] transition-colors"
+          title={collapsed ? 'ขยาย' : 'พับเก็บ'}>
+          <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
+            <path d={collapsed ? 'M2 1L7 7L2 13' : 'M6 1L1 7L6 13'} stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
+          </svg>
+        </button>
         {/* Header */}
-        <div className="h-14 flex items-center gap-3 px-3 border-b border-border shrink-0">
+        <div className={`h-14 flex items-center shrink-0 border-b border-white/10 ${collapsed ? 'px-2 justify-center' : 'px-3 gap-3'}`}>
           <button onClick={() => setCollapsed(!collapsed)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-secondary cursor-pointer bg-transparent border-none text-text-tertiary">
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 cursor-pointer bg-transparent border-none text-white/50">
             <PanelLeft size={16} />
           </button>
-          {!collapsed && <span className="font-semibold text-sm tracking-tight">Business MRI</span>}
+          {!collapsed && <span className="font-semibold text-sm text-white tracking-tight">Business MRI</span>}
         </div>
 
         {/* Menu */}
-        <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-0.5">
-          {MENU_ITEMS.map((item) => <NavItem key={item.path} {...item} />)}
+        <nav className={`flex-1 overflow-y-auto py-2 space-y-0.5 ${collapsed ? 'px-1' : 'px-2'}`}>
+          {MENU_ITEMS.map((item) => <NavItem key={item.label + item.path} {...item} />)}
 
-          {!collapsed && <div className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wide px-3 pt-4 pb-1">Sessions</div>}
-          {collapsed && <div className="border-t border-border my-2" />}
+          {!collapsed && <div className="text-[10px] font-semibold text-white/30 uppercase tracking-wide px-3 pt-4 pb-1">Sessions</div>}
+          {collapsed && <div className="border-t border-white/10 my-2 mx-1" />}
 
-          {SESSION_ITEMS.map((item) => <NavItem key={item.path} {...item} />)}
+          {SESSION_ITEMS.map((item) => <NavItem key={item.label + item.path} {...item} />)}
         </nav>
 
         {/* Footer */}
-        <div className="p-3 border-t border-border shrink-0">
-          {!collapsed && (
-            <div className="text-[10px] text-text-tertiary">WinWin Analyzer</div>
-          )}
+        <div className="p-2 border-t border-white/10 shrink-0">
+          {!collapsed && <div className="text-[10px] text-white/20 px-2">WinWin Analyzer</div>}
         </div>
       </aside>
 
-      {/* Mobile header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-bg-primary/95 backdrop-blur border-b border-border flex items-center justify-between px-4">
+      {/* Mobile header — navy */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4"
+        style={{ background: 'rgba(15, 23, 42, 0.97)', backdropFilter: 'blur(8px)' }}>
         <button onClick={() => setMobileOpen(true)}
-          className="w-9 h-9 flex items-center justify-center rounded-lg bg-transparent border-none cursor-pointer text-text-primary">
+          className="w-9 h-9 flex items-center justify-center rounded-lg bg-transparent border-none cursor-pointer text-white/70">
           <PanelLeft size={20} />
         </button>
-        <span className="text-sm font-semibold">Business MRI</span>
+        <span className="text-sm font-semibold text-white">Business MRI</span>
         <div className="w-9" />
       </div>
 
-      {/* Mobile sidebar overlay */}
+      {/* Mobile sidebar overlay — navy */}
       {mobileOpen && (
         <>
-          <div className="md:hidden fixed inset-0 z-50 bg-black/40" onClick={() => setMobileOpen(false)} />
-          <aside className="md:hidden fixed left-0 top-0 bottom-0 z-50 w-72 bg-bg-primary border-r border-border flex flex-col animate-in slide-in-from-left">
-            <div className="h-14 flex items-center gap-3 px-3 border-b border-border shrink-0">
+          <div className="md:hidden fixed inset-0 z-50 bg-black/50" onClick={() => setMobileOpen(false)} />
+          <aside className="md:hidden fixed left-0 top-0 bottom-0 z-50 w-72 flex flex-col"
+            style={{ background: '#0F172A', animation: 'slideInLeft 0.2s ease-out' }}>
+            <div className="h-14 flex items-center gap-3 px-3 border-b border-white/10 shrink-0">
               <button onClick={() => setMobileOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-bg-secondary cursor-pointer bg-transparent border-none text-text-tertiary">
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 cursor-pointer bg-transparent border-none text-white/50">
                 <ChevronLeft size={16} />
               </button>
-              <span className="font-semibold text-sm">Business MRI</span>
+              <span className="font-semibold text-sm text-white">Business MRI</span>
             </div>
             <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-0.5">
-              {MENU_ITEMS.map((item) => <NavItem key={item.path} {...item} />)}
-              <div className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wide px-3 pt-4 pb-1">Sessions</div>
-              {SESSION_ITEMS.map((item) => <NavItem key={item.path} {...item} />)}
+              {MENU_ITEMS.map((item) => <NavItem key={item.label + item.path} {...item} />)}
+              <div className="text-[10px] font-semibold text-white/30 uppercase tracking-wide px-3 pt-4 pb-1">Sessions</div>
+              {SESSION_ITEMS.map((item) => <NavItem key={item.label + item.path} {...item} />)}
             </nav>
           </aside>
         </>
@@ -111,7 +127,7 @@ export function IbSidebar({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <div className="flex-1 min-w-0 md:overflow-y-auto">
-        <div className="md:hidden h-14" /> {/* spacer for mobile header */}
+        <div className="md:hidden h-14" />
         {children}
       </div>
     </div>

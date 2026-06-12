@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Put, Param, Body, Req } from '@nestjs/common';
 import * as express from 'express';
 import { ReadinessService } from './readiness.service';
+import { WinBankService } from './winbank.service';
 import { getUserId } from '../common/get-user-id';
 
 @Controller('api/ib')
 export class ReadinessController {
-  constructor(private svc: ReadinessService) {}
+  constructor(private svc: ReadinessService, private winbank: WinBankService) {}
 
   // ─── Assessment CRUD ─────────────────────────────────────
 
@@ -64,6 +65,37 @@ export class ReadinessController {
   @Put('assessments/:id/frs-profile')
   switchFrsProfile(@Req() req: express.Request, @Param('id') id: string, @Body() body: { profile: 'learning' | 'bank' }) {
     return this.svc.switchFrsProfile(getUserId(req), id, body.profile);
+  }
+
+  // ─── WinBank AI ─────────────────────────────────────────
+
+  @Get('winbank/:assessmentId/latest')
+  async getLatestWinBank(@Req() req: express.Request, @Param('assessmentId') assessmentId: string) {
+    return this.winbank.getLatestAnalysis(getUserId(req), assessmentId);
+  }
+
+  @Get('winbank/:assessmentId/history')
+  async listWinBankHistory(@Req() req: express.Request, @Param('assessmentId') assessmentId: string) {
+    return this.winbank.listAnalyses(getUserId(req), assessmentId);
+  }
+
+  @Post('winbank/analyze')
+  async analyzeWinBank(@Req() req: express.Request, @Body() body: { assessmentId: string }) {
+    try {
+      return await this.winbank.analyze(getUserId(req), body.assessmentId);
+    } catch (err: any) {
+      console.error('[WinBank Controller]', err.message);
+      return { error: true, message: err.message ?? 'Unknown error' };
+    }
+  }
+
+  @Post('winbank/chat')
+  async chatWinBank(@Req() req: express.Request, @Body() body: { assessmentId: string; message: string; history?: any[] }) {
+    try {
+      return await this.winbank.chat(getUserId(req), body.assessmentId, body.message, body.history ?? []);
+    } catch (err: any) {
+      return { error: true, reply: err.message ?? 'Unknown error' };
+    }
   }
 
   // ─── Config ──────────────────────────────────────────────
