@@ -118,7 +118,8 @@ export default function IbDashboardPage() {
 
   if (loading) return <div className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังโหลด...</div>;
 
-  const completed = STEPS.filter(s => stepStatus[s.slug]?.done).length;
+  const coreSteps = STEPS.filter(s => s.slug !== 'ib-bank-sim');
+  const completed = coreSteps.filter(s => stepStatus[s.slug]?.done).length;
   const nextStep = STEPS.find(s => !stepStatus[s.slug]?.done);
   const statusColor = (s: string) => s === 'good' ? 'bg-status-good' : s === 'warn' ? 'bg-status-warn' : s === 'bad' ? 'bg-status-bad' : 'bg-border';
   const statusText = (s: string) => s === 'good' ? 'text-status-good' : s === 'warn' ? 'text-status-warn' : s === 'bad' ? 'text-status-bad' : 'text-text-tertiary';
@@ -143,11 +144,11 @@ export default function IbDashboardPage() {
         <div data-tour="ib-score" className="bg-bg-card border border-border rounded-2xl p-5 flex flex-col items-center anim-fade-up">
           <ScoreRing score={score} size={180} />
           <div className="flex gap-1.5 mt-3">
-            {Array.from({ length: STEPS.length }).map((_, i) => (
+            {Array.from({ length: coreSteps.length }).map((_, i) => (
               <div key={i} className={`w-2.5 h-2.5 rounded-full transition-colors ${i < completed ? 'bg-accent' : 'bg-border'}`} />
             ))}
           </div>
-          <div className="text-[10px] text-text-tertiary mt-1.5">{completed}/{STEPS.length} steps</div>
+          <div className="text-[10px] text-text-tertiary mt-1.5">{completed}/{coreSteps.length} steps</div>
         </div>
 
         {/* Report button */}
@@ -262,18 +263,28 @@ export default function IbDashboardPage() {
                 const status = stepStatus[step.slug];
                 const done = status?.done;
                 const verdict = status?.verdict;
+                const isBonusStep = step.slug === 'ib-bank-sim';
                 return (
                   <a key={step.slug} href={step.href}
                     className="group flex items-center gap-3 px-4 py-2.5 no-underline hover:bg-bg-secondary transition-colors border-b border-border last:border-b-0">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${done ? 'bg-status-good' : 'border-[1.5px] border-border-strong'}`}>
-                      {done ? (
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                      isBonusStep ? 'bg-accent/10 border border-accent/30' : done ? 'bg-status-good' : 'border-[1.5px] border-border-strong'
+                    }`}>
+                      {isBonusStep ? (
+                        <span className="text-[8px] font-bold text-accent">AI</span>
+                      ) : done ? (
                         <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M3 7l3 3 5-6"/></svg>
                       ) : (
                         <span className="num text-[9px] font-bold text-text-tertiary">{step.num}</span>
                       )}
                     </div>
-                    <span className={`flex-1 text-[13px] font-medium ${done ? 'text-text-secondary' : 'text-text-primary'}`}>{step.label}</span>
-                    {done && verdict ? (
+                    <span className={`flex-1 text-[13px] font-medium ${isBonusStep ? 'text-accent' : done ? 'text-text-secondary' : 'text-text-primary'}`}>
+                      {step.label}
+                      {isBonusStep && <span className="text-[10px] text-text-tertiary ml-1.5">เสริม</span>}
+                    </span>
+                    {isBonusStep ? (
+                      <span className="text-[11px] text-accent font-medium">เริ่มแชท →</span>
+                    ) : done && verdict ? (
                       <span className={`text-[11px] font-semibold px-2 py-1 rounded-md ${verdict === 'green' ? 'text-status-good bg-wash-good' : verdict === 'yellow' ? 'text-status-warn bg-wash-warn' : 'text-status-bad bg-wash-bad'}`}>
                         {verdict === 'green' ? 'ดี' : verdict === 'yellow' ? 'ระวัง' : 'แก้ไข'}
                       </span>

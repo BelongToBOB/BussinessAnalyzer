@@ -11,7 +11,6 @@ const STEPS = [
   { num: 5, slug: 'ib-capital' },
   { num: 6, slug: 'ib-growth' },
   { num: 7, slug: 'ib-loan-action' },
-  { num: 8, slug: 'ib-bank-sim' },
 ];
 
 export function IbStepProgress({ current }: { current: number }) {
