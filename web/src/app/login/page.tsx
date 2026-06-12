@@ -127,6 +127,10 @@ export default function LoginPage() {
                       <input type="email" value={seminarEmail} onChange={(e) => setSeminarEmail(e.target.value)}
                         placeholder="email@example.com"
                         className="w-full h-10 rounded-lg px-3 text-sm bg-white/10 text-white border border-white/15 outline-none focus:border-[#C9A14A] placeholder:text-white/30" />
+                      <button type="button" onClick={() => setSeminarEmail('insidebankuser01@winwin.co')}
+                        className="text-[10px] text-white/30 hover:text-white/60 mt-1 cursor-pointer bg-transparent border-none underline">
+                        ไม่มีอีเมล? ใช้บัญชีสำรอง
+                      </button>
                     </div>
                     <div>
                       <label className="text-xs text-white/50 mb-1 block">รหัสสัมมนา</label>
