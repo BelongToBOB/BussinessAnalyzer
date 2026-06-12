@@ -164,10 +164,14 @@ export function AiChat() {
               style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15))' }}>
               <BotIcon size={20} />
             </div>
-            <div>
+            <div className="flex-1">
               <div className="text-sm font-bold">RM AI</div>
               <div className="text-[10px] text-text-tertiary">ผู้ช่วยอ่านตัวเลขธุรกิจ</div>
             </div>
+            <button onClick={() => setOpen(false)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer bg-transparent border-none text-text-tertiary hover:text-text-primary hover:bg-bg-secondary transition-colors">
+              <X size={16} />
+            </button>
           </div>
           <div className="flex items-center gap-3 mt-3">
             <div className="flex items-center gap-1.5">
