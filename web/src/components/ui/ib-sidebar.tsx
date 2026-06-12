@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, TrendingUp, FileText, Bot, BarChart3,
   GitCompare, Star, PanelLeft, ChevronLeft, ChevronsLeft, ChevronsRight,
-  Brain, Heart, Waves, Building2, ClipboardList, Handshake,
+  Brain, Heart, Waves, Building2, ClipboardList, Handshake, LogOut, Home,
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -86,9 +86,19 @@ export function IbSidebar({ children }: { children: React.ReactNode }) {
           {SESSION_ITEMS.map((item) => <NavItem key={item.label + item.path} {...item} />)}
         </nav>
 
-        {/* Footer */}
-        <div className="p-2 border-t border-white/10 shrink-0">
-          {!collapsed && <div className="text-[10px] text-white/20 px-2">WinWin Analyzer</div>}
+        {/* Footer — home + logout */}
+        <div className={`border-t border-white/10 shrink-0 space-y-0.5 ${collapsed ? 'p-1' : 'p-2'}`}>
+          <Link href="/select" title="เปลี่ยนเครื่องมือ"
+            className={`flex items-center gap-3 rounded-lg text-[13px] no-underline text-white/40 hover:bg-white/5 hover:text-white/70 transition-colors ${collapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2'}`}>
+            <Home size={16} className="shrink-0" />
+            {!collapsed && <span>เปลี่ยนเครื่องมือ</span>}
+          </Link>
+          <button onClick={() => { window.location.href = '/api/auth/signout'; }}
+            title="ออกจากระบบ"
+            className={`w-full flex items-center gap-3 rounded-lg text-[13px] text-white/40 hover:bg-red-500/10 hover:text-red-400 cursor-pointer bg-transparent border-none transition-colors ${collapsed ? 'px-2 py-2 justify-center' : 'px-3 py-2'}`}>
+            <LogOut size={16} className="shrink-0" />
+            {!collapsed && <span>ออกจากระบบ</span>}
+          </button>
         </div>
       </aside>
 
