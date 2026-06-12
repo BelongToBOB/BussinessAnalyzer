@@ -135,19 +135,16 @@ export function AiChat() {
 
   return (
     <>
-      {/* Toggle button */}
+      {/* FAB — bottom right circle */}
       <button onClick={() => setOpen(!open)}
-        className={`fixed top-1/2 -translate-y-1/2 z-40 flex items-center gap-1.5 cursor-pointer border-none shadow-lg transition-all duration-300 ${
-          open ? 'right-[360px] rounded-l-xl px-2 py-3' : 'right-0 rounded-l-2xl px-3 py-4'
+        className={`fixed z-40 flex items-center justify-center cursor-pointer border-none shadow-xl transition-all duration-300 rounded-full ${
+          open ? 'bottom-5 right-[372px] w-10 h-10' : 'bottom-20 right-4 w-14 h-14'
         }`}
-        style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', writingMode: open ? undefined : 'vertical-rl' }}>
+        style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', boxShadow: '0 4px 20px rgba(99,102,241,0.4)' }}>
         {open ? (
           <X size={18} color="#fff" />
         ) : (
-          <>
-            <BotIcon size={18} />
-            <span className="text-white text-[11px] font-bold tracking-wider" style={{ transform: 'rotate(180deg)' }}>AI</span>
-          </>
+          <BotIcon size={24} />
         )}
       </button>
 
