@@ -490,7 +490,7 @@ export class ReadinessService {
       const businessMode = dto.businessMode ?? 'expanding';
 
       const dealInputs: DealInput[] = dto.deals.map((d: any) => ({
-        slot: d.slot, amount: d.amount, interestRate: d.interestRate,
+        slot: d.slot, amount: d.amount, interestRate: d.interestRate / 100,
         tenureYears: d.tenureYears, monthlyInstallment: d.monthlyInstallment ?? 0,
         scoreCollateral: d.scoreCollateral ?? 50, scoreCovenants: d.scoreCovenants ?? 50,
       }));

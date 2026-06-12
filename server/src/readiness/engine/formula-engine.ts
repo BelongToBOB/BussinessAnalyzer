@@ -432,10 +432,15 @@ export function calcS04(input: S04Input, cfg: EngineConfig): S04Result {
     warnings.push('EBITDA ติดลบ — วิธีที่ 2 ใช้ไม่ได้ ระบบใช้ค่า median แทน');
   }
 
-  // Capacity score: based on DSCR after
+  // Capacity score: dscrQuality × 60 + sFit × 40 (v2 formula)
+  const sFit = loanPractical && loanForDscr <= loanPractical
+    ? 40
+    : loanPractical
+      ? Math.max(0, 40 * (1 - (loanForDscr - loanPractical) / (loanPractical || 1)))
+      : 20; // no practical = neutral
   let capacityScore = 0;
   if (dscrAfter !== null) {
-    capacityScore = Math.round(dscrQuality(dscrAfter, cfg) * 100);
+    capacityScore = Math.round(dscrQuality(dscrAfter, cfg) * 60 + sFit);
   }
 
   return {

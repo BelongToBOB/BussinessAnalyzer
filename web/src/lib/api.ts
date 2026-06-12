@@ -132,3 +132,26 @@ export const getSession = async (type: string, month?: string) => {
 };
 export const saveSession = (type: string, data: any, month?: string) =>
   fetchApi(`/api/sessions/${type}${month ? `/${month}` : ''}`, { method: 'PUT', body: JSON.stringify(data) });
+
+// ─── Readiness Lab (IB) ─────────────────────────────────
+export const rdCreateAssessment = (data?: { title?: string }) =>
+  fetchApi<any>('/api/ib/assessments', { method: 'POST', body: JSON.stringify(data ?? {}) });
+export const rdListAssessments = () => fetchApi<any[]>('/api/ib/assessments');
+export const rdGetAssessment = (id: string) => fetchApi<any>(`/api/ib/assessments/${id}`);
+export const rdSaveS1 = (id: string, data: any) =>
+  fetchApi(`/api/ib/assessments/${id}/s1`, { method: 'PUT', body: JSON.stringify(data) });
+export const rdSaveS2 = (id: string, data: any) =>
+  fetchApi(`/api/ib/assessments/${id}/s2`, { method: 'PUT', body: JSON.stringify(data) });
+export const rdSaveS3 = (id: string, data: any) =>
+  fetchApi(`/api/ib/assessments/${id}/s3`, { method: 'PUT', body: JSON.stringify(data) });
+export const rdSaveS4 = (id: string, data: any) =>
+  fetchApi(`/api/ib/assessments/${id}/s4`, { method: 'PUT', body: JSON.stringify(data) });
+export const rdSaveS5 = (id: string, data: any) =>
+  fetchApi(`/api/ib/assessments/${id}/s5`, { method: 'PUT', body: JSON.stringify(data) });
+export const rdSaveS6 = (id: string, data: any) =>
+  fetchApi(`/api/ib/assessments/${id}/s6`, { method: 'PUT', body: JSON.stringify(data) });
+export const rdSaveKpi = (id: string, data: any) =>
+  fetchApi(`/api/ib/assessments/${id}/kpi`, { method: 'PUT', body: JSON.stringify(data) });
+export const rdSwitchFrsProfile = (id: string, profile: 'learning' | 'bank') =>
+  fetchApi(`/api/ib/assessments/${id}/frs-profile`, { method: 'PUT', body: JSON.stringify({ profile }) });
+export const rdGetConfig = () => fetchApi<any[]>('/api/ib/config');

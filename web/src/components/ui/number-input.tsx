@@ -9,11 +9,12 @@ interface NumberInputProps {
   placeholder?: string;
   readOnly?: boolean;
   error?: string | null;
+  compact?: boolean;
 }
 
 export function NumberInput({
   value, onChange, suffix = 'บาท',
-  placeholder = '0', readOnly = false, error,
+  placeholder = '0', readOnly = false, error, compact = false,
 }: NumberInputProps) {
   return (
     <div>
@@ -25,13 +26,13 @@ export function NumberInput({
           placeholder={placeholder}
           readOnly={readOnly}
           className={`
-            w-full h-[52px] rounded-xl px-4 pr-16 num text-xl font-medium tracking-tight outline-none transition-colors
+            w-full rounded-xl num outline-none transition-colors border
+            ${compact ? 'h-[38px] px-3 pr-10 text-sm font-medium' : 'h-[52px] px-4 pr-16 text-xl font-medium tracking-tight'}
             ${readOnly ? 'bg-bg-secondary text-text-secondary' : 'bg-bg-card text-text-primary'}
             ${error ? 'border-status-bad' : 'border-border focus:border-accent'}
-            border
           `}
         />
-        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-text-tertiary font-medium">
+        <span className={`absolute top-1/2 -translate-y-1/2 text-text-tertiary font-medium ${compact ? 'right-2.5 text-[11px]' : 'right-4 text-sm'}`}>
           {suffix}
         </span>
       </div>
