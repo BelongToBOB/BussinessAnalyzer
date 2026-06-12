@@ -12,10 +12,6 @@ function storeUserId(id: string) {
 async function getUserId(): Promise<string | null> {
   if (cachedUserId) return cachedUserId;
 
-  // Check localStorage first (survives page navigations)
-  const stored = getStoredUserId();
-  if (stored) { cachedUserId = stored; return stored; }
-
   try {
     const res = await fetch('/api/auth/session');
     if (!res.ok) return null;
@@ -24,12 +20,25 @@ async function getUserId(): Promise<string | null> {
     const email = session.user.email;
     const name = session.user.name;
 
+    // Check if stored uid matches current session email
+    const stored = getStoredUserId();
+    const storedEmail = (() => { try { return localStorage.getItem('_uid_email'); } catch { return null; } })();
+    if (stored && storedEmail === email) {
+      cachedUserId = stored;
+      return stored;
+    }
+
+    // Clear stale uid from different account
+    if (stored && storedEmail !== email) {
+      try { localStorage.removeItem('_uid'); localStorage.removeItem('_uid_email'); } catch {}
+    }
+
     if (!email) {
       cachedUserId = session.user.id || null;
       return cachedUserId;
     }
 
-    // Sync with backend (only needed once — result cached in localStorage)
+    // Sync with backend
     try {
       const syncRes = await fetch(`${API_URL}/api/auth/sync`, {
         method: 'POST',
@@ -40,6 +49,7 @@ async function getUserId(): Promise<string | null> {
         const synced = await syncRes.json();
         cachedUserId = synced.id;
         storeUserId(synced.id);
+        try { localStorage.setItem('_uid_email', email); } catch {}
         return cachedUserId;
       }
     } catch { /* backend down */ }
