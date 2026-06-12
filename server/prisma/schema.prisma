@@ -90,6 +90,7 @@ model Business {
   expenseItems   ExpenseItem[]
   leakChecks     LeakCheck[]
   sessionData    SessionData[]
+  assessments    RdAssessment[]
 
   // MVP: 1 user = 1 business. Remove in Phase 4 for multi-business.
   @@unique([userId])
@@ -214,4 +215,405 @@ model ActivityLog {
 
   @@index([userId, action])
   @@index([createdAt])
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Readiness Lab — 6-Session Financial Readiness Assessment
+// Replaces the old IB 7-step flow
+// ═══════════════════════════════════════════════════════════════
+
+enum RdAssessmentStatus {
+  draft
+  in_progress
+  completed
+  archived
+}
+
+enum RdFrsProfile {
+  learning
+  bank
+}
+
+enum RdFinanceLiteracy {
+  none
+  basic
+  good
+  expert
+}
+
+enum RdBusinessMode {
+  expanding
+  stable
+}
+
+enum RdReportType {
+  business_plan
+  loan_readiness
+  deal_comparison
+}
+
+// ─── Assessment Hub ──────────────────────────────────────────
+
+model RdAssessment {
+  id              String             @id @default(cuid())
+  businessId      String
+  title           String?
+  status          RdAssessmentStatus @default(draft)
+  currentSession  Int                @default(1) @db.SmallInt
+  completedFlags  Json               @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  business        Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  mindset         RdS1Mindset?
+  financials      RdS2Financial[]
+  health          RdS2Health?
+  cashflows       RdS3Cashflow[]
+  cashflowSummary RdS3Summary?
+  loan            RdS4Loan?
+  plan            RdS5Plan?
+  bankQuestions   RdS5BankQuestion[]
+  deals           RdS6Deal[]
+  execution       RdS6Execution?
+  kpiTrackers     RdS6KpiTracker[]
+  readinessScore  RdReadinessScore?
+  reports         RdReport[]
+
+  @@index([businessId])
+}
+
+// ─── Session 01: Mindset ─────────────────────────────────────
+
+model RdS1Mindset {
+  assessmentId       String  @id
+  operatorFlags      Json    @default("{}")
+  ownerFlags         Json    @default("{}")
+  annualRevenueEst   Decimal? @db.Decimal(18, 2)
+  topFinancialPain   String?  @db.Text
+  expansionGoal      String?  @db.Text
+  loanPurpose        String?  @db.Text
+  financeLiteracy    RdFinanceLiteracy?
+  hasBorrowedBefore  Boolean?
+  biggestWorry       String?  @db.Text
+  leverageChoice     String?  @db.Char(1)
+  leverageReason     String?  @db.Text
+  reflection         String?  @db.Text
+  // derived
+  operatorScore      Int?     @db.SmallInt
+  ownerScore         Int?     @db.SmallInt
+  ownerMindsetScore  Int?     @db.SmallInt
+  expansionClarity   Int?     @db.SmallInt
+  loanPurposeClarity Int?     @db.SmallInt
+  verdict            String?
+  readiness          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+// ─── Session 02: Financial Health ────────────────────────────
+
+model RdS2Financial {
+  id               String  @id @default(cuid())
+  assessmentId     String
+  fiscalYear       Int
+  isLatest         Boolean @default(false)
+  // raw inputs
+  revenue          Decimal? @db.Decimal(18, 2)
+  cogs             Decimal? @db.Decimal(18, 2)
+  sgaExpense       Decimal? @db.Decimal(18, 2)
+  depreciation     Decimal? @db.Decimal(18, 2)
+  interestExpense  Decimal? @db.Decimal(18, 2)
+  tax              Decimal? @db.Decimal(18, 2)
+  netProfit        Decimal? @db.Decimal(18, 2)
+  totalAssets      Decimal? @db.Decimal(18, 2)
+  totalLiabilities Decimal? @db.Decimal(18, 2)
+  equity           Decimal? @db.Decimal(18, 2)
+  cash             Decimal? @db.Decimal(18, 2)
+  accountsReceivable Decimal? @db.Decimal(18, 2)
+  inventory        Decimal? @db.Decimal(18, 2)
+  accountsPayable  Decimal? @db.Decimal(18, 2)
+  annualDebtService Decimal? @db.Decimal(18, 2)
+  // derived
+  ebitda           Decimal? @db.Decimal(18, 2)
+  ebit             Decimal? @db.Decimal(18, 2)
+  ebitdaMargin     Decimal? @db.Decimal(8, 4)
+  netMargin        Decimal? @db.Decimal(8, 4)
+  deRatio          Decimal? @db.Decimal(8, 4)
+  dscr             Decimal? @db.Decimal(8, 4)
+  workingCapital   Decimal? @db.Decimal(18, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, fiscalYear])
+  @@index([assessmentId])
+}
+
+model RdS2Health {
+  assessmentId  String  @id
+  revenueGrowth Decimal? @db.Decimal(8, 4)
+  profitGrowth  Decimal? @db.Decimal(8, 4)
+  healthScore   Int?     @db.SmallInt
+  status        String?
+  redFlags      Json     @default("[]")
+  passChecklist Json     @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+// ─── Session 03: Cashflow Stability ──────────────────────────
+
+model RdS3Cashflow {
+  id             String  @id @default(cuid())
+  assessmentId   String
+  month          String  @db.Char(7) // "2026-01"
+  // raw inputs
+  salesRevenue   Decimal? @db.Decimal(18, 2)
+  cashSales      Decimal? @db.Decimal(18, 2)
+  collectedFromAr Decimal? @db.Decimal(18, 2)
+  otherIncome    Decimal? @db.Decimal(18, 2)
+  cogsPaid       Decimal? @db.Decimal(18, 2)
+  rawMaterial    Decimal? @db.Decimal(18, 2)
+  rentUtilities  Decimal? @db.Decimal(18, 2)
+  salaries       Decimal? @db.Decimal(18, 2)
+  debtPayment    Decimal? @db.Decimal(18, 2)
+  taxPaid        Decimal? @db.Decimal(18, 2)
+  ownerWithdrawal Decimal? @db.Decimal(18, 2)
+  reserve        Decimal? @db.Decimal(18, 2)
+  // derived
+  cashIn         Decimal? @db.Decimal(18, 2)
+  realCash       Decimal? @db.Decimal(18, 2)
+  surplusCash    Decimal? @db.Decimal(18, 2)
+  growthCash     Decimal? @db.Decimal(18, 2)
+  realCashPct    Decimal? @db.Decimal(8, 4)
+  collectionGap  Decimal? @db.Decimal(18, 2)
+  collectionRate Decimal? @db.Decimal(8, 4)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, month])
+  @@index([assessmentId])
+}
+
+model RdS3Summary {
+  assessmentId    String  @id
+  avgMonthlySales Decimal? @db.Decimal(18, 2)
+  avgMonthlyCashIn Decimal? @db.Decimal(18, 2)
+  avgRealCash     Decimal? @db.Decimal(18, 2)
+  avgSurplus      Decimal? @db.Decimal(18, 2)
+  avgGrowth       Decimal? @db.Decimal(18, 2)
+  trend           String?
+  tightestMonth   String?  @db.Char(7)
+  stabilityScore  Int?     @db.SmallInt
+  warnings        Json     @default("[]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+// ─── Session 04: Loan Capacity ───────────────────────────────
+
+model RdS4Loan {
+  assessmentId             String  @id
+  // raw inputs
+  annualRevenue            Decimal? @db.Decimal(18, 2)
+  annualEbitda             Decimal? @db.Decimal(18, 2)
+  avgMonthlySales          Decimal? @db.Decimal(18, 2)
+  avgMonthlyCashIn         Decimal? @db.Decimal(18, 2)
+  existingMonthlyDebtService Decimal? @db.Decimal(18, 2)
+  existingDebtBalance      Decimal? @db.Decimal(18, 2)
+  collateralValue          Decimal? @db.Decimal(18, 2)
+  totalInvestment          Decimal? @db.Decimal(18, 2)
+  ownEquity                Decimal? @db.Decimal(18, 2)
+  desiredLoan              Decimal? @db.Decimal(18, 2)
+  assumedRate              Decimal? @db.Decimal(8, 4) @default(7.00)
+  assumedYears             Int?     @db.SmallInt @default(7)
+  // derived — 4 methods
+  m1RevenueMultiple        Decimal? @db.Decimal(18, 2)
+  m2Reverse                Decimal? @db.Decimal(18, 2)
+  m3WorkingCapital         Decimal? @db.Decimal(18, 2)
+  m4AssetBased             Decimal? @db.Decimal(18, 2)
+  // derived — tiers
+  loanConservative         Decimal? @db.Decimal(18, 2)
+  loanPractical            Decimal? @db.Decimal(18, 2)
+  loanStretch              Decimal? @db.Decimal(18, 2)
+  recommendedAmount        Decimal? @db.Decimal(18, 2)
+  riskyThreshold           Decimal? @db.Decimal(18, 2)
+  dscrBefore               Decimal? @db.Decimal(8, 4)
+  dscrAfter                Decimal? @db.Decimal(8, 4)
+  capacityScore            Int?     @db.SmallInt
+  verdict                  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+// ─── Session 05: Bank Readiness ──────────────────────────────
+
+model RdS5Plan {
+  assessmentId       String  @id
+  foundedYear        Int?
+  requestedAmount    Decimal? @db.Decimal(18, 2)
+  shareStructure     String?  @db.Text
+  mainProduct        String?  @db.Text
+  targetCustomers    String?  @db.Text
+  salesChannels      String?  @db.Text
+  differentiator     String?  @db.Text
+  salesForecast      Decimal? @db.Decimal(18, 2)
+  loanPurposeDetail  String?  @db.Text
+  repaymentSource    String?  @db.Text
+  collateralDetail   String?  @db.Text
+  riskFactors        String?  @db.Text
+  riskMitigation     String?  @db.Text
+  documents          Json     @default("{}")
+  // derived
+  loanReadinessScore Int?     @db.SmallInt
+  planCompleteness   Decimal? @db.Decimal(8, 4)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+model RdS5BankQuestion {
+  id           String  @id @default(cuid())
+  assessmentId String
+  qNo          Int     @db.SmallInt
+  answered     Boolean @default(false)
+  answer       String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, qNo])
+  @@index([assessmentId])
+}
+
+// ─── Session 06: Deal & Execution ────────────────────────────
+
+model RdS6Deal {
+  id               String  @id @default(cuid())
+  assessmentId     String
+  slot             String  @db.Char(1) // A, B, C
+  bankName         String?
+  amount           Decimal? @db.Decimal(18, 2)
+  interestRate     Decimal? @db.Decimal(8, 4)
+  tenureYears      Int?     @db.SmallInt
+  monthlyInstallment Decimal? @db.Decimal(18, 2)
+  collateralRequired String?
+  feeAmount        Decimal? @db.Decimal(18, 2)
+  feeNote          String?
+  covenants        String?
+  // derived scores
+  scoreAmount      Int?     @db.SmallInt
+  scoreInterest    Int?     @db.SmallInt
+  scoreTenure      Int?     @db.SmallInt
+  scoreCollateral  Int?     @db.SmallInt
+  scoreCovenants   Int?     @db.SmallInt
+  dealScore        Decimal? @db.Decimal(8, 4)
+  dscrAfterDeal    Decimal? @db.Decimal(8, 4)
+  cashLeftAfterDebt Decimal? @db.Decimal(18, 2)
+  isBest           Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+}
+
+model RdS6Execution {
+  assessmentId String        @id
+  businessMode RdBusinessMode?
+  month1Plan   String?       @db.Text
+  month2Plan   String?       @db.Text
+  month3Plan   String?       @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+model RdS6KpiTracker {
+  id            String  @id @default(cuid())
+  assessmentId  String
+  month         String  @db.Char(7)
+  revenueGrowth Decimal? @db.Decimal(8, 4)
+  cashflow      Decimal? @db.Decimal(18, 2)
+  paidOnTime    Boolean?
+  note          String?  @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@unique([assessmentId, month])
+  @@index([assessmentId])
+}
+
+// ─── Readiness Score Snapshot ────────────────────────────────
+
+model RdReadinessScore {
+  assessmentId       String       @id
+  mindsetScore       Int?         @db.SmallInt
+  healthScore        Int?         @db.SmallInt
+  stabilityScore     Int?         @db.SmallInt
+  capacityScore      Int?         @db.SmallInt
+  bankReadinessScore Int?         @db.SmallInt
+  frsProfile         RdFrsProfile @default(learning)
+  compositeFrs       Int?         @db.SmallInt
+  frsBand            String?
+
+  computedAt DateTime @default(now())
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+}
+
+// ─── Reports ─────────────────────────────────────────────────
+
+model RdReport {
+  id           String       @id @default(cuid())
+  assessmentId String
+  type         RdReportType
+  format       String       @default("html") // "pdf" | "html"
+  fileUrl      String?
+
+  generatedAt DateTime @default(now())
+
+  assessment RdAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  @@index([assessmentId])
+}
+
+// ─── Config Constants (engine thresholds) ────────────────────
+
+model RdConfigConstant {
+  key         String  @id @db.VarChar(100)
+  value       Decimal @db.Decimal(18, 6)
+  description String? @db.Text
+  updatedBy   String?
+
+  updatedAt DateTime @updatedAt
 }
