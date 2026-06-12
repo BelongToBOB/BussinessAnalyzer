@@ -14,7 +14,7 @@ const TEMPLATES = [
     btnBg: 'linear-gradient(135deg, #78350F, #92400E)',
     borderAccent: 'rgba(202, 138, 4, 0.25)',
     features: ['Owner Dashboard 10 ช่อง', 'Cashflow 4 Layers', 'Expense Map', 'แผนธุรกิจ 1 หน้า'],
-    ready: true,
+    ready: false,
   },
   {
     id: 'ib',
