@@ -81,6 +81,7 @@ const IB_SESSION_LABELS: Record<string, string> = {
   'ib-capital': 'Step 5 ออกแบบวงเงินกู้',
   'ib-growth': 'Step 6 กู้ได้เท่าไหร่',
   'ib-loan-action': 'Step 7 เตรียมยื่นกู้',
+  'ib-bank-sim': 'Step 8 Bank Simulation',
 };
 
 const ALL_TOOLS_IB = Object.keys(IB_SESSION_LABELS);

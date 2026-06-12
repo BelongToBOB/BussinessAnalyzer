@@ -19,6 +19,7 @@ const STEPS = [
   { num: 5, slug: 'ib-capital', label: 'ออกแบบวงเงินกู้', desc: 'วัตถุประสงค์ · ทุน · หลักประกัน', href: '/ib/step/5-capital' },
   { num: 6, slug: 'ib-growth', label: 'กู้ได้เท่าไหร่', desc: 'วงเงิน 3 ระดับ — ปลอดภัย/สูงสุด/อันตราย', href: '/ib/step/6-growth' },
   { num: 7, slug: 'ib-loan-action', label: 'เตรียมยื่นกู้', desc: 'เอกสาร · เรื่องเล่า · แผนปฏิบัติ', href: '/ib/step/7-action' },
+  { num: 8, slug: 'ib-bank-sim', label: 'Bank Simulation', desc: 'จำลองสัมภาษณ์สินเชื่อกับ Virtual RM', href: '/ib/bank-sim' },
 ];
 
 interface HealthItem {
@@ -149,18 +150,12 @@ export default function IbDashboardPage() {
           <div className="text-[10px] text-text-tertiary mt-1.5">{completed}/{STEPS.length} steps</div>
         </div>
 
-        {/* Action buttons */}
+        {/* Report button */}
         {completed >= 3 && (
-          <div className="flex gap-3 mt-4">
-            <button data-tour="ib-report" onClick={() => router.push('/ib/report')}
-              className="flex-1 h-12 rounded-xl gradient-accent text-white font-semibold cursor-pointer border-none text-sm hover:opacity-90 transition">
-              ดู MRI Report →
-            </button>
-            <button onClick={() => router.push('/ib/bank-sim')}
-              className="flex-1 h-12 rounded-xl border-2 border-accent text-accent font-semibold cursor-pointer bg-transparent text-sm hover:bg-accent hover:text-white transition">
-              Bank Simulation
-            </button>
-          </div>
+          <button data-tour="ib-report" onClick={() => router.push('/ib/report')}
+            className="w-full mt-4 h-12 rounded-xl gradient-accent text-white font-semibold cursor-pointer border-none text-sm hover:opacity-90 transition">
+            ดู MRI Report →
+          </button>
         )}
 
         {/* Health Summary + Radar Chart */}

@@ -87,7 +87,7 @@ export default function IbReportPage() {
         <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">{(biz as any)?.name} · {identity?.bizType}</div>
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight mb-6">Business MRI Report</h1>
 
-        <BusinessScoreBar score={score} stepsCompleted={completed} totalSteps={7} />
+        <BusinessScoreBar score={score} stepsCompleted={completed} totalSteps={8} />
 
         {/* Verdict */}
         <div className={`mt-6 rounded-2xl p-5 ${verdict.color.includes('good') ? 'bg-wash-good' : verdict.color.includes('warn') ? 'bg-wash-warn' : verdict.color.includes('bad') ? 'bg-wash-bad' : 'bg-bg-card border border-border'}`}>

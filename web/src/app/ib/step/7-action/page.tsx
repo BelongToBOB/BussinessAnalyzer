@@ -294,11 +294,18 @@ export default function IbStep7Page() {
             {saving ? 'กำลังบันทึก...' : saved ? 'บันทึกแล้ว' : 'บันทึก'}
           </button>
           {saved && (
-            <button onClick={() => router.push('/ib/report')}
-              className="flex-1 rounded-xl border border-border bg-bg-card font-semibold cursor-pointer text-sm text-text-primary"
-              style={{ height: 48 }}>
-              ดู MRI Report →
-            </button>
+            <>
+              <button onClick={() => router.push('/ib/bank-sim')}
+                className="flex-1 rounded-xl gradient-accent text-white font-semibold cursor-pointer text-sm border-none"
+                style={{ height: 48 }}>
+                Bank Simulation →
+              </button>
+              <button onClick={() => router.push('/ib/report')}
+                className="flex-1 rounded-xl border border-border bg-bg-card font-semibold cursor-pointer text-sm text-text-primary"
+                style={{ height: 48 }}>
+                ดู MRI Report
+              </button>
+            </>
           )}
         </div>
       </main>
