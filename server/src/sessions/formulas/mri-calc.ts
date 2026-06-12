@@ -120,13 +120,17 @@ export function financialVerdict(f: FinancialInput, b: BalanceSheet, debtSchedul
 
   const verdicts: { metric: string; value: number | null; color: string; label: string }[] = [];
 
-  // DSCR
+  // DSCR — null = no debt = good
   if (d != null) {
     verdicts.push({ metric: 'DSCR', value: round(d), color: d >= 1.5 ? 'green' : d >= 1.25 ? 'yellow' : 'red', label: d >= 1.5 ? 'แข็งแรง' : d >= 1.25 ? 'พอใช้' : 'ต่ำกว่าเกณฑ์' });
+  } else {
+    verdicts.push({ metric: 'DSCR', value: null, color: 'green', label: 'ไม่มีภาระหนี้' });
   }
-  // D/E
+  // D/E — null = no liabilities = good
   if (de != null) {
     verdicts.push({ metric: 'D/E', value: round(de), color: de <= 2 ? 'green' : de <= 3 ? 'yellow' : 'red', label: de <= 2 ? 'ดี' : de <= 3 ? 'ระวัง' : 'สูงเกินไป' });
+  } else {
+    verdicts.push({ metric: 'D/E', value: null, color: 'green', label: 'ไม่มีหนี้' });
   }
   // EBITDA Margin
   if (margin != null) {
@@ -200,16 +204,16 @@ export function financialScore(f: FinancialInput, b: BalanceSheet, debtSchedule:
   const cr = currentRatio(b);
   const qr = quickRatio(b);
 
-  // DSCR (30 pts)
-  if (d != null) score += d >= 1.5 ? 30 : d >= 1.25 ? 20 : d >= 1.0 ? 10 : 0;
-  // D/E (20 pts)
-  if (de != null) score += de <= 2 ? 20 : de <= 3 ? 12 : 5;
-  // EBITDA Margin (20 pts)
-  if (margin != null) score += margin >= 0.15 ? 20 : margin >= 0.08 ? 12 : 5;
-  // Current Ratio (15 pts)
-  if (cr != null) score += cr >= 1.5 ? 15 : cr >= 1.0 ? 10 : 5;
-  // Quick Ratio (15 pts)
-  if (qr != null) score += qr >= 1.0 ? 15 : qr >= 0.5 ? 10 : 5;
+  // DSCR (30 pts) — null = no debt = full score
+  score += d == null ? 30 : d >= 1.5 ? 30 : d >= 1.25 ? 20 : d >= 1.0 ? 10 : 0;
+  // D/E (20 pts) — null = no liabilities or no equity info = full score
+  score += de == null ? 20 : de <= 2 ? 20 : de <= 3 ? 12 : 5;
+  // EBITDA Margin (20 pts) — null = no revenue data = 0
+  score += margin == null ? 0 : margin >= 0.15 ? 20 : margin >= 0.08 ? 12 : 5;
+  // Current Ratio (15 pts) — null = no current liabilities = full score
+  score += cr == null ? 15 : cr >= 1.5 ? 15 : cr >= 1.0 ? 10 : 5;
+  // Quick Ratio (15 pts) — null = no current liabilities = full score
+  score += qr == null ? 15 : qr >= 1.0 ? 15 : qr >= 0.5 ? 10 : 5;
 
   return score;
 }
@@ -308,8 +312,9 @@ export function bankViewScore(ctx: {
     + clamp(((ctx.ebitdaMargin || 0) / 15) * 7, 0, 7);
   const cashflow = (ctx.growthPositive ? 15 : 5)
     + clamp((1 - ctx.cycleDays / 90) * 10, 0, 10);
-  const debt = clamp(((ctx.dscrVal || 0) / 1.5) * 15, 0, 15)
-    + clamp((1 - ((ctx.deVal || 0) / 3)) * 10, 0, 10);
+  // null DSCR = no debt = full score; null D/E = no liabilities = full score
+  const debt = clamp(((ctx.dscrVal ?? 1.5) / 1.5) * 15, 0, 15)
+    + clamp((1 - ((ctx.deVal ?? 0) / 3)) * 10, 0, 10);
   const purpose = (ctx.useOfFundClear ? 15 : 5) + (ctx.structureCorrect ? 10 : 3);
   const total = clamp(revenue + cashflow + debt + purpose, 0, 100);
   return { revenue: round(revenue), cashflow: round(cashflow), debt: round(debt), purpose: round(purpose), total: round(total) };
@@ -385,11 +390,15 @@ export function bankReadinessVerdict(m: {
   dscr: number | null; de: number | null; growthPositive: boolean;
   salesPerYear: number; wantLoan: number; useOfFundComplete: boolean;
 }) {
-  if ((m.dscr != null && m.dscr < 1.0) || (!m.growthPositive && m.de != null && m.de > 3))
+  // null DSCR = no existing debt; null D/E = no liabilities — treat as healthy
+  const effectiveDscr = m.dscr ?? Infinity;
+  const effectiveDe = m.de ?? 0;
+
+  if ((effectiveDscr < 1.0) || (!m.growthPositive && effectiveDe > 3))
     return { group: 'High Risk', color: 'red', action: 'ยังไม่ควรกู้เพิ่ม ต้องปรับฐานก่อน' };
-  if (m.dscr != null && m.dscr >= 1.5 && m.de != null && m.de <= 2.5 && m.salesPerYear > 30e6 && m.wantLoan >= 10e6 && m.useOfFundComplete)
+  if (effectiveDscr >= 1.5 && effectiveDe <= 2.5 && m.salesPerYear > 30e6 && m.wantLoan >= 10e6 && m.useOfFundComplete)
     return { group: 'Expansion-Ready', color: 'green', action: 'Hot Lead — พร้อมจัดโครงสร้างวงเงิน' };
-  if ((m.dscr != null && m.dscr < 1.25) || !m.growthPositive || (m.de != null && m.de > 2.5))
+  if ((effectiveDscr < 1.25) || !m.growthPositive || (effectiveDe > 2.5))
     return { group: 'Need Cleanup', color: 'yellow', action: 'ต้องจัดบ้านก่อน — เคลียร์งบ/หนี้/กระแสเงินสด' };
   return { group: 'Ready to Structure', color: 'green', action: 'ตัวเลขพร้อม — จัดแพ็กเกจกู้ได้' };
 }
@@ -407,7 +416,7 @@ export function threeMoves(m: { dscr: number | null; de: number | null; growthCa
 
 export function bankOfficerComment(m: { dscr: number | null; growthCash: number; de: number | null; quickRatio: number | null; cycleDays: number }) {
   const parts: string[] = [];
-  if (m.dscr == null) parts.push('ยังไม่มีภาระหนี้ให้ประเมิน DSCR');
+  if (m.dscr == null) parts.push('ไม่มีภาระหนี้เดิม — จุดแข็งในการกู้ใหม่');
   else if (m.dscr >= 1.5) parts.push(`ธุรกิจมี DSCR ${round(m.dscr)} อยู่ในระดับแข็งแรง`);
   else if (m.dscr >= 1.25) parts.push(`ธุรกิจมี DSCR ${round(m.dscr)} อยู่ในระดับใช้ได้`);
   else parts.push(`ธุรกิจมี DSCR ${round(m.dscr)} ต่ำกว่าเกณฑ์`);
@@ -416,10 +425,12 @@ export function bankOfficerComment(m: { dscr: number | null; growthCash: number;
   if (m.cycleDays > 35) parts.push(`ควรปรับ Cash Cycle จาก ${m.cycleDays} วัน เหลือไม่เกิน 35 วัน`);
   if (m.de != null && m.de > 2.5) parts.push(`และลด D/E (${round(m.de)}) ให้ต่ำกว่า 2.5`);
 
+  // null DSCR = no debt = treat as strong
+  const effectiveDscr = m.dscr ?? Infinity;
   let stance: string;
-  if (m.dscr != null && m.dscr >= 1.5 && m.growthCash >= 0 && (m.de == null || m.de <= 2.5))
+  if (effectiveDscr >= 1.5 && m.growthCash >= 0 && (m.de == null || m.de <= 2.5))
     stance = 'อนุมัติได้ (พร้อมจัดโครงสร้างวงเงิน)';
-  else if (m.dscr != null && m.dscr >= 1.25 && m.growthCash >= 0)
+  else if (effectiveDscr >= 1.25 && m.growthCash >= 0)
     stance = 'อนุมัติแบบมีเงื่อนไข';
   else stance = 'ยังไม่อนุมัติเพิ่ม — ปรับฐานก่อน';
 
