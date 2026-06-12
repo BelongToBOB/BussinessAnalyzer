@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, TrendingUp, FileText, Bot, BarChart3,
   GitCompare, Star, PanelLeft, ChevronLeft, ChevronsLeft, ChevronsRight,
-  Brain, Heart, Waves, Building2, ClipboardList, Handshake, LogOut, Home,
+  Brain, Heart, Waves, Building2, ClipboardList, Handshake, LogOut, Home, Repeat2, CheckSquare,
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -26,6 +26,9 @@ const SESSION_ITEMS = [
   { icon: Building2, label: 'S04 Loan', path: '/ib/session/4-loan' },
   { icon: ClipboardList, label: 'S05 Plan', path: '/ib/session/5-plan' },
   { icon: Handshake, label: 'S06 Deal', path: '/ib/session/6-deal' },
+  { icon: Repeat2, label: 'S08 Cash Cycle', path: '/ib/session/8-cashcycle' },
+  { icon: Building2, label: 'S09 Bank Offers', path: '/ib/session/9-bankoffers' },
+  { icon: CheckSquare, label: 'S10 Approved', path: '/ib/session/10-approved' },
 ];
 
 export function IbSidebar({ children }: { children: React.ReactNode }) {
