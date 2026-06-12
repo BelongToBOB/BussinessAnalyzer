@@ -9,6 +9,7 @@ import {
   calcFrs,
   calcMindsetScore,
   calcPlanCompleteness,
+  calcDealScores,
   type EngineConfig,
 } from './formula-engine';
 
@@ -209,5 +210,145 @@ describe('calcPlanCompleteness', () => {
   });
   it('returns 25 when half answered, no docs', () => {
     expect(calcPlanCompleteness(6, 12, 0, 4)).toBe(25);
+  });
+});
+
+// ─── Current Ratio + Gross Margin (v9) ──────────────────────
+describe('calcS02Derived — Current Ratio + Gross Margin', () => {
+  it('computes Current Ratio when assets/liabilities provided', () => {
+    const result = calcS02Derived({
+      revenue: 205_250_748, cogs: 185_457_426,
+      depreciation: 2_100_000, interestExpense: 1_361_601, tax: 0,
+      netProfit: 5_572_744, totalLiabilities: 95_102_949, equity: 39_977_495,
+      annualDebtService: 1_954_208,
+      currentAssets: 103_620_009, currentLiabilities: 94_149_056,
+    });
+    expect(result.currentRatio).toBeCloseTo(1.10, 1);
+    expect(result.currentRatioFlag).toBe('ok');
+  });
+
+  it('returns good for Current Ratio >= 1.5', () => {
+    const result = calcS02Derived({
+      revenue: 10_000_000, cogs: 6_000_000,
+      depreciation: 200_000, interestExpense: 500_000, tax: 500_000,
+      netProfit: 2_000_000, totalLiabilities: 5_000_000, equity: 10_000_000,
+      annualDebtService: 1_500_000,
+      currentAssets: 15_000_000, currentLiabilities: 8_000_000,
+    });
+    expect(result.currentRatio).toBeCloseTo(1.875, 2);
+    expect(result.currentRatioFlag).toBe('good');
+  });
+
+  it('returns risk for Current Ratio < 1.0', () => {
+    const result = calcS02Derived({
+      revenue: 10_000_000, cogs: 6_000_000,
+      depreciation: 200_000, interestExpense: 500_000, tax: 500_000,
+      netProfit: 2_000_000, totalLiabilities: 5_000_000, equity: 10_000_000,
+      annualDebtService: 1_500_000,
+      currentAssets: 3_000_000, currentLiabilities: 5_000_000,
+    });
+    expect(result.currentRatio).toBeCloseTo(0.6, 1);
+    expect(result.currentRatioFlag).toBe('risk');
+  });
+
+  it('returns null when currentAssets/Liabilities not provided', () => {
+    const result = calcS02Derived({
+      revenue: 10_000_000, cogs: 6_000_000,
+      depreciation: 200_000, interestExpense: 500_000, tax: 500_000,
+      netProfit: 2_000_000, totalLiabilities: 5_000_000, equity: 10_000_000,
+      annualDebtService: 1_500_000,
+    });
+    expect(result.currentRatio).toBeNull();
+  });
+
+  it('computes Gross Margin correctly', () => {
+    const result = calcS02Derived({
+      revenue: 205_250_748, cogs: 185_457_426,
+      depreciation: 2_100_000, interestExpense: 1_361_601, tax: 0,
+      netProfit: 5_572_744, totalLiabilities: 95_102_949, equity: 39_977_495,
+      annualDebtService: 1_954_208,
+    });
+    // GM = (205.25M - 185.46M) / 205.25M = 9.6%
+    expect(result.grossMargin).toBeCloseTo(9.6, 0);
+    expect(result.grossMarginFlag).toBe('low'); // < 30%
+  });
+
+  it('returns good grossMargin for high-margin business', () => {
+    const result = calcS02Derived({
+      revenue: 10_000_000, cogs: 5_000_000,
+      depreciation: 200_000, interestExpense: 500_000, tax: 500_000,
+      netProfit: 2_000_000, totalLiabilities: 5_000_000, equity: 10_000_000,
+      annualDebtService: 1_500_000,
+    });
+    expect(result.grossMargin).toBeCloseTo(50, 0);
+    expect(result.grossMarginFlag).toBe('good'); // >= 30%
+  });
+});
+
+// ─── WinWin Preset Validation (S02) ─────────────────────────
+describe('WinWin 2566 preset — S02', () => {
+  it('matches expected EBITDA, D/E, DSCR for WinWin data', () => {
+    const result = calcS02Derived({
+      revenue: 205_250_748, cogs: 185_457_426,
+      depreciation: 2_100_000, interestExpense: 1_361_601, tax: 0,
+      netProfit: 5_572_744, totalLiabilities: 95_102_949, equity: 39_977_495,
+      annualDebtService: 1_954_208,
+    });
+    expect(result.ebitda).toBeCloseTo(9_034_345, -2);
+    expect(result.ebitdaMargin).toBeCloseTo(4.4, 0);
+    expect(result.deRatio).toBeCloseTo(2.38, 1);
+    expect(result.dscr).toBeCloseTo(4.62, 1);
+  });
+});
+
+// ─── Capacity Score v2 ──────────────────────────────────────
+describe('calcS04 — Capacity Score v2 (dscrQuality×60 + sFit)', () => {
+  it('returns ~48 for WinWin case (DSCR after ~1.06)', () => {
+    const result = calcS04({
+      annualRevenue: 205_250_748,
+      annualEbitda: 9_034_345,
+      existingMonthlyDebtService: 162_851,
+      existingDebtBalance: 0,
+      collateralValue: 0,
+    }, cfg);
+    // Practical = m2 = 9,034,345 * 5 * 0.8 = 36,137,380
+    // DSCR after ~1.06 → dscrQuality ~0.12 → 0.12*60 + 40 = 47.2 ≈ 47-48
+    expect(result.capacityScore).toBeGreaterThanOrEqual(45);
+    expect(result.capacityScore).toBeLessThanOrEqual(50);
+  });
+
+  it('returns decent capacity for strong DSCR with desired loan', () => {
+    const result = calcS04({
+      annualRevenue: 12_000_000,
+      annualEbitda: 4_200_000,
+      existingMonthlyDebtService: 50_000,
+      existingDebtBalance: 1_000_000,
+      collateralValue: 10_000_000,
+      desiredLoan: 3_000_000,
+    }, cfg);
+    // v2: dscrQuality * 60 + sFit(40) — sFit=40 when desired <= practical
+    expect(result.capacityScore).toBeGreaterThanOrEqual(50);
+  });
+});
+
+// ─── Deal Scores ─────────────────────────────────────────────
+describe('calcDealScores', () => {
+  it('scores 3 deals and picks best by dealScore', () => {
+    const deals = [
+      { slot: 'A', amount: 30_000_000, interestRate: 0.065, tenureYears: 7, monthlyInstallment: 0, scoreCollateral: 50, scoreCovenants: 50 },
+      { slot: 'B', amount: 25_000_000, interestRate: 0.0575, tenureYears: 5, monthlyInstallment: 0, scoreCollateral: 50, scoreCovenants: 50 },
+      { slot: 'C', amount: 28_000_000, interestRate: 0.0625, tenureYears: 7, monthlyInstallment: 0, scoreCollateral: 50, scoreCovenants: 50 },
+    ];
+    const scores = calcDealScores(deals, 30_000_000, 'expanding', cfg);
+    expect(scores).toHaveLength(3);
+    expect(scores[0].scoreAmount).toBeGreaterThan(0);
+    expect(scores[0].dealScore).toBeGreaterThan(0);
+    // All should have different scores
+    const unique = new Set(scores.map(s => s.dealScore));
+    expect(unique.size).toBeGreaterThanOrEqual(2);
+  });
+
+  it('returns empty for no deals', () => {
+    expect(calcDealScores([], 0, 'expanding', cfg)).toEqual([]);
   });
 });

@@ -98,6 +98,8 @@ export interface S02Input {
   inventory?: number;
   accountsPayable?: number;
   annualDebtService: number;
+  currentAssets?: number;
+  currentLiabilities?: number;
 }
 
 export interface S02Derived {
@@ -110,6 +112,10 @@ export interface S02Derived {
   dscr: number | null;
   dscrFlag: 'na' | 'ok' | 'low';
   workingCapital: number | null;
+  currentRatio: number | null;
+  currentRatioFlag: 'good' | 'ok' | 'risk';
+  grossMargin: number | null;
+  grossMarginFlag: 'good' | 'low';
 }
 
 export function calcS02Derived(input: S02Input): S02Derived {
@@ -143,7 +149,20 @@ export function calcS02Derived(input: S02Input): S02Derived {
   const ap = accountsPayable ?? 0;
   const workingCapital = (ar + inv) - ap;
 
-  return { ebitda, ebit, ebitdaMargin, netMargin, deRatio, deRatioFlag, dscr, dscrFlag, workingCapital };
+  // Current Ratio
+  const { currentAssets, currentLiabilities, cogs } = input;
+  let currentRatio: number | null = null;
+  let currentRatioFlag: 'good' | 'ok' | 'risk' = 'good';
+  if (currentAssets != null && currentLiabilities != null && currentLiabilities > 0) {
+    currentRatio = currentAssets / currentLiabilities;
+    currentRatioFlag = currentRatio >= 1.5 ? 'good' : currentRatio >= 1.0 ? 'ok' : 'risk';
+  }
+
+  // Gross Margin
+  const grossMargin = revenue > 0 && cogs > 0 ? ((revenue - cogs) / revenue) * 100 : null;
+  const grossMarginFlag: 'good' | 'low' = grossMargin !== null && grossMargin >= 30 ? 'good' : 'low';
+
+  return { ebitda, ebit, ebitdaMargin, netMargin, deRatio, deRatioFlag, dscr, dscrFlag, workingCapital, currentRatio, currentRatioFlag, grossMargin, grossMarginFlag };
 }
 
 export interface S02HealthResult {

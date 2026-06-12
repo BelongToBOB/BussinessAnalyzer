@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useAssessment } from '@/lib/use-assessment';
 import { money } from '@/lib/format';
-import { BottomNav } from '@/components/ui/bottom-nav';
 import { ChevronLeft, Printer } from 'lucide-react';
 
 export default function BusinessPlanPage() {
@@ -137,7 +136,6 @@ export default function BusinessPlanPage() {
         )}
       </main>
 
-      <BottomNav />
     </div>
   );
 }

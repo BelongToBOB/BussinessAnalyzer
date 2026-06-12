@@ -124,7 +124,9 @@ export default function Session2FinancialPage() {
   const currLiab = u(curr.totalLiabilities);
   const currEquity = u(curr.equity);
   const currDebt = u(curr.annualDebtService);
+  const currCogs = u(curr.cogs);
   const ebitdaMargin = currRev > 0 ? (currEbitda / currRev) * 100 : null;
+  const grossMargin = currRev > 0 && currCogs > 0 ? ((currRev - currCogs) / currRev) * 100 : null;
   const deRatio = currEquity > 0 ? currLiab / currEquity : currEquity < 0 ? -Infinity : null;
   const dscr = currDebt > 0 ? currEbitda / currDebt : null;
 
@@ -293,60 +295,32 @@ export default function Session2FinancialPage() {
           <div className="bg-text-primary text-bg-primary px-4 py-2.5 text-xs font-semibold">
             PART B | Key Ratios ของธุรกิจคุณ
           </div>
-          <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* EBITDA Margin */}
-            <div className="border-l-4 border-status-good bg-wash-good rounded-r-xl p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-xs font-bold text-status-good">EBITDA Margin %</div>
-                  <div className="text-[10px] text-text-tertiary mt-0.5">= EBITDA ÷ Revenue × 100</div>
-                </div>
-                <div className="text-right">
-                  <span className={`num text-xl font-bold ${ebitdaMargin !== null && ebitdaMargin >= 15 ? 'text-status-good' : 'text-status-bad'}`}>
-                    {ebitdaMargin !== null ? ebitdaMargin.toFixed(1) + '%' : '——%'}
-                  </span>
-                  <div className="text-[10px] text-text-tertiary">เกณฑ์ดี: &gt; 15%</div>
-                </div>
-              </div>
-            </div>
-            {/* D/E */}
-            <div className="border-l-4 border-accent bg-wash-info rounded-r-xl p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-xs font-bold text-accent">D/E Ratio</div>
-                  <div className="text-[10px] text-text-tertiary mt-0.5">= หนี้สินรวม ÷ ส่วนผู้ถือหุ้น</div>
-                </div>
-                <div className="text-right">
-                  {deRatio === -Infinity ? (
-                    <span className="text-status-bad font-bold text-lg">ทุนติดลบ</span>
-                  ) : (
-                    <span className={`num text-xl font-bold ${deRatio !== null && deRatio < 3 ? 'text-status-good' : 'text-status-bad'}`}>
-                      {deRatio !== null ? deRatio.toFixed(2) + 'x' : '——x'}
-                    </span>
-                  )}
-                  <div className="text-[10px] text-text-tertiary">เกณฑ์ดี: &lt; 3x</div>
+          <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[
+              { label: 'EBITDA Margin', formula: '= EBITDA ÷ Revenue × 100', value: ebitdaMargin, fmt: (v: number) => v.toFixed(1) + '%', good: ebitdaMargin !== null && ebitdaMargin >= 15, threshold: '> 15%', color: 'border-status-good bg-wash-good', textColor: 'text-status-good' },
+              { label: 'Gross Margin', formula: '= (Revenue−COGS) ÷ Revenue × 100', value: grossMargin, fmt: (v: number) => v.toFixed(1) + '%', good: grossMargin !== null && grossMargin >= 30, threshold: '> 30%', color: 'border-status-good bg-wash-good', textColor: 'text-status-good' },
+              { label: 'D/E Ratio', formula: '= หนี้สินรวม ÷ ส่วนผู้ถือหุ้น', value: deRatio === -Infinity ? null : deRatio, fmt: (v: number) => v.toFixed(2) + 'x', good: deRatio !== null && deRatio !== -Infinity && deRatio < 3, threshold: '< 3x', color: 'border-accent bg-wash-info', textColor: 'text-accent', special: deRatio === -Infinity ? 'ทุนติดลบ' : undefined },
+              { label: 'DSCR', formula: '= EBITDA ÷ ภาระหนี้ต่อปี', value: dscr, fmt: (v: number) => v.toFixed(2) + 'x', good: dscr !== null && dscr > 1.25, threshold: '> 1.25x', color: 'border-accent bg-wash-info', textColor: 'text-accent', special: currDebt === 0 ? 'ไม่มีหนี้' : undefined },
+            ].map((r) => (
+              <div key={r.label} className={`border-l-4 rounded-r-xl p-4 ${r.color}`}>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className={`text-xs font-bold ${r.textColor}`}>{r.label}</div>
+                    <div className="text-[10px] text-text-tertiary mt-0.5">{r.formula}</div>
+                  </div>
+                  <div className="text-right">
+                    {r.special ? (
+                      <span className="text-text-tertiary text-xs">{r.special}</span>
+                    ) : (
+                      <span className={`num text-xl font-bold ${r.good ? 'text-status-good' : 'text-status-bad'}`}>
+                        {r.value !== null ? r.fmt(r.value) : '——'}
+                      </span>
+                    )}
+                    <div className="text-[10px] text-text-tertiary">เกณฑ์ดี: {r.threshold}</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            {/* DSCR */}
-            <div className="border-l-4 border-accent bg-wash-info rounded-r-xl p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="text-xs font-bold text-accent">DSCR</div>
-                  <div className="text-[10px] text-text-tertiary mt-0.5">= EBITDA ÷ ภาระหนี้ต่อปี</div>
-                </div>
-                <div className="text-right">
-                  {currDebt === 0 ? (
-                    <span className="text-text-tertiary text-xs">ไม่มีหนี้ (N/A)</span>
-                  ) : (
-                    <span className={`num text-xl font-bold ${dscr !== null && dscr > 1.25 ? 'text-status-good' : 'text-status-bad'}`}>
-                      {dscr !== null ? dscr.toFixed(2) + 'x' : '——x'}
-                    </span>
-                  )}
-                  <div className="text-[10px] text-text-tertiary">เกณฑ์ดี: &gt; 1.25x</div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 

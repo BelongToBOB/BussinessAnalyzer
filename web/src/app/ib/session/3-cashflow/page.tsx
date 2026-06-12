@@ -45,10 +45,12 @@ function emptyMonth(m: string): MonthData {
   };
 }
 
+// WinWin 2566: Revenue=205.25M/yr, COGS=185.46M (GM 9.6%), EBITDA=11.03M
+// Monthly ≈ Revenue/12, Cash In ~98% (60% cash + 38% AR), COGS Paid ~90.4%
 const WINWIN_EXAMPLE = [
-  { salesRevenue: '1,200,000', cashSales: '800,000', collectedFromAr: '350,000', otherIncome: '50,000', cogsPaid: '700,000', rentUtilities: '80,000', salaries: '150,000', capex: '50,000', interest: '20,000', debtPrincipal: '60,000', taxPaid: '30,000', ownerWithdrawal: '40,000' },
-  { salesRevenue: '1,350,000', cashSales: '900,000', collectedFromAr: '400,000', otherIncome: '50,000', cogsPaid: '780,000', rentUtilities: '80,000', salaries: '150,000', capex: '30,000', interest: '20,000', debtPrincipal: '60,000', taxPaid: '35,000', ownerWithdrawal: '40,000' },
-  { salesRevenue: '1,500,000', cashSales: '1,000,000', collectedFromAr: '450,000', otherIncome: '50,000', cogsPaid: '860,000', rentUtilities: '80,000', salaries: '155,000', capex: '20,000', interest: '20,000', debtPrincipal: '60,000', taxPaid: '40,000', ownerWithdrawal: '40,000' },
+  { salesRevenue: '13,000,000', cashSales: '7,800,000', collectedFromAr: '6,498,000', otherIncome: '0', cogsPaid: '11,752,000', rentUtilities: '80,000', salaries: '900,000', capex: '500,000', interest: '113,467', debtPrincipal: '119,919', taxPaid: '142,586', ownerWithdrawal: '200,000' },
+  { salesRevenue: '14,500,000', cashSales: '8,700,000', collectedFromAr: '4,940,000', otherIncome: '0', cogsPaid: '13,108,000', rentUtilities: '80,000', salaries: '900,000', capex: '300,000', interest: '113,467', debtPrincipal: '119,919', taxPaid: '142,586', ownerWithdrawal: '200,000' },
+  { salesRevenue: '16,000,000', cashSales: '9,600,000', collectedFromAr: '5,510,000', otherIncome: '0', cogsPaid: '14,464,000', rentUtilities: '80,000', salaries: '900,000', capex: '200,000', interest: '113,467', debtPrincipal: '119,919', taxPaid: '142,586', ownerWithdrawal: '200,000' },
 ];
 
 export default function Session3CashflowPage() {

@@ -1,19 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAssessment, getCompletedSessions } from '@/lib/use-assessment';
+import { rdSwitchFrsProfile } from '@/lib/api';
 import { ScoreRing } from '@/components/ui/score-ring';
 import { RdSessionProgress } from '@/components/ui/rd-session-progress';
-import { BottomNav } from '@/components/ui/bottom-nav';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
-import { TrendingUp, FileText, MessageSquare, BarChart3, AlertTriangle, Brain, Heart, Waves, Building2, ClipboardList } from 'lucide-react';
+import { TrendingUp, FileText, MessageSquare, BarChart3, AlertTriangle, Brain, Heart, Waves, Building2, ClipboardList, ChevronRight } from 'lucide-react';
 
-const PILLAR_META: { key: string; label: string; Icon: any }[] = [
-  { key: 'mindset', label: 'Mindset', Icon: Brain },
-  { key: 'health', label: 'สุขภาพการเงิน', Icon: Heart },
-  { key: 'cashflow', label: 'Cash Flow', Icon: Waves },
-  { key: 'capacity', label: 'ความสามารถกู้', Icon: Building2 },
-  { key: 'bankReadiness', label: 'Bank Readiness', Icon: ClipboardList },
+const PILLAR_META: { key: string; label: string; Icon: any; sessionHref: string }[] = [
+  { key: 'mindset', label: 'Mindset', Icon: Brain, sessionHref: '/ib/session/1-mindset' },
+  { key: 'health', label: 'สุขภาพการเงิน', Icon: Heart, sessionHref: '/ib/session/2-financial' },
+  { key: 'cashflow', label: 'Cash Flow', Icon: Waves, sessionHref: '/ib/session/3-cashflow' },
+  { key: 'capacity', label: 'ความสามารถกู้', Icon: Building2, sessionHref: '/ib/session/4-loan' },
+  { key: 'bankReadiness', label: 'Bank Readiness', Icon: ClipboardList, sessionHref: '/ib/session/5-plan' },
 ];
 
 const SESSIONS = [
@@ -27,7 +28,8 @@ const SESSIONS = [
 
 export default function IbDashboardPage() {
   const router = useRouter();
-  const { assessment, loading } = useAssessment();
+  const { assessmentId, assessment, loading, refresh } = useAssessment();
+  const [switching, setSwitching] = useState(false);
 
   if (loading) return <div className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังโหลด...</div>;
 
@@ -36,6 +38,7 @@ export default function IbDashboardPage() {
   const scores = assessment?.readinessScores;
   const frs = scores?.compositeFrs ?? 0;
   const frsBand = scores?.frsBand ?? 'ยังไม่พร้อม';
+  const profile = scores?.frsProfile ?? 'learning';
   const nextSession = SESSIONS.find(s => !flags[s.key]);
 
   const pillarScores = scores ? [
@@ -57,6 +60,17 @@ export default function IbDashboardPage() {
 
   const redFlags: string[] = [];
   if (assessment?.s2Health?.redFlags) redFlags.push(...(assessment.s2Health.redFlags as string[]).slice(0, 3));
+
+  const handleSwitchProfile = async () => {
+    if (!assessmentId) return;
+    setSwitching(true);
+    try {
+      const next = profile === 'bank' ? 'learning' : 'bank';
+      await rdSwitchFrsProfile(assessmentId, next as any);
+      await refresh();
+    } catch {}
+    setSwitching(false);
+  };
 
   return (
     <div className="min-h-screen bg-bg-secondary">
@@ -99,9 +113,18 @@ export default function IbDashboardPage() {
             <div className="bg-bg-card border border-border rounded-2xl p-6 flex flex-col items-center justify-center">
               <div className="text-sm font-bold mb-4">Business MRI Score</div>
               <ScoreRing score={frs} size={160} label="" sublabel={frsBand} />
-              <div className="text-xs text-text-tertiary mt-3">
-                Profile: {scores.frsProfile === 'bank' ? 'Bank View' : 'Learning View'}
+
+              {/* Profile switcher */}
+              <div className="mt-3 flex items-center gap-2">
+                <button onClick={handleSwitchProfile} disabled={switching}
+                  className="text-[10px] px-2 py-1 rounded border border-border bg-transparent cursor-pointer hover:bg-bg-secondary transition-colors disabled:opacity-50">
+                  {switching ? '...' : 'เปลี่ยน'}
+                </button>
+                <span className="text-xs text-text-tertiary">
+                  {profile === 'bank' ? 'Bank View' : 'Learning View'}
+                </span>
               </div>
+
               <div className="mt-2 px-3 py-1 rounded-full text-xs font-semibold"
                 style={{ color: bandColor, background: `color-mix(in srgb, ${bandColor} 12%, transparent)` }}>
                 {frsBand}
@@ -121,12 +144,15 @@ export default function IbDashboardPage() {
                   </RadarChart>
                 </ResponsiveContainer>
 
-                {/* Bar breakdown */}
+                {/* Bar breakdown — clickable to session */}
                 <div className="space-y-3">
                   {pillarScores.map((p) => {
                     const meta = PILLAR_META.find(m => m.key === p.key)!;
                     return (
-                      <div key={p.key} className="flex items-center gap-2">
+                      <div key={p.key}
+                        className="flex items-center gap-2 cursor-pointer hover:bg-bg-secondary rounded px-1 py-0.5 transition-colors"
+                        onClick={() => router.push(meta.sessionHref)}
+                        title={`ไปดู ${meta.label}`}>
                         <meta.Icon size={14} className="text-text-tertiary shrink-0" />
                         <div className="flex-1">
                           <div className="flex justify-between text-xs mb-0.5">
@@ -137,6 +163,7 @@ export default function IbDashboardPage() {
                             <div className="h-full rounded-full transition-all duration-500" style={{ width: `${p.score}%`, backgroundColor: barColor(p.score) }} />
                           </div>
                         </div>
+                        <ChevronRight size={12} className="text-text-tertiary shrink-0" />
                       </div>
                     );
                   })}
@@ -194,7 +221,7 @@ export default function IbDashboardPage() {
 
         {/* Reports grid */}
         {completedCount >= 2 && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             <a href="/ib/business-plan" className="bg-bg-card border border-border rounded-xl p-4 no-underline hover:bg-bg-secondary transition-colors">
               <div className="text-xs font-semibold text-text-primary">Business Plan</div>
               <div className="text-[10px] text-text-tertiary mt-0.5">สรุปแผนธุรกิจ</div>
@@ -207,7 +234,7 @@ export default function IbDashboardPage() {
         )}
 
         {/* Sessions list */}
-        <div className="mt-6 bg-bg-card border border-border rounded-2xl overflow-hidden">
+        <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
           <div className="px-4 py-3 border-b border-border">
             <div className="text-sm font-semibold">Sessions ({completedCount}/6)</div>
           </div>
@@ -235,7 +262,6 @@ export default function IbDashboardPage() {
         </div>
       </main>
 
-      <BottomNav />
     </div>
   );
 }

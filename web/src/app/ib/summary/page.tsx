@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useAssessment } from '@/lib/use-assessment';
-import { BottomNav } from '@/components/ui/bottom-nav';
 import { ChevronLeft } from 'lucide-react';
 
 type Signal = 'green' | 'yellow' | 'red' | 'gray';
@@ -144,7 +143,6 @@ export default function SummaryPage() {
         </div>
       </main>
 
-      <BottomNav />
     </div>
   );
 }

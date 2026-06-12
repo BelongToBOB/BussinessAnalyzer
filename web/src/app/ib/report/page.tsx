@@ -6,7 +6,6 @@ import { useAssessment, getCompletedSessions } from '@/lib/use-assessment';
 import { rdSwitchFrsProfile } from '@/lib/api';
 import { ScoreRing } from '@/components/ui/score-ring';
 import { PillarChart } from '@/components/ui/pillar-chart';
-import { BottomNav } from '@/components/ui/bottom-nav';
 import { money } from '@/lib/format';
 import { ChevronLeft } from 'lucide-react';
 
@@ -220,7 +219,6 @@ export default function FrsReportPage() {
         </a>
       </main>
 
-      <BottomNav />
     </div>
   );
 }
