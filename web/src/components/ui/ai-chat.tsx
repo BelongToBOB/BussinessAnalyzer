@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { X, Send } from 'lucide-react';
+import { X, Send, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
@@ -144,7 +144,10 @@ export function AiChat() {
         {open ? (
           <X size={18} color="#fff" />
         ) : (
-          <BotIcon size={24} />
+          <div className="relative flex items-center justify-center">
+            <span className="text-white text-[18px] font-black tracking-tight">AI</span>
+            <Sparkles size={10} color="#fff" className="absolute -top-1.5 -right-2.5 opacity-80" />
+          </div>
         )}
       </button>
 
