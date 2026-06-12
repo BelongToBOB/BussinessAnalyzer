@@ -81,7 +81,7 @@ export class ChatService {
 
       const stream = this.anthropic.messages.stream({
         model: 'claude-sonnet-4-6',
-        max_tokens: 500,
+        max_tokens: 1024,
         system: SYSTEM_PROMPT + (context ? `\n\nข้อมูลธุรกิจของ user:\n${context}` : ''),
         messages,
       });
@@ -128,7 +128,7 @@ export class ChatService {
     try {
       const response = await this.anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 500,
+        max_tokens: 1024,
         system: SYSTEM_PROMPT + (context ? `\n\nข้อมูลธุรกิจของ user:\n${context}` : ''),
         messages,
       });
