@@ -10,6 +10,7 @@ import { ExpenseMapModule } from './expense-map/expense-map.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { AdminModule } from './admin/admin.module';
 import { ChatModule } from './chat/chat.module';
+import { ReadinessModule } from './readiness/readiness.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ChatModule } from './chat/chat.module';
     SessionsModule,
     AdminModule,
     ChatModule,
+    ReadinessModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
