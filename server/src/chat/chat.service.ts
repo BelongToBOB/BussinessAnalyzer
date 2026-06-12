@@ -90,7 +90,7 @@ export class ChatService {
       res.setHeader('Connection', 'keep-alive');
 
       const stream = this.anthropic.messages.stream({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
         system: SYSTEM_PROMPT + (context ? `\n\nข้อมูลธุรกิจของ user:\n${context}` : ''),
         messages,
@@ -137,7 +137,7 @@ export class ChatService {
 
     try {
       const response = await this.anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
         system: SYSTEM_PROMPT + (context ? `\n\nข้อมูลธุรกิจของ user:\n${context}` : ''),
         messages,
