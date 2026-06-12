@@ -45,7 +45,6 @@ export default function SettingsPage() {
   const router = useRouter();
   const [business, setBusiness] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState('light');
   const [notifMonth, setNotifMonth] = useState(true);
   const [notifQuarter, setNotifQuarter] = useState(false);
 
@@ -68,24 +67,7 @@ export default function SettingsPage() {
     }
     load();
 
-    const stored = localStorage.getItem('theme') || 'light';
-    setTheme(stored);
   }, []);
-
-  const handleTheme = (t: string) => {
-    setTheme(t);
-    localStorage.setItem('theme', t);
-    if (t === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else if (t === 'light') {
-      document.documentElement.removeAttribute('data-theme');
-    } else {
-      // auto
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) document.documentElement.setAttribute('data-theme', 'dark');
-      else document.documentElement.removeAttribute('data-theme');
-    }
-  };
 
   const saveBusiness = async (data: Record<string, unknown>) => {
     setSaving(true);
@@ -167,7 +149,7 @@ export default function SettingsPage() {
       <main className="max-w-3xl mx-auto px-4 md:px-6 py-5 pb-24">
         <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary">{business?.name}</div>
         <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">ตั้งค่า</h1>
-        <p className="text-sm text-text-secondary mt-1 mb-7">บัญชี · ธีม · การแจ้งเตือน · ข้อมูล</p>
+        <p className="text-sm text-text-secondary mt-1 mb-7">บัญชี · การแจ้งเตือน · ข้อมูล</p>
 
         {/* Account */}
         <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary px-1 pb-2">บัญชี</div>
@@ -205,24 +187,6 @@ export default function SettingsPage() {
 
           <SettingsRow label="เข้าสู่ระบบด้วย" value="LINE / อีเมล" last
             trailing={<span className="text-xs text-text-tertiary">ไม่สามารถแก้ได้</span>} />
-        </div>
-
-        {/* Theme */}
-        <div className="text-[11px] font-semibold tracking-wide uppercase text-text-secondary px-1 pb-2">ธีม</div>
-        <div className="bg-bg-secondary rounded-xl p-1 flex gap-1 max-w-[360px] mb-7">
-          {[
-            { id: 'light', label: 'สว่าง' },
-            { id: 'dark', label: 'มืด' },
-            { id: 'auto', label: 'อัตโนมัติ' },
-          ].map((t) => (
-            <button key={t.id} onClick={() => handleTheme(t.id)} className="flex-1 h-10 rounded-lg border-none text-[13px] font-semibold cursor-pointer font-thai transition-all" style={{
-              background: theme === t.id ? 'var(--bg-card)' : 'transparent',
-              boxShadow: theme === t.id ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
-              color: theme === t.id ? 'var(--text-primary)' : 'var(--text-secondary)',
-            }}>
-              {t.label}
-            </button>
-          ))}
         </div>
 
         {/* Notifications */}
