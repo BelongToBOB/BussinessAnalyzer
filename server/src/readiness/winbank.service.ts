@@ -111,13 +111,11 @@ export class WinBankService {
         max_tokens: 6000,
         system: ANALYZE_PROMPT,
         messages: [
-          { role: 'user', content: `ข้อมูล Business MRI:\n${context}\n\nวิเคราะห์และตอบเป็น JSON เท่านั้น กระชับ แต่ละ string ไม่เกิน 100 ตัวอักษร ห้ามใส่เครื่องหมาย " ในค่า string` },
-          { role: 'assistant', content: '{' },
+          { role: 'user', content: `ข้อมูล Business MRI:\n${context}\n\nวิเคราะห์และตอบเป็น JSON เท่านั้น กระชับ แต่ละ string ไม่เกิน 100 ตัวอักษร ห้ามใส่เครื่องหมาย " ในค่า string ห้ามใส่ markdown wrapper` },
         ],
       });
 
-      const rawText = response.content[0].type === 'text' ? response.content[0].text : '';
-      const text = '{' + rawText; // prepend { from prefill
+      const text = response.content[0].type === 'text' ? response.content[0].text : '';
       console.log('[WinBank] AI response length:', text.length);
 
       const jsonMatch = text.match(/\{[\s\S]*\}/);
