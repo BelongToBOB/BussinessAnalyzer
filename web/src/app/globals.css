@@ -540,3 +540,49 @@ select:focus-visible {
 }
 
 } /* end @layer base */
+
+/* ─── Print Styles ─────────────────────────────────────── */
+
+@media print {
+  /* Hide sidebar, header, nav, buttons */
+  aside, [data-theme-ib] > div > aside,
+  header.sticky, .print\\:hidden,
+  button, a[href="/ib"], a[href="/ib/bank-sim"],
+  .gradient-accent { display: none !important; }
+
+  /* Full width content */
+  [data-theme-ib] > div { display: block !important; }
+  [data-theme-ib] > div > div { margin: 0 !important; max-width: 100% !important; }
+  main { padding: 0 !important; max-width: 100% !important; }
+
+  /* White background */
+  body, html, [data-theme-ib], .min-h-screen,
+  .bg-bg-secondary, .bg-bg-card, .bg-bg-primary { background: white !important; }
+
+  /* Dark text */
+  * { color: #1a1a1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Keep colored backgrounds for status */
+  .bg-wash-good, .bg-wash-warn, .bg-wash-bad,
+  .bg-status-good, .bg-status-warn, .bg-status-bad,
+  .bg-accent, [style*="background"] { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Status text colors */
+  .text-status-good { color: #16a34a !important; }
+  .text-status-warn { color: #d97706 !important; }
+  .text-status-bad { color: #dc2626 !important; }
+  .text-accent { color: #2563eb !important; }
+
+  /* Page breaks */
+  .rounded-2xl { break-inside: avoid; }
+
+  /* Remove shadows & borders for cleaner print */
+  .shadow-sm, .shadow-md, .shadow-lg { box-shadow: none !important; }
+  .border { border-color: #e5e5e5 !important; }
+
+  /* Hide mobile spacer */
+  .md\\:hidden { display: none !important; }
+
+  /* Print header */
+  .print-header { display: block !important; }
+}

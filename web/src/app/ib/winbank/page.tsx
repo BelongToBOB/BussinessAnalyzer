@@ -373,17 +373,23 @@ export default function WinBankPage() {
             )}
 
 
-            {/* Timestamp + Re-analyze */}
-            <div className="text-center space-y-1">
+            {/* Timestamp + Actions */}
+            <div className="text-center space-y-2">
               {generatedAt && (
                 <div className="text-[10px] text-text-tertiary">
                   วิเคราะห์เมื่อ {new Date(generatedAt).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })}
                 </div>
               )}
-              <button onClick={handleAnalyze} disabled={analyzing}
-                className="text-xs text-text-tertiary hover:text-accent cursor-pointer bg-transparent border-none underline">
-                {analyzing ? 'กำลังวิเคราะห์...' : 'วิเคราะห์ใหม่ (ใช้ AI token)'}
-              </button>
+              <div className="flex items-center justify-center gap-4">
+                <button onClick={() => window.print()}
+                  className="text-xs text-text-tertiary hover:text-accent cursor-pointer bg-transparent border-none underline">
+                  บันทึก PDF
+                </button>
+                <button onClick={handleAnalyze} disabled={analyzing}
+                  className="text-xs text-text-tertiary hover:text-accent cursor-pointer bg-transparent border-none underline">
+                  {analyzing ? 'กำลังวิเคราะห์...' : 'วิเคราะห์ใหม่ (ใช้ AI token)'}
+                </button>
+              </div>
             </div>
           </div>
         )}

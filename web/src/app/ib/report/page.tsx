@@ -7,7 +7,7 @@ import { rdSwitchFrsProfile } from '@/lib/api';
 import { ScoreRing } from '@/components/ui/score-ring';
 import { PillarChart } from '@/components/ui/pillar-chart';
 import { money } from '@/lib/format';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Printer } from 'lucide-react';
 
 export default function FrsReportPage() {
   const router = useRouter();
@@ -49,12 +49,17 @@ export default function FrsReportPage() {
 
   return (
     <div className="min-h-screen bg-bg-secondary">
-      <header className="sticky top-0 z-10 bg-bg-primary/85 backdrop-blur-lg border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 md:px-6 h-14 flex items-center gap-2">
-          <button onClick={() => router.push('/ib')} className="p-2 cursor-pointer bg-transparent border-none text-text-primary">
-            <ChevronLeft size={20} strokeWidth={2} />
+      <header className="sticky top-0 z-10 bg-bg-primary/85 backdrop-blur-lg border-b border-border print:hidden">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <button onClick={() => router.push('/ib')} className="p-2 cursor-pointer bg-transparent border-none text-text-primary">
+              <ChevronLeft size={20} strokeWidth={2} />
+            </button>
+            <span className="text-[15px] font-semibold">FRS Report</span>
+          </div>
+          <button onClick={() => window.print()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-border bg-transparent cursor-pointer text-text-secondary hover:bg-bg-secondary">
+            <Printer size={14} /> บันทึก PDF
           </button>
-          <span className="text-[15px] font-semibold">FRS Report</span>
         </div>
       </header>
 
