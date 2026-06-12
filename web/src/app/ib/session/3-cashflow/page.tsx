@@ -135,8 +135,8 @@ export default function Session3CashflowPage() {
 
   if (loading) return <div className="min-h-screen bg-bg-secondary flex items-center justify-center text-text-secondary">กำลังโหลด...</div>;
 
-  const InputRow = ({ label, fieldKey, note }: { label: string; fieldKey: string; note?: string }) => (
-    <div>
+  const renderInput = (label: string, fieldKey: string, note?: string) => (
+    <div key={fieldKey}>
       <label className="text-xs font-medium text-text-secondary">
         {label}{note && <span className="ml-1 text-text-tertiary text-[10px]">({note})</span>}
       </label>
@@ -199,7 +199,7 @@ export default function Session3CashflowPage() {
             {/* Context */}
             <div className="bg-bg-card border border-border rounded-2xl p-4">
               <div className="text-[10px] font-semibold text-text-tertiary uppercase mb-2">Context — ยอดขายรวม</div>
-              <InputRow label="ยอดขายรวม (Sales Revenue)" fieldKey="salesRevenue" note="รวมเครดิต" />
+              {renderInput('ยอดขายรวม (Sales Revenue)', 'salesRevenue', 'รวมเครดิต')}
             </div>
 
             {/* Tier 1: Cash In */}
@@ -209,9 +209,9 @@ export default function Session3CashflowPage() {
                 <span className="text-xs font-semibold">CASH IN — เงินเข้าจริง</span>
               </div>
               <div className="space-y-2">
-                <InputRow label="ยอดขายสด (Cash Sales)" fieldKey="cashSales" />
-                <InputRow label="เก็บจากลูกหนี้ (Collected from AR)" fieldKey="collectedFromAr" />
-                <InputRow label="รายได้อื่น (Other Income)" fieldKey="otherIncome" />
+                {renderInput('ยอดขายสด (Cash Sales)', 'cashSales')}
+                {renderInput('เก็บจากลูกหนี้ (Collected from AR)', 'collectedFromAr')}
+                {renderInput('รายได้อื่น (Other Income)', 'otherIncome')}
               </div>
               <SubtotalRow label="= Cash In" value={cf.cashIn} highlight />
               {cf.collectionRate !== null && (
@@ -228,7 +228,7 @@ export default function Session3CashflowPage() {
                 <div className="w-6 h-6 rounded-full bg-[#6366F1] text-white text-[10px] font-bold flex items-center justify-center">2</div>
                 <span className="text-xs font-semibold">REAL CASH = Cash In − ต้นทุน</span>
               </div>
-              <InputRow label="ต้นทุนสินค้าจ่ายจริง (COGS Paid)" fieldKey="cogsPaid" />
+              {renderInput('ต้นทุนสินค้าจ่ายจริง (COGS Paid)', 'cogsPaid')}
               <SubtotalRow label="= Real Cash" value={cf.realCash} highlight />
             </div>
 
@@ -239,8 +239,8 @@ export default function Session3CashflowPage() {
                 <span className="text-xs font-semibold">SURPLUS = Real Cash − OPEX</span>
               </div>
               <div className="space-y-2">
-                <InputRow label="ค่าเช่า + สาธารณูปโภค" fieldKey="rentUtilities" />
-                <InputRow label="เงินเดือนพนักงาน" fieldKey="salaries" />
+                {renderInput('ค่าเช่า + สาธารณูปโภค', 'rentUtilities')}
+                {renderInput('เงินเดือนพนักงาน', 'salaries')}
               </div>
               <SubtotalRow label="= Surplus Cash" value={cf.surplus} highlight />
             </div>
@@ -252,11 +252,11 @@ export default function Session3CashflowPage() {
                 <span className="text-xs font-semibold">GROWTH = Surplus − CapEx − หนี้ − ภาษี − เจ้าของ</span>
               </div>
               <div className="space-y-2">
-                <InputRow label="เงินลงทุน/ซื้อสินทรัพย์ (CapEx)" fieldKey="capex" />
-                <InputRow label="ดอกเบี้ย (Interest)" fieldKey="interest" />
-                <InputRow label="เงินต้น/ผ่อนหนี้ (Debt Principal)" fieldKey="debtPrincipal" />
-                <InputRow label="ภาษี (Tax Paid)" fieldKey="taxPaid" />
-                <InputRow label="เจ้าของถอนเงิน (Owner Withdrawal)" fieldKey="ownerWithdrawal" />
+                {renderInput('เงินลงทุน/ซื้อสินทรัพย์ (CapEx)', 'capex')}
+                {renderInput('ดอกเบี้ย (Interest)', 'interest')}
+                {renderInput('เงินต้น/ผ่อนหนี้ (Debt Principal)', 'debtPrincipal')}
+                {renderInput('ภาษี (Tax Paid)', 'taxPaid')}
+                {renderInput('เจ้าของถอนเงิน (Owner Withdrawal)', 'ownerWithdrawal')}
               </div>
               <div className={`flex justify-between items-center py-2.5 px-3 rounded-lg mt-3 border-2 ${cf.growth < 0 ? 'bg-wash-bad border-status-bad/40' : 'bg-text-primary/5 border-text-primary/20'}`}>
                 <div>
