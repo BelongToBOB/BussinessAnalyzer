@@ -7,7 +7,7 @@ import { rdSwitchFrsProfile } from '@/lib/api';
 import { ScoreRing } from '@/components/ui/score-ring';
 import { RdSessionProgress } from '@/components/ui/rd-session-progress';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
-import { TrendingUp, FileText, MessageSquare, BarChart3, AlertTriangle, Brain, Heart, Waves, Building2, ClipboardList, ChevronRight } from 'lucide-react';
+import { TrendingUp, FileText, Bot, BarChart3, AlertTriangle, Brain, Heart, Waves, Building2, ClipboardList, ChevronRight } from 'lucide-react';
 
 const PILLAR_META: { key: string; label: string; Icon: any; sessionHref: string }[] = [
   { key: 'mindset', label: 'Mindset', Icon: Brain, sessionHref: '/ib/session/1-mindset' },
@@ -208,7 +208,7 @@ export default function IbDashboardPage() {
               { Icon: TrendingUp, label: 'ดำเนินการต่อ', href: nextSession?.href ?? '/ib/session/1-mindset' },
               { Icon: FileText, label: 'FRS Report', href: '/ib/report' },
               { Icon: BarChart3, label: 'สรุปความพร้อม', href: '/ib/summary' },
-              { Icon: MessageSquare, label: 'Bank Simulation', href: '/ib/bank-sim' },
+              { Icon: Bot, label: 'RM WinBank', href: '/ib/winbank' },
             ].map((item) => (
               <button key={item.label} onClick={() => router.push(item.href)}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border bg-bg-card cursor-pointer hover:bg-bg-secondary transition-colors">

@@ -211,17 +211,6 @@ export default function FrsReportPage() {
         )}
 
         {/* Bank Simulation CTA */}
-        <a href="/ib/bank-sim"
-          className="mt-6 flex items-center gap-3 bg-bg-card border border-accent/30 rounded-2xl p-4 no-underline hover:bg-accent/5 transition-colors anim-fade-up">
-          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
-            <span className="text-sm font-bold text-accent">AI</span>
-          </div>
-          <div className="flex-1">
-            <div className="text-sm font-semibold text-accent">Bank Simulation</div>
-            <div className="text-[11px] text-text-tertiary">ทดลองสัมภาษณ์สินเชื่อกับ Virtual RM</div>
-          </div>
-          <span className="text-[11px] text-accent font-medium">เริ่มแชท →</span>
-        </a>
       </main>
 
     </div>

@@ -136,9 +136,9 @@ export default function SummaryPage() {
             <div className="text-xs font-semibold">Deal Comparison</div>
             <div className="text-[10px] text-text-tertiary mt-0.5">เปรียบเทียบดีล</div>
           </button>
-          <button onClick={() => router.push('/ib/bank-sim')} className="bg-bg-card border border-border rounded-xl p-4 text-left cursor-pointer hover:bg-bg-secondary transition-colors">
-            <div className="text-xs font-semibold">Bank Simulation</div>
-            <div className="text-[10px] text-text-tertiary mt-0.5">จำลองสัมภาษณ์</div>
+          <button onClick={() => router.push('/ib/winbank')} className="bg-bg-card border border-border rounded-xl p-4 text-left cursor-pointer hover:bg-bg-secondary transition-colors">
+            <div className="text-xs font-semibold">RM WinBank</div>
+            <div className="text-[10px] text-text-tertiary mt-0.5">AI วิเคราะห์ธุรกิจ</div>
           </button>
         </div>
       </main>
