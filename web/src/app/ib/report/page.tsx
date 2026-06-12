@@ -44,15 +44,19 @@ export default function IbReportPage() {
   // Score — shared calculation
   const { score, completed } = calcBusinessScore(data);
 
-  // Verdict
+  // Verdict — null DSCR = no debt = healthy, null D/E = no liabilities = healthy
   const dscrVal = fin?.dscr;
   const deVal = fin?.de;
+  const effectiveDscr = dscrVal ?? Infinity;
+  const effectiveDe = deVal ?? 0;
   const growthPositive = (cash?.growthCash || 0) >= 0;
+  const hasFinData = !!fin;
+
   let verdict = { group: 'ยังไม่มีข้อมูลเพียงพอ', color: 'text-text-tertiary', action: 'กรุณาทำ Step 1-7 ให้ครบ' };
-  if (dscrVal != null) {
-    if (dscrVal < 1.0 || (!growthPositive && deVal > 3)) verdict = { group: 'High Risk', color: 'text-status-bad', action: 'ยังไม่ควรกู้เพิ่ม ต้องปรับฐานก่อน' };
-    else if (dscrVal >= 1.5 && deVal <= 2.5 && growthPositive) verdict = { group: 'Ready to Structure', color: 'text-status-good', action: 'ตัวเลขพร้อม — จัดแพ็กเกจกู้ได้' };
-    else if (dscrVal < 1.25 || !growthPositive || deVal > 2.5) verdict = { group: 'Need Cleanup', color: 'text-status-warn', action: 'ต้องจัดบ้านก่อน' };
+  if (hasFinData) {
+    if (effectiveDscr < 1.0 || (!growthPositive && effectiveDe > 3)) verdict = { group: 'High Risk', color: 'text-status-bad', action: 'ยังไม่ควรกู้เพิ่ม ต้องปรับฐานก่อน' };
+    else if (effectiveDscr >= 1.5 && effectiveDe <= 2.5 && growthPositive) verdict = { group: 'Ready to Structure', color: 'text-status-good', action: 'ตัวเลขพร้อม — จัดแพ็กเกจกู้ได้' };
+    else if (effectiveDscr < 1.25 || !growthPositive || effectiveDe > 2.5) verdict = { group: 'Need Cleanup', color: 'text-status-warn', action: 'ต้องจัดบ้านก่อน' };
     else verdict = { group: 'Ready to Structure', color: 'text-status-good', action: 'ตัวเลขพร้อม — จัดแพ็กเกจกู้ได้' };
   }
 
@@ -60,13 +64,15 @@ export default function IbReportPage() {
   const moves: { metric: string; text: string }[] = [];
   if (dscrVal != null && dscrVal < 1.5) moves.push({ metric: 'DSCR', text: `ยกระดับ DSCR จาก ${dscrVal?.toFixed(2)} ไป ≥1.5` });
   if (cash?.growthCash < 0) moves.push({ metric: 'Growth Cash', text: `อุดรอยรั่ว: Growth Cash ติดลบ ${money(cash.growthCash)}` });
-  if (deVal > 2.5) moves.push({ metric: 'D/E', text: `ลดหนี้ให้ D/E < 2.5 (ตอนนี้ ${deVal?.toFixed(2)})` });
+  if (deVal != null && deVal > 2.5) moves.push({ metric: 'D/E', text: `ลดหนี้ให้ D/E < 2.5 (ตอนนี้ ${deVal?.toFixed(2)})` });
 
-  // Bank Sim
+  // Bank Sim — null DSCR = no debt = approve-ready
   let bankStance = 'ยังไม่มีข้อมูล';
-  if (dscrVal != null && dscrVal >= 1.5 && growthPositive && (deVal == null || deVal <= 2.5)) bankStance = 'อนุมัติได้';
-  else if (dscrVal != null && dscrVal >= 1.25 && growthPositive) bankStance = 'อนุมัติแบบมีเงื่อนไข';
-  else if (dscrVal != null) bankStance = 'ยังไม่อนุมัติ — ปรับฐานก่อน';
+  if (hasFinData) {
+    if (effectiveDscr >= 1.5 && growthPositive && effectiveDe <= 2.5) bankStance = 'อนุมัติได้';
+    else if (effectiveDscr >= 1.25 && growthPositive) bankStance = 'อนุมัติแบบมีเงื่อนไข';
+    else bankStance = 'ยังไม่อนุมัติ — ปรับฐานก่อน';
+  }
 
   return (
     <div className="min-h-screen bg-bg-secondary">
@@ -96,11 +102,11 @@ export default function IbReportPage() {
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-bg-card border border-border rounded-xl p-3 text-center">
                 <div className="text-[10px] text-text-secondary">ชำระหนี้ (DSCR)</div>
-                <div className={`num text-xl font-bold ${dscrVal >= 1.5 ? 'text-status-good' : dscrVal >= 1.25 ? 'text-status-warn' : 'text-status-bad'}`}>{dscrVal?.toFixed(2) || '—'}</div>
+                <div className={`num text-xl font-bold ${dscrVal == null ? 'text-status-good' : dscrVal >= 1.5 ? 'text-status-good' : dscrVal >= 1.25 ? 'text-status-warn' : 'text-status-bad'}`}>{dscrVal != null ? dscrVal.toFixed(2) : 'ไม่มีหนี้'}</div>
               </div>
               <div className="bg-bg-card border border-border rounded-xl p-3 text-center">
                 <div className="text-[10px] text-text-secondary">หนี้ต่อทุน (D/E)</div>
-                <div className={`num text-xl font-bold ${deVal <= 2 ? 'text-status-good' : deVal <= 3 ? 'text-status-warn' : 'text-status-bad'}`}>{deVal?.toFixed(2) || '—'}</div>
+                <div className={`num text-xl font-bold ${deVal == null ? 'text-status-good' : deVal <= 2 ? 'text-status-good' : deVal <= 3 ? 'text-status-warn' : 'text-status-bad'}`}>{deVal != null ? deVal.toFixed(2) : 'ไม่มีหนี้'}</div>
               </div>
               <div className="bg-bg-card border border-border rounded-xl p-3 text-center">
                 <div className="text-[10px] text-text-secondary">เงินเหลือเติบโต</div>
@@ -162,13 +168,14 @@ export default function IbReportPage() {
             <div className="bg-bg-primary/50 rounded-xl p-4 mt-3">
               <div className="text-[11px] font-semibold text-text-secondary mb-2">ความเห็นเจ้าหน้าที่สินเชื่อ (จำลอง)</div>
               <div className="text-sm text-text-primary leading-relaxed">
+                {dscrVal == null && 'ไม่มีภาระหนี้เดิม — จุดแข็งในการกู้ใหม่ '}
                 {dscrVal != null && dscrVal >= 1.5 && 'ธุรกิจมีความสามารถในการชำระหนี้ดี '}
                 {dscrVal != null && dscrVal >= 1.25 && dscrVal < 1.5 && 'DSCR พอใช้แต่ยังไม่ถึงระดับแข็งแรง '}
                 {dscrVal != null && dscrVal < 1.25 && 'DSCR ต่ำกว่าเกณฑ์ — ภาระหนี้สูงเกินกำลัง '}
                 {cash?.growthCash < 0 && 'Growth Cash ติดลบแสดงว่าเงินสดไม่พอหมุน '}
-                {deVal > 2.5 && `D/E ${deVal?.toFixed(2)} สูง — หนี้มากกว่าทุน ควรลดก่อนกู้เพิ่ม `}
+                {deVal != null && deVal > 2.5 && `D/E ${deVal.toFixed(2)} สูง — หนี้มากกว่าทุน ควรลดก่อนกู้เพิ่ม `}
                 {fin?.quickRatio != null && fin.quickRatio < 1 && 'สภาพคล่องเร็วยังต่ำ ระวังพึ่งสต็อกมากเกินไป '}
-                {dscrVal != null && dscrVal >= 1.5 && cash?.growthCash >= 0 && (deVal == null || deVal <= 2.5) && 'พร้อมจัดโครงสร้างวงเงินได้'}
+                {effectiveDscr >= 1.5 && cash?.growthCash >= 0 && effectiveDe <= 2.5 && 'พร้อมจัดโครงสร้างวงเงินได้'}
               </div>
             </div>
 
