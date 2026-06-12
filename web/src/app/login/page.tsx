@@ -29,6 +29,30 @@ const TOOLS_IBF: ToolItem[] = [
 
 export default function LoginPage() {
   const [activeTab, setActiveTab] = useState<'ib' | 'ibf'>('ib');
+  const [showSeminar, setShowSeminar] = useState(false);
+  const [seminarEmail, setSeminarEmail] = useState('');
+  const [seminarCode, setSeminarCode] = useState('');
+  const [seminarError, setSeminarError] = useState('');
+  const [seminarLoading, setSeminarLoading] = useState(false);
+
+  const handleSeminarLogin = async () => {
+    setSeminarError('');
+    if (!seminarEmail.trim()) { setSeminarError('กรุณากรอกอีเมล'); return; }
+    if (!seminarCode.trim()) { setSeminarError('กรุณากรอกรหัสสัมมนา'); return; }
+    if (seminarCode.trim().toLowerCase() !== 'isb17') { setSeminarError('รหัสสัมมนาไม่ถูกต้อง'); return; }
+    setSeminarLoading(true);
+    const result = await signIn('credentials', {
+      email: seminarEmail.trim().toLowerCase(),
+      password: seminarCode.trim().toLowerCase(),
+      redirect: false,
+    });
+    setSeminarLoading(false);
+    if (result?.ok) {
+      window.location.href = '/select';
+    } else {
+      setSeminarError('เข้าสู่ระบบไม่สำเร็จ — ลองสมัครสมาชิกก่อน');
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden bg-[#121D2E]">
@@ -86,6 +110,37 @@ export default function LoginPage() {
                   className="w-full flex items-center justify-center h-12 sm:h-11 rounded-xl border border-white/15 bg-white/5 text-white/70 text-sm font-medium no-underline hover:bg-white/10 hover:text-white transition-all">
                   เข้าสู่ระบบด้วยอีเมล
                 </a>
+
+                {/* Seminar login */}
+                <button
+                  onClick={() => setShowSeminar(!showSeminar)}
+                  className="w-full flex items-center justify-center gap-2 h-12 sm:h-11 rounded-xl bg-[#C9A14A] hover:bg-[#B8922F] text-[#0B1F3A] text-sm font-bold cursor-pointer border-none transition-all"
+                >
+                  <Landmark size={18} />
+                  เข้าด้วยรหัสสัมมนา Inside Bank
+                </button>
+
+                {showSeminar && (
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3 anim-fade-up">
+                    <div>
+                      <label className="text-xs text-white/50 mb-1 block">อีเมลที่สมัครเรียน</label>
+                      <input type="email" value={seminarEmail} onChange={(e) => setSeminarEmail(e.target.value)}
+                        placeholder="email@example.com"
+                        className="w-full h-10 rounded-lg px-3 text-sm bg-white/10 text-white border border-white/15 outline-none focus:border-[#C9A14A] placeholder:text-white/30" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-white/50 mb-1 block">รหัสสัมมนา</label>
+                      <input type="text" value={seminarCode} onChange={(e) => setSeminarCode(e.target.value)}
+                        placeholder="เช่น ISB17"
+                        className="w-full h-10 rounded-lg px-3 text-sm bg-white/10 text-white border border-white/15 outline-none focus:border-[#C9A14A] placeholder:text-white/30 uppercase" />
+                    </div>
+                    {seminarError && <div className="text-xs text-red-400">{seminarError}</div>}
+                    <button onClick={handleSeminarLogin} disabled={seminarLoading}
+                      className="w-full h-10 rounded-lg bg-[#C9A14A] hover:bg-[#B8922F] text-[#0B1F3A] text-sm font-bold cursor-pointer border-none disabled:opacity-50 transition-all">
+                      {seminarLoading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Stats inline */}
