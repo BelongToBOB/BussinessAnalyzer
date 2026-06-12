@@ -107,7 +107,7 @@ export class WinBankService {
       console.log('[WinBank] Analyzing assessment:', assessmentId, 'context length:', context.length);
 
       const response = await this.anthropic.messages.create({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-sonnet-4-6',
         max_tokens: 6000,
         system: ANALYZE_PROMPT,
         messages: [
