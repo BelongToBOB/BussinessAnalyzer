@@ -177,6 +177,7 @@ export default function Session2FinancialPage() {
         equity: u(row.equity) || (u(row.totalAssets) - u(row.totalLiabilities)),
         cash: 0, accountsReceivable: 0, inventory: 0, accountsPayable: 0,
         annualDebtService: u(row.annualDebtService),
+        currentAssets: u(row.currentAssets), currentLiabilities: u(row.currentLiabilities),
       });
       const years = [buildPayload(prev, prevYear, false), buildPayload(curr, thisYear, true)]
         .filter(y => y.revenue > 0); // only include years with data

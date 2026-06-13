@@ -247,6 +247,7 @@ export class ReadinessService {
           accountsReceivable: y.accountsReceivable,
           inventory: y.inventory, accountsPayable: y.accountsPayable,
           annualDebtService: y.annualDebtService,
+          currentAssets: y.currentAssets, currentLiabilities: y.currentLiabilities,
           ebitda: d.ebitda, ebit: d.ebit,
           ebitdaMargin: d.ebitdaMargin, netMargin: d.netMargin,
           deRatio: d.deRatio, dscr: d.dscr,

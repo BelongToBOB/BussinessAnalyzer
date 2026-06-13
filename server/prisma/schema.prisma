@@ -338,6 +338,8 @@ model RdS2Financial {
   inventory        Decimal? @db.Decimal(18, 2)
   accountsPayable  Decimal? @db.Decimal(18, 2)
   annualDebtService Decimal? @db.Decimal(18, 2)
+  currentAssets     Decimal? @db.Decimal(18, 2)
+  currentLiabilities Decimal? @db.Decimal(18, 2)
   // derived
   ebitda           Decimal? @db.Decimal(18, 2)
   ebit             Decimal? @db.Decimal(18, 2)
