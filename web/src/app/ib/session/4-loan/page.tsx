@@ -209,16 +209,22 @@ export default function Session4LoanPage() {
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="bg-bg-primary rounded-xl p-2.5 border border-border">
                       <div className="text-[9px] text-text-tertiary">Conservative</div>
+                      <div className="text-[8px] text-text-tertiary">ปลอดภัย</div>
                       <div className="num text-xs font-bold mt-0.5">{result.loanConservative ? money(Number(result.loanConservative)) : '—'}</div>
                     </div>
                     <div className="bg-accent/10 rounded-xl p-2.5 border border-accent/30">
                       <div className="text-[9px] text-accent">Practical ⭐</div>
+                      <div className="text-[8px] text-accent/70">แนะนำ</div>
                       <div className="num text-xs font-bold text-accent mt-0.5">{result.loanPractical ? money(Number(result.loanPractical)) : '—'}</div>
                     </div>
                     <div className="bg-bg-primary rounded-xl p-2.5 border border-border">
                       <div className="text-[9px] text-text-tertiary">Stretch Max</div>
+                      <div className="text-[8px] text-text-tertiary">สูงสุด</div>
                       <div className="num text-xs font-bold mt-0.5">{result.loanStretch ? money(Number(result.loanStretch)) : '—'}</div>
                     </div>
+                  </div>
+                  <div className="text-[10px] text-text-tertiary mt-3 leading-relaxed">
+                    <strong>Conservative</strong> = วงเงินต่ำสุดจาก 4 วิธี (เสี่ยงน้อยสุด) · <strong>Practical</strong> = วงเงินจากวิธี Debt Capacity (สมดุลที่สุด) · <strong>Stretch Max</strong> = วงเงินสูงสุดที่ DSCR ยังผ่าน 1.25x (เสี่ยงสูง)
                   </div>
                 </div>
 
