@@ -62,11 +62,12 @@ export function IbSidebar({ children }: { children: React.ReactNode }) {
       {/* Sidebar — desktop, navy */}
       <aside className={`hidden md:flex flex-col shrink-0 transition-all duration-300 relative ${collapsed ? 'w-14' : 'w-60'}`}
         style={{ background: '#0F172A' }}>
-        {/* Collapse triangle button — centered on right edge */}
+        {/* Collapse triangle button — fixed top-right, aligned with header */}
         <button onClick={() => setCollapsed(!collapsed)}
-          className="absolute top-1/2 -translate-y-1/2 -right-3 z-10 w-6 h-10 flex items-center justify-center cursor-pointer bg-[#0F172A] border border-white/10 border-l-0 rounded-r-md hover:bg-[#1E293B] transition-colors"
+          className="fixed top-4 z-20 w-5 h-8 flex items-center justify-center cursor-pointer bg-[#0F172A] border border-white/10 border-l-0 rounded-r-md hover:bg-[#1E293B] transition-all"
+          style={{ left: collapsed ? '56px' : '240px' }}
           title={collapsed ? 'ขยาย' : 'พับเก็บ'}>
-          <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
+          <svg width="7" height="12" viewBox="0 0 8 14" fill="none">
             <path d={collapsed ? 'M2 1L7 7L2 13' : 'M6 1L1 7L6 13'} stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
           </svg>
         </button>
