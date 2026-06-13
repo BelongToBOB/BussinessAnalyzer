@@ -12,10 +12,10 @@ import { toast } from 'sonner';
 import { ChevronLeft, ChevronRight, Calculator } from 'lucide-react';
 
 const METHODS = [
-  { key: 'm1DebtCapacity', label: 'วิธีที่ 1: Debt Capacity', desc: 'EBITDA ÷ ยอดผ่อนรวม ≥ 1.25x → วงเงินสูงสุด', color: '#CA8A04' },
-  { key: 'm2Reverse', label: 'วิธีที่ 2: Reverse Calculation', desc: 'EBITDA − หนี้เดิม = เงินเหลือ → ผ่อนปลอดภัย → วงเงิน', color: '#8B5CF6' },
-  { key: 'm3RevenueMultiple', label: 'วิธีที่ 3: Revenue Multiple', desc: 'ยอดขาย/เดือน × 3 − หนี้เดิม', color: '#3B82F6' },
-  { key: 'm4WorkingCapital', label: 'วิธีที่ 4: Working Capital', desc: 'ยอดขาย/ปี × 20%', color: '#22C55E' },
+  { key: 'm1DebtCapacity', label: 'วิธีที่ 1: Debt Capacity', desc: 'EBITDA ÷ ยอดผ่อนรวม ≥ 1.25x → วงเงินสูงสุด', explain: 'ดูว่ากำไรพอจ่ายหนี้ไหม ถ้า DSCR ≥ 1.25 แปลว่ามีเงินเหลือหลังผ่อน แล้วคำนวณกลับว่ากู้ได้สูงสุดเท่าไหร่', color: '#CA8A04' },
+  { key: 'm2Reverse', label: 'วิธีที่ 2: Reverse Calculation', desc: 'EBITDA − หนี้เดิม = เงินเหลือ → ผ่อนปลอดภัย → วงเงิน', explain: 'คิดจากเงินสดเหลือจริงหลังจ่ายหนี้เดิม แล้วเอาแค่ 50% มาผ่อน เพื่อเหลือเงินสำรอง', color: '#8B5CF6' },
+  { key: 'm3RevenueMultiple', label: 'วิธีที่ 3: Revenue Multiple', desc: 'ยอดขาย/เดือน × 3 − หนี้เดิม', explain: 'ธนาคารมองว่ายอดขาย 1 บาท ควรรับหนี้ได้ไม่เกิน 3 บาท แล้วหักหนี้เดิมออก', color: '#3B82F6' },
+  { key: 'm4WorkingCapital', label: 'วิธีที่ 4: Working Capital', desc: 'ยอดขาย/ปี × 20%', explain: 'สินเชื่อหมุนเวียน ธนาคารให้ประมาณ 20% ของรายได้ต่อปี เช่น ขายปีละ 200 ล้าน ได้ WC Loan ~40 ล้าน', color: '#22C55E' },
 ];
 
 export default function Session4LoanPage() {
@@ -196,6 +196,7 @@ export default function Session4LoanPage() {
                               {val != null ? money(Math.round(Number(val))) : 'N/A'}
                             </span>
                           </div>
+                          <div className="text-[10px] text-text-secondary mt-2 leading-relaxed">{(m as any).explain}</div>
                         </div>
                       );
                     })}
