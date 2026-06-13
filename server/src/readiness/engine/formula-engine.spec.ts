@@ -80,30 +80,31 @@ describe('calcS02Derived', () => {
   });
 });
 
-describe('calcS04 - Loan Sizing (annual inputs, m1 uses monthly)', () => {
-  it('computes 4 loan methods — m1 uses revenue/12', () => {
+describe('calcS04 - Loan Sizing (revenue=monthly, ebitda=annual)', () => {
+  it('computes 4 loan methods — m1 uses monthly revenue directly', () => {
+    // Revenue = 1M/month, EBITDA = 4.2M/year
     const result = calcS04({
-      annualRevenue: 12_000_000,
-      annualEbitda: 4_200_000,
+      annualRevenue: 1_000_000,    // monthly revenue
+      annualEbitda: 4_200_000,     // annual EBITDA
       existingMonthlyDebtService: 50_000,
       existingDebtBalance: 2_000_000,
       collateralValue: 10_000_000,
       desiredLoan: 5_000_000,
     }, cfg);
-    // m1 = (12M/12) * 3 - 2M = 3M - 2M = 1M
+    // m1 = 1M * 3 - 2M = 1M (monthly revenue × 3)
     expect(result.m1RevenueMultiple).toBeCloseTo(1_000_000, -3);
     // m2 = 4.2M * 5 * 0.8 = 16.8M (annual EBITDA)
     expect(result.m2Reverse).toBeCloseTo(16_800_000, -3);
-    // m3 = 12M * 0.2 = 2.4M (annual revenue)
-    expect(result.m3WorkingCapital).toBeCloseTo(2_400_000, -3);
+    // m3 = 1M * 0.2 = 200K (monthly revenue × 20%)
+    expect(result.m3WorkingCapital).toBeCloseTo(200_000, -3);
     // m4 = 10M * 0.75 - 2M = 5.5M
     expect(result.m4AssetBased).toBeCloseTo(5_500_000, -3);
   });
 
-  it('computes DSCR before and after', () => {
+  it('computes DSCR before and after (annual EBITDA)', () => {
     const result = calcS04({
-      annualRevenue: 12_000_000,
-      annualEbitda: 4_200_000,
+      annualRevenue: 1_000_000,    // monthly
+      annualEbitda: 4_200_000,     // annual
       existingMonthlyDebtService: 100_000,
       existingDebtBalance: 3_000_000,
       collateralValue: 10_000_000,
@@ -116,7 +117,7 @@ describe('calcS04 - Loan Sizing (annual inputs, m1 uses monthly)', () => {
 
   it('returns verdict string', () => {
     const result = calcS04({
-      annualRevenue: 12_000_000,
+      annualRevenue: 1_000_000,
       annualEbitda: 4_200_000,
       existingMonthlyDebtService: 50_000,
       existingDebtBalance: 1_000_000,

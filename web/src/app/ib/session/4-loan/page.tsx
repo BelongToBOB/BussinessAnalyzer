@@ -113,14 +113,14 @@ export default function Session4LoanPage() {
               <div className="text-sm font-semibold mb-4">ข้อมูลทางการเงิน</div>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs font-medium mb-1 block text-text-secondary">รายได้รวมต่อปี (Revenue) *</label>
-                  <NumberInput value={annualRevenue} onChange={setAnnualRevenue} compact suffix="฿" />
+                  <label className="text-xs font-medium mb-1 block text-text-secondary">รายได้ต่อเดือน (Revenue) *</label>
+                  <NumberInput value={annualRevenue} onChange={setAnnualRevenue} compact suffix="฿/เดือน" />
                 </div>
                 <div>
                   <label className="text-xs font-medium mb-1 block text-text-secondary">EBITDA ต่อปี *</label>
                   <NumberInput value={annualEbitda} onChange={setAnnualEbitda} compact suffix="฿" />
                   {u(annualRevenue) > 0 && u(annualEbitda) > 0 && (
-                    <div className="text-[10px] text-text-tertiary mt-1">EBITDA Margin: {((u(annualEbitda) / u(annualRevenue)) * 100).toFixed(1)}%</div>
+                    <div className="text-[10px] text-text-tertiary mt-1">EBITDA Margin: {((u(annualEbitda) / (u(annualRevenue) * 12)) * 100).toFixed(1)}%</div>
                   )}
                 </div>
                 <div className="border-t border-border pt-3">
@@ -192,7 +192,7 @@ export default function Session4LoanPage() {
                               <div className="text-[10px] text-text-tertiary">{m.desc}</div>
                             </div>
                             <span className="num text-sm font-bold" style={{ color: m.color }}>
-                              {val != null && Number(val) > 0 ? money(Number(val)) : 'N/A'}
+                              {val != null ? money(Math.round(Number(val))) : 'N/A'}
                             </span>
                           </div>
                         </div>

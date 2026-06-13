@@ -417,8 +417,8 @@ export function calcS04(input: S04Input, cfg: EngineConfig): S04Result {
   const existingAnnualDebt = existingMonthlyDebtService * 12;
 
   // 4 methods
-  // วิธี 1: Revenue Multiple = ยอดขายต่อเดือน × 3 - หนี้เดิม
-  const m1RevenueMultiple = (annualRevenue / 12) * cfg.REVENUE_MULTIPLE - existingDebtBalance;
+  // วิธี 1: Revenue Multiple = ยอดขายต่อเดือน × 3 - หนี้เดิม (annualRevenue = monthly revenue from user)
+  const m1RevenueMultiple = annualRevenue * cfg.REVENUE_MULTIPLE - existingDebtBalance;
   const m2Reverse = annualEbitda > 0 ? annualEbitda * cfg.REVERSE_MULT * cfg.REVERSE_LTV : null;
   const m3WorkingCapital = annualRevenue * cfg.WC_RATE;
   const m4AssetBased = collateralValue * cfg.LTV_RATE - existingDebtBalance;
