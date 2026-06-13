@@ -37,16 +37,12 @@ export default function Session4LoanPage() {
   useEffect(() => {
     if (!assessment) return;
     const s4 = assessment.s4;
-    const s2 = assessment.s2Financials;
-    const latest = s2?.length ? s2[s2.length - 1] : null;
 
-    // Always pre-fill Revenue/EBITDA/Debt from latest S2 (source of truth)
-    if (latest?.revenue) setAnnualRevenue(maskCurrency(String(Math.round(Number(latest.revenue)))));
-    if (latest?.ebitda) setAnnualEbitda(maskCurrency(String(Math.round(Number(latest.ebitda)))));
-    if (latest?.annualDebtService) setExistingMonthlyDebtService(maskCurrency(String(Math.round(Number(latest.annualDebtService) / 12))));
-
-    // Load S4-specific fields (collateral, desired loan, etc.) from saved data
+    // Load S4 saved data only (no auto pre-fill from S2)
     if (s4) {
+      if (s4.annualRevenue) setAnnualRevenue(maskCurrency(String(Math.round(Number(s4.annualRevenue)))));
+      if (s4.annualEbitda) setAnnualEbitda(maskCurrency(String(Math.round(Number(s4.annualEbitda)))));
+      if (s4.existingMonthlyDebtService) setExistingMonthlyDebtService(maskCurrency(String(Math.round(Number(s4.existingMonthlyDebtService)))));
       if (s4.existingDebtBalance) setExistingDebtBalance(maskCurrency(String(Math.round(Number(s4.existingDebtBalance)))));
       if (s4.collateralValue) setCollateralValue(maskCurrency(String(Math.round(Number(s4.collateralValue)))));
       if (s4.desiredLoan) setDesiredLoan(maskCurrency(String(Math.round(Number(s4.desiredLoan)))));
@@ -106,10 +102,8 @@ export default function Session4LoanPage() {
 
         <RdSessionProgress current={4} completedFlags={flags} />
 
-        {assessment?.s2Financials?.length > 0 && (
-          <div className="bg-wash-info rounded-xl p-3 mb-4 text-xs text-accent flex items-center gap-2">
-            <span>ℹ</span> ดึงข้อมูลจาก Session 02 มาให้อัตโนมัติ — ตรวจสอบและแก้ไขได้
-          </div>
+        {false && (
+          <div></div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
