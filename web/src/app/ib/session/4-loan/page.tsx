@@ -48,7 +48,8 @@ export default function Session4LoanPage() {
       if (s4.desiredLoan) setDesiredLoan(maskCurrency(String(Math.round(Number(s4.desiredLoan)))));
       if (s4.assumedRate) setAssumedRate(String(Number(s4.assumedRate) * 100));
       if (s4.assumedYears) setAssumedYears(String(s4.assumedYears));
-      setResult(s4);
+      // Don't set result from DB — new formula fields not stored in DB
+      // User needs to click "คำนวณวงเงิน" to see results
     }
   }, [assessment]);
 
