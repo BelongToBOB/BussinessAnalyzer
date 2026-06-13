@@ -270,6 +270,7 @@ export class ReadinessService {
       latest.derived, revenueGrowth, profitGrowth,
       prevY?.inventory ?? null, prevY?.revenue ?? null,
       prevY?.cash ?? null, prevY?.netProfit ?? null, cfg,
+      latestY.inventory ?? null,
     );
 
     await this.prisma.rdS2Health.upsert({

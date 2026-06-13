@@ -184,7 +184,8 @@ export function calcHealthScore(
   prevRevenue: number | null,
   prevCash: number | null,
   prevNetProfit: number | null,
-  cfg: EngineConfig
+  cfg: EngineConfig,
+  currentInventory?: number | null
 ): S02HealthResult {
   const { DSCR_MIN, DE_MAX, DE_DANGER, EBITDA_MARGIN_GOOD,
     HS_EBITDA_W, HS_DSCR_W, HS_DE_W, HS_GROWTH_W } = cfg;
@@ -211,10 +212,18 @@ export function calcHealthScore(
     'มีจุดเสี่ยง';
 
   const redFlags: string[] = [];
-  if (derived.ebitda <= 0) redFlags.push('ธุรกิจยังไม่สร้างกำไรจากเนื้องาน');
-  if (derived.dscr !== null && derived.dscr < DSCR_MIN) redFlags.push('ความสามารถจ่ายหนี้ต่ำกว่าเกณฑ์ธนาคาร');
-  if (derived.deRatioFlag === 'negative_equity') redFlags.push('ทุนติดลบ — ต้องเพิ่มทุนก่อนขอกู้');
-  if (derived.deRatio !== null && derived.deRatio >= DE_MAX) redFlags.push('หนี้สูงเกินเกณฑ์ (D/E ≥ 3x)');
+  if (derived.ebitda <= 0) redFlags.push('EBITDA ≤ 0 — ธุรกิจยังไม่สร้างกำไรจากเนื้องาน');
+  if (derived.dscr !== null && derived.dscr < DSCR_MIN) redFlags.push('DSCR ต่ำกว่าเกณฑ์ธนาคาร (1.25x)');
+  if (derived.deRatioFlag === 'negative_equity') redFlags.push('ส่วนของผู้ถือหุ้นติดลบ (ทุนติดลบ)');
+  if (derived.deRatio !== null && derived.deRatio >= DE_MAX) redFlags.push('D/E สูงเกินเกณฑ์ (≥3x)');
+  if (prevInventory !== null && prevInventory > 0 && currentInventory != null) {
+    if (currentInventory > prevInventory * 1.25) {
+      redFlags.push('สต็อกบวมเร็ว — เงินอาจจมในของที่ขายไม่ออก');
+    }
+  }
+  if (derived.currentRatio !== null && derived.currentRatioFlag === 'risk') {
+    redFlags.push('Current Ratio < 1.0 — หนี้สั้นมากกว่าสินทรัพย์สั้น เสี่ยงสภาพคล่อง');
+  }
 
   const passChecklist = {
     ebitdaPositive: derived.ebitda > 0,
