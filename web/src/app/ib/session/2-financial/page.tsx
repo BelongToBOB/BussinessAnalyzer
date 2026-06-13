@@ -38,13 +38,14 @@ interface FinRow {
   revenue: string; cogs: string; depreciation: string;
   interestExpense: string; tax: string; netProfit: string;
   totalAssets: string; totalLiabilities: string; equity: string;
-  annualDebtService: string;
+  annualDebtService: string; currentAssets: string; currentLiabilities: string;
 }
 
 function emptyRow(): FinRow {
   return {
     revenue: '', cogs: '', depreciation: '', interestExpense: '', tax: '',
     netProfit: '', totalAssets: '', totalLiabilities: '', equity: '', annualDebtService: '',
+    currentAssets: '', currentLiabilities: '',
   };
 }
 
@@ -61,6 +62,8 @@ const TABLE_ROWS: { key: keyof FinRow | '_grossProfit' | '_ebitda'; label: strin
   { key: 'totalLiabilities', label: 'หนี้สินรวม (Total Liabilities)' },
   { key: 'equity', label: 'ส่วนของผู้ถือหุ้น (Equity)' },
   { key: 'annualDebtService', label: 'ภาระหนี้ต่อปี (ต้น+ดอก)' },
+  { key: 'currentAssets', label: 'สินทรัพย์หมุนเวียน (Current Assets)' },
+  { key: 'currentLiabilities', label: 'หนี้สินหมุนเวียน (Current Liabilities)' },
 ];
 
 export default function Session2FinancialPage() {
@@ -94,6 +97,7 @@ export default function Session2FinancialPage() {
         interestExpense: fm(r.interestExpense), tax: fm(r.tax), netProfit: fm(r.netProfit),
         totalAssets: fm(r.totalAssets), totalLiabilities: fm(r.totalLiabilities),
         equity: fm(r.equity), annualDebtService: fm(r.annualDebtService),
+        currentAssets: fm(r.currentAssets), currentLiabilities: fm(r.currentLiabilities),
       };
     };
 
