@@ -344,9 +344,9 @@ export function calcS03Summary(
 // ─── Session 04: Loan Sizing ────────────────────────────────────────────────
 
 export interface S04Input {
-  annualRevenue: number;
-  annualEbitda: number;
-  existingMonthlyDebtService: number;
+  annualRevenue: number;   // monthly revenue (field name kept for compat)
+  annualEbitda: number;    // monthly EBITDA
+  existingMonthlyDebtService: number; // monthly existing debt payment
   existingDebtBalance: number;
   collateralValue: number;
   assumedRate?: number;
@@ -355,8 +355,12 @@ export interface S04Input {
 }
 
 export interface S04Result {
+  m1DebtCapacity: number | null;      // วิธี 1: Debt Capacity
+  m2Reverse: number | null;           // วิธี 2: Reverse Calculation
+  m3RevenueMultiple: number;          // วิธี 3: Revenue Multiple
+  m4WorkingCapital: number;           // วิธี 4: Working Capital
+  // kept for backward compat
   m1RevenueMultiple: number;
-  m2Reverse: number | null;
   m3WorkingCapital: number;
   m4AssetBased: number;
   loanConservative: number | null;
@@ -372,13 +376,24 @@ export interface S04Result {
   capacityScore: number;
 }
 
+/** Monthly payment for a loan (PMT) */
+export function monthlyPmt(P: number, annualRate: number, termMonths: number): number {
+  if (P <= 0 || annualRate <= 0 || termMonths <= 0) return 0;
+  const r = annualRate / 12;
+  return P * r / (1 - Math.pow(1 + r, -termMonths));
+}
+
+/** PV of annuity: convert monthly payment → loan amount */
+export function pvAnnuity(payment: number, annualRate: number, termMonths: number): number {
+  if (payment <= 0 || annualRate <= 0 || termMonths <= 0) return 0;
+  const r = annualRate / 12;
+  return payment * (1 - Math.pow(1 + r, -termMonths)) / r;
+}
+
 /** Annuity: annual debt service for a new loan */
 export function newAnnualDebt(P: number, annualRate: number, years: number): number {
   if (P <= 0 || annualRate <= 0 || years <= 0) return 0;
-  const r = annualRate / 12;
-  const n = years * 12;
-  const monthly = P * r / (1 - Math.pow(1 + r, -n));
-  return monthly * 12;
+  return monthlyPmt(P, annualRate, years * 12) * 12;
 }
 
 /** Find loan stretch: max loan where dscr_after >= DSCR_MIN */
@@ -410,48 +425,68 @@ function findLoanStretch(
 export function calcS04(input: S04Input, cfg: EngineConfig): S04Result {
   const {
     annualRevenue, annualEbitda, existingMonthlyDebtService,
-    existingDebtBalance, collateralValue, desiredLoan
+    existingDebtBalance, desiredLoan
   } = input;
   const rate = input.assumedRate ?? cfg.DEFAULT_LOAN_RATE;
-  const years = input.assumedYears ?? cfg.DEFAULT_LOAN_YEARS;
-  const existingAnnualDebt = existingMonthlyDebtService * 12;
+  const termMonths = (input.assumedYears ?? cfg.DEFAULT_LOAN_YEARS) * 12;
+  const SAFETY_RATIO = 0.5; // config: ผ่อนแบบปลอดภัย 50% ของเงินเหลือ
 
-  // User inputs: revenue=monthly, ebitda=monthly, debt=monthly
+  // All inputs are monthly
   const monthlyRevenue = annualRevenue;
   const monthlyEbitda = annualEbitda;
+  const oldPayment = existingMonthlyDebtService;
   const annualEbitdaCalc = monthlyEbitda * 12;
+  const existingAnnualDebt = oldPayment * 12;
 
-  // 4 methods
-  // วิธี 1: Revenue Multiple = ยอดขายต่อเดือน × 3 - หนี้เดิม
-  const m1RevenueMultiple = monthlyRevenue * cfg.REVENUE_MULTIPLE - existingDebtBalance;
-  // วิธี 2: Reverse DSCR = EBITDA ต่อเดือน × 5 × 80%
-  const m2Reverse = monthlyEbitda > 0 ? monthlyEbitda * cfg.REVERSE_MULT * cfg.REVERSE_LTV : null;
-  // วิธี 3: Working Capital = ยอดขายต่อเดือน × 20%
-  const m3WorkingCapital = monthlyRevenue * cfg.WC_RATE;
-  const m4AssetBased = collateralValue * cfg.LTV_RATE - existingDebtBalance;
+  // ─── วิธี 1: Debt Capacity (DSCR-style → หาวงเงินสูงสุด) ───
+  // maxNewPayment = (EBITDA/เดือน ÷ 1.25) − หนี้เดิม/เดือน
+  let m1DebtCapacity: number | null = null;
+  if (monthlyEbitda > 0) {
+    const maxNewPayment = (monthlyEbitda / cfg.DSCR_MIN) - oldPayment;
+    if (maxNewPayment > 0) {
+      m1DebtCapacity = pvAnnuity(maxNewPayment, rate, termMonths);
+    }
+  }
 
-  // Valid methods (> 0)
-  const validMethods = [m1RevenueMultiple, m2Reverse, m3WorkingCapital, m4AssetBased]
+  // ─── วิธี 2: Reverse Calculation (cashflow-based) ───
+  // availableCash = EBITDA/เดือน − หนี้เดิม/เดือน
+  // affordablePay = availableCash × SAFETY_RATIO
+  let m2Reverse: number | null = null;
+  if (monthlyEbitda > oldPayment) {
+    const availableCash = monthlyEbitda - oldPayment;
+    const affordablePay = availableCash * SAFETY_RATIO;
+    m2Reverse = pvAnnuity(affordablePay, rate, termMonths);
+  }
+
+  // ─── วิธี 3: Revenue Multiple ───
+  // ยอดขาย/เดือน × 3 − หนี้เดิม
+  const m3RevenueMultiple = monthlyRevenue * cfg.REVENUE_MULTIPLE - existingDebtBalance;
+
+  // ─── วิธี 4: Working Capital ───
+  // ยอดขาย/เดือน × 12 × 20%
+  const m4WorkingCapital = monthlyRevenue * 12 * cfg.WC_RATE;
+
+  // ─── Practical / Conservative / Stretch ───
+  const allMethods = [m1DebtCapacity, m2Reverse, m3RevenueMultiple, m4WorkingCapital]
     .filter((v): v is number => v !== null && v > 0);
 
-  const loanConservative = validMethods.length > 0 ? Math.min(...validMethods) : null;
-  const loanPractical = m2Reverse !== null && m2Reverse > 0
-    ? m2Reverse
-    : validMethods.length > 0
-      ? validMethods.sort((a, b) => a - b)[Math.floor(validMethods.length / 2)]
+  const loanConservative = allMethods.length > 0 ? Math.min(...allMethods) : null;
+  const loanPractical = m1DebtCapacity !== null && m1DebtCapacity > 0
+    ? m1DebtCapacity
+    : allMethods.length > 0
+      ? allMethods.sort((a, b) => a - b)[Math.floor(allMethods.length / 2)]
       : null;
 
-  const loanStretch = findLoanStretch(annualEbitdaCalc, existingAnnualDebt, rate, years, cfg.DSCR_MIN);
+  const loanStretch = findLoanStretch(annualEbitdaCalc, existingAnnualDebt, rate, termMonths / 12, cfg.DSCR_MIN);
   const recommendedAmount = loanPractical;
 
-  // DSCR before/after
-  const dscrBefore = existingAnnualDebt > 0 ? annualEbitdaCalc / existingAnnualDebt : null;
-  const loanForDscr = loanPractical ?? 0;
-  const nd = newAnnualDebt(loanForDscr, rate, years);
-  const totalDebt = existingAnnualDebt + nd;
-  const dscrAfter = totalDebt > 0 ? annualEbitdaCalc / totalDebt : null;
+  // ─── DSCR before/after ───
+  const dscrBefore = oldPayment > 0 ? monthlyEbitda / oldPayment : null;
+  const loanForDscr = desiredLoan ?? loanPractical ?? 0;
+  const newPay = monthlyPmt(loanForDscr, rate, termMonths);
+  const dscrAfter = (oldPayment + newPay) > 0 ? monthlyEbitda / (oldPayment + newPay) : null;
+  const nd = newPay * 12;
 
-  // Risky threshold: loan where dscr_after < DSCR_MIN
   const riskyThreshold = loanStretch;
 
   const verdict = dscrAfter !== null
@@ -465,22 +500,25 @@ export function calcS04(input: S04Input, cfg: EngineConfig): S04Result {
     warnings.push(`วงเงินที่ต้องการ (${fmtMoney(desiredLoan)}) เกินกำลัง — แนะนำไม่เกิน ${fmtMoney(recommendedAmount * cfg.DESIRED_LOAN_WARN_MULT)}`);
   }
   if (monthlyEbitda <= 0) {
-    warnings.push('EBITDA ติดลบ — วิธีที่ 2 ใช้ไม่ได้ ระบบใช้ค่า median แทน');
+    warnings.push('EBITDA ติดลบ — วิธีที่ 1-2 ใช้ไม่ได้');
   }
 
-  // Capacity score: dscrQuality × 60 + sFit × 40 (v2 formula)
+  // Capacity score
   const sFit = loanPractical && loanForDscr <= loanPractical
     ? 40
     : loanPractical
       ? Math.max(0, 40 * (1 - (loanForDscr - loanPractical) / (loanPractical || 1)))
-      : 20; // no practical = neutral
+      : 20;
   let capacityScore = 0;
   if (dscrAfter !== null) {
     capacityScore = Math.round(dscrQuality(dscrAfter, cfg) * 60 + sFit);
   }
 
   return {
-    m1RevenueMultiple, m2Reverse, m3WorkingCapital, m4AssetBased,
+    m1DebtCapacity, m2Reverse, m3RevenueMultiple, m4WorkingCapital,
+    // backward compat
+    m1RevenueMultiple: m3RevenueMultiple, m3WorkingCapital: m4WorkingCapital,
+    m4AssetBased: 0,
     loanConservative, loanPractical, loanStretch,
     recommendedAmount, riskyThreshold,
     dscrBefore, dscrAfter, newAnnualDebt: nd,

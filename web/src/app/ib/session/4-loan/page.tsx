@@ -12,10 +12,10 @@ import { toast } from 'sonner';
 import { ChevronLeft, ChevronRight, Calculator } from 'lucide-react';
 
 const METHODS = [
-  { key: 'm1RevenueMultiple', label: 'วิธีที่ 1: Revenue Multiple', desc: 'Revenue × 3x − หนี้เดิม', color: '#3B82F6' },
-  { key: 'm2Reverse', label: 'วิธีที่ 2: Reverse DSCR', desc: 'EBITDA × 5x × 80%', color: '#8B5CF6' },
-  { key: 'm3WorkingCapital', label: 'วิธีที่ 3: Working Capital', desc: 'Revenue × 20%', color: '#22C55E' },
-  { key: 'm4AssetBased', label: 'วิธีที่ 4: Asset-Based (LTV)', desc: 'หลักทรัพย์ × 75% − หนี้เดิม', color: '#F59E0B' },
+  { key: 'm1DebtCapacity', label: 'วิธีที่ 1: Debt Capacity', desc: 'EBITDA ÷ ยอดผ่อนรวม ≥ 1.25x → วงเงินสูงสุด', color: '#CA8A04' },
+  { key: 'm2Reverse', label: 'วิธีที่ 2: Reverse Calculation', desc: 'EBITDA − หนี้เดิม = เงินเหลือ → ผ่อนปลอดภัย → วงเงิน', color: '#8B5CF6' },
+  { key: 'm3RevenueMultiple', label: 'วิธีที่ 3: Revenue Multiple', desc: 'ยอดขาย/เดือน × 3 − หนี้เดิม', color: '#3B82F6' },
+  { key: 'm4WorkingCapital', label: 'วิธีที่ 4: Working Capital', desc: 'ยอดขาย/ปี × 20%', color: '#22C55E' },
 ];
 
 export default function Session4LoanPage() {
@@ -130,10 +130,6 @@ export default function Session4LoanPage() {
                 <div>
                   <label className="text-xs font-medium mb-1 block text-text-secondary">ยอดหนี้คงเหลือรวม</label>
                   <NumberInput value={existingDebtBalance} onChange={setExistingDebtBalance} compact suffix="฿" />
-                </div>
-                <div>
-                  <label className="text-xs font-medium mb-1 block text-text-secondary">มูลค่าหลักทรัพย์ค้ำประกัน</label>
-                  <NumberInput value={collateralValue} onChange={setCollateralValue} compact suffix="฿" />
                 </div>
                 <div>
                   <label className="text-xs font-medium mb-1 block text-text-secondary">วงเงินที่ต้องการ (ถ้ามี)</label>

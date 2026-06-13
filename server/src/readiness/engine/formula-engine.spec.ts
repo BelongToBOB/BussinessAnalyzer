@@ -80,49 +80,64 @@ describe('calcS02Derived', () => {
   });
 });
 
-describe('calcS04 - Loan Sizing (all monthly inputs)', () => {
-  it('computes 4 loan methods with monthly revenue + ebitda', () => {
-    // Revenue = 1M/month, EBITDA = 350K/month
+describe('calcS04 - 4 Loan Methods (spec: Debt Capacity, Reverse, Revenue Multiple, WC)', () => {
+  it('computes Debt Capacity via PV annuity', () => {
+    // EBITDA/mo 833K, old payment 100K → maxNewPay = (833K/1.25) - 100K = 566,400
     const result = calcS04({
-      annualRevenue: 1_000_000,    // monthly
-      annualEbitda: 350_000,       // monthly
-      existingMonthlyDebtService: 50_000,
-      existingDebtBalance: 2_000_000,
-      collateralValue: 10_000_000,
-      desiredLoan: 5_000_000,
+      annualRevenue: 5_000_000, annualEbitda: 833_000,
+      existingMonthlyDebtService: 100_000, existingDebtBalance: 10_000_000,
+      collateralValue: 0,
     }, cfg);
-    // m1 = 1M * 3 - 2M = 1M
-    expect(result.m1RevenueMultiple).toBeCloseTo(1_000_000, -3);
-    // m2 = 350K * 5 * 0.8 = 1.4M
-    expect(result.m2Reverse).toBeCloseTo(1_400_000, -3);
-    // m3 = 1M * 0.2 = 200K
-    expect(result.m3WorkingCapital).toBeCloseTo(200_000, -3);
-    // m4 = 10M * 0.75 - 2M = 5.5M
-    expect(result.m4AssetBased).toBeCloseTo(5_500_000, -3);
+    expect(result.m1DebtCapacity).toBeGreaterThan(0);
   });
 
-  it('computes DSCR before and after (monthly × 12)', () => {
+  it('computes Reverse Calculation from cashflow', () => {
+    // EBITDA/mo 250K, old 100K → available 150K → afford 75K → PV(75K, 7%, 84)
     const result = calcS04({
-      annualRevenue: 1_000_000,    // monthly
-      annualEbitda: 350_000,       // monthly → annual = 4.2M
-      existingMonthlyDebtService: 100_000,
-      existingDebtBalance: 3_000_000,
-      collateralValue: 10_000_000,
-      desiredLoan: 5_000_000,
+      annualRevenue: 5_000_000, annualEbitda: 250_000,
+      existingMonthlyDebtService: 100_000, existingDebtBalance: 10_000_000,
+      collateralValue: 0,
     }, cfg);
-    // DSCR before = (350K*12) / (100K*12) = 3.5
+    expect(result.m2Reverse).toBeGreaterThan(4_000_000);
+    expect(result.m2Reverse).toBeLessThan(6_000_000);
+  });
+
+  it('computes Revenue Multiple = monthly × 3 − debt', () => {
+    const result = calcS04({
+      annualRevenue: 5_000_000, annualEbitda: 833_000,
+      existingMonthlyDebtService: 100_000, existingDebtBalance: 10_000_000,
+      collateralValue: 0,
+    }, cfg);
+    // 5M × 3 - 10M = 5M
+    expect(result.m3RevenueMultiple).toBeCloseTo(5_000_000, -3);
+  });
+
+  it('computes Working Capital = monthly × 12 × 20%', () => {
+    const result = calcS04({
+      annualRevenue: 5_000_000, annualEbitda: 833_000,
+      existingMonthlyDebtService: 100_000, existingDebtBalance: 10_000_000,
+      collateralValue: 0,
+    }, cfg);
+    // 5M × 12 × 0.2 = 12M
+    expect(result.m4WorkingCapital).toBeCloseTo(12_000_000, -3);
+  });
+
+  it('computes DSCR monthly: EBITDA/mo ÷ totalPayment/mo', () => {
+    const result = calcS04({
+      annualRevenue: 5_000_000, annualEbitda: 350_000,
+      existingMonthlyDebtService: 100_000, existingDebtBalance: 3_000_000,
+      collateralValue: 0,
+    }, cfg);
+    // DSCR before = 350K / 100K = 3.5
     expect(result.dscrBefore).toBeCloseTo(3.5, 1);
     expect(result.dscrAfter).toBeLessThan(result.dscrBefore!);
   });
 
   it('returns verdict string', () => {
     const result = calcS04({
-      annualRevenue: 1_000_000,
-      annualEbitda: 350_000,
-      existingMonthlyDebtService: 50_000,
-      existingDebtBalance: 1_000_000,
-      collateralValue: 10_000_000,
-      desiredLoan: 3_000_000,
+      annualRevenue: 5_000_000, annualEbitda: 350_000,
+      existingMonthlyDebtService: 50_000, existingDebtBalance: 1_000_000,
+      collateralValue: 0,
     }, cfg);
     expect(result.verdict).toBeTruthy();
   });
@@ -307,13 +322,11 @@ describe('WinWin 2566 preset — S02', () => {
 });
 
 // ─── Capacity Score v2 ──────────────────────────────────────
-describe('calcS04 — Capacity Score v2 (monthly inputs)', () => {
-  it('returns ~48 for WinWin case (monthly EBITDA 919K)', () => {
+describe('calcS04 — Capacity Score v2', () => {
+  it('returns capacity score for WinWin case', () => {
     const result = calcS04({
-      annualRevenue: 17_104_229,   // monthly
-      annualEbitda: 919_529,       // monthly (11,034,343/12)
-      existingMonthlyDebtService: 162_851,
-      existingDebtBalance: 0,
+      annualRevenue: 17_104_229, annualEbitda: 919_529,
+      existingMonthlyDebtService: 162_851, existingDebtBalance: 0,
       collateralValue: 0,
     }, cfg);
     expect(result.capacityScore).toBeGreaterThanOrEqual(40);
@@ -322,12 +335,9 @@ describe('calcS04 — Capacity Score v2 (monthly inputs)', () => {
 
   it('returns decent capacity for strong DSCR', () => {
     const result = calcS04({
-      annualRevenue: 1_000_000,    // monthly
-      annualEbitda: 350_000,       // monthly
-      existingMonthlyDebtService: 50_000,
-      existingDebtBalance: 1_000_000,
-      collateralValue: 10_000_000,
-      desiredLoan: 500_000,
+      annualRevenue: 5_000_000, annualEbitda: 350_000,
+      existingMonthlyDebtService: 50_000, existingDebtBalance: 1_000_000,
+      collateralValue: 0, desiredLoan: 500_000,
     }, cfg);
     expect(result.capacityScore).toBeGreaterThanOrEqual(40);
   });
