@@ -192,8 +192,8 @@ export default function Session4LoanPage() {
                               <div className="text-xs font-semibold" style={{ color: m.color }}>{m.label}</div>
                               <div className="text-[10px] text-text-tertiary">{m.desc}</div>
                             </div>
-                            <span className="num text-sm font-bold" style={{ color: m.color }}>
-                              {val != null ? money(Math.round(Number(val))) : 'N/A'}
+                            <span className={`text-sm font-bold ${val == null ? '' : 'num'}`} style={{ color: val != null ? m.color : 'var(--status-bad)' }}>
+                              {val != null ? money(Math.round(Number(val))) : 'กู้เพิ่มไม่ได้'}
                             </span>
                           </div>
                           <div className="text-[10px] text-text-secondary mt-2 leading-relaxed">{(m as any).explain}</div>
