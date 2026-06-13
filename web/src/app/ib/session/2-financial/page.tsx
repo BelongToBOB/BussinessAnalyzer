@@ -137,6 +137,9 @@ export default function Session2FinancialPage() {
   const grossMargin = currRev > 0 && currCogs > 0 ? ((currRev - currCogs) / currRev) * 100 : null;
   const deRatio = currEquity > 0 ? currLiab / currEquity : currEquity < 0 ? -Infinity : null;
   const dscr = currDebt > 0 ? currEbitda / currDebt : null;
+  const currCA = u(curr.currentAssets);
+  const currCL = u(curr.currentLiabilities);
+  const currentRatio = currCL > 0 ? currCA / currCL : null;
 
   // Checklist
   const chkEbitda = currEbitda > 0;
@@ -309,6 +312,7 @@ export default function Session2FinancialPage() {
               { label: 'Gross Margin', formula: '= (Revenue−COGS) ÷ Revenue × 100', value: grossMargin, fmt: (v: number) => v.toFixed(1) + '%', good: grossMargin !== null && grossMargin >= 30, threshold: '> 30%', color: 'border-status-good bg-wash-good', textColor: 'text-status-good' },
               { label: 'D/E Ratio', formula: '= หนี้สินรวม ÷ ส่วนผู้ถือหุ้น', value: deRatio === -Infinity ? null : deRatio, fmt: (v: number) => v.toFixed(2) + 'x', good: deRatio !== null && deRatio !== -Infinity && deRatio < 3, threshold: '< 3x', color: 'border-accent bg-wash-info', textColor: 'text-accent', special: deRatio === -Infinity ? 'ทุนติดลบ' : undefined },
               { label: 'DSCR', formula: '= EBITDA ÷ ภาระหนี้ต่อปี', value: dscr, fmt: (v: number) => v.toFixed(2) + 'x', good: dscr !== null && dscr > 1.25, threshold: '> 1.25x', color: 'border-accent bg-wash-info', textColor: 'text-accent', special: currDebt === 0 ? 'ไม่มีหนี้' : undefined },
+              { label: 'Current Ratio', formula: '= สินทรัพย์หมุนเวียน ÷ หนี้สินหมุนเวียน', value: currentRatio, fmt: (v: number) => v.toFixed(2) + 'x', good: currentRatio !== null && currentRatio >= 1.0, threshold: '≥ 1.0x', color: 'border-status-bad bg-wash-bad', textColor: 'text-status-bad', special: currCL === 0 ? 'ไม่มีข้อมูล' : undefined },
             ].map((r) => (
               <div key={r.label} className={`border-l-4 rounded-r-xl p-4 ${r.color}`}>
                 <div className="flex items-start justify-between">
