@@ -392,24 +392,13 @@ export default function Session2FinancialPage() {
           </div>
         </div>
 
-        {/* Health Score result */}
-        {result && (
-          <div className="bg-accent/5 border border-accent/20 rounded-2xl p-5 mb-4 anim-scale-in">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <div className="text-sm font-bold text-accent">Financial Health Score</div>
-                <div className="text-xs text-text-secondary mt-1">{result.status}</div>
-              </div>
-              <ScoreRing score={result.healthScore ?? 0} size={90} label="" />
-            </div>
-            {result.redFlags?.length > 0 && (
-              <div className="mt-2 p-3 rounded-xl bg-wash-bad space-y-1">
-                <div className="text-xs font-semibold text-status-bad">Red Flags:</div>
-                {result.redFlags.map((f: string, i: number) => (
-                  <div key={i} className="text-xs text-status-bad">• {f}</div>
-                ))}
-              </div>
-            )}
+        {/* Red Flags only (no Health Score gauge) */}
+        {result?.redFlags?.length > 0 && (
+          <div className="p-3 rounded-xl bg-wash-bad space-y-1 mb-4">
+            <div className="text-xs font-semibold text-status-bad">Red Flags:</div>
+            {result.redFlags.map((f: string, i: number) => (
+              <div key={i} className="text-xs text-status-bad">• {f}</div>
+            ))}
           </div>
         )}
 
