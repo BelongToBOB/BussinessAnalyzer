@@ -113,12 +113,12 @@ export default function Session4LoanPage() {
               <div className="text-sm font-semibold mb-4">ข้อมูลทางการเงิน</div>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs font-medium mb-1 block text-text-secondary">รายได้รวมต่อปี (Revenue) *</label>
-                  <NumberInput value={annualRevenue} onChange={setAnnualRevenue} compact suffix="฿" />
+                  <label className="text-xs font-medium mb-1 block text-text-secondary">รายได้ต่อเดือน (Revenue) *</label>
+                  <NumberInput value={annualRevenue} onChange={setAnnualRevenue} compact suffix="฿/เดือน" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium mb-1 block text-text-secondary">EBITDA ต่อปี *</label>
-                  <NumberInput value={annualEbitda} onChange={setAnnualEbitda} compact suffix="฿" />
+                  <label className="text-xs font-medium mb-1 block text-text-secondary">EBITDA ต่อเดือน *</label>
+                  <NumberInput value={annualEbitda} onChange={setAnnualEbitda} compact suffix="฿/เดือน" />
                   {u(annualRevenue) > 0 && u(annualEbitda) > 0 && (
                     <div className="text-[10px] text-text-tertiary mt-1">EBITDA Margin: {((u(annualEbitda) / u(annualRevenue)) * 100).toFixed(1)}%</div>
                   )}

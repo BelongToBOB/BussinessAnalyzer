@@ -414,12 +414,15 @@ export function calcS04(input: S04Input, cfg: EngineConfig): S04Result {
   } = input;
   const rate = input.assumedRate ?? cfg.DEFAULT_LOAN_RATE;
   const years = input.assumedYears ?? cfg.DEFAULT_LOAN_YEARS;
-  const existingAnnualDebt = existingMonthlyDebtService * 12;
+  // User inputs monthly values — compare monthly to monthly
+  const monthlyRevenue = annualRevenue; // field renamed: now monthly
+  const monthlyEbitda = annualEbitda;   // field renamed: now monthly
+  const monthlyDebt = existingMonthlyDebtService;
 
-  // 4 methods
-  const m1RevenueMultiple = annualRevenue * cfg.REVENUE_MULTIPLE - existingDebtBalance;
-  const m2Reverse = annualEbitda > 0 ? annualEbitda * cfg.REVERSE_MULT * cfg.REVERSE_LTV : null;
-  const m3WorkingCapital = annualRevenue * cfg.WC_RATE;
+  // 4 methods (all use monthly inputs directly)
+  const m1RevenueMultiple = monthlyRevenue * cfg.REVENUE_MULTIPLE - existingDebtBalance;
+  const m2Reverse = monthlyEbitda > 0 ? monthlyEbitda * cfg.REVERSE_MULT * cfg.REVERSE_LTV : null;
+  const m3WorkingCapital = monthlyRevenue * cfg.WC_RATE;
   const m4AssetBased = collateralValue * cfg.LTV_RATE - existingDebtBalance;
 
   // Valid methods (> 0)
@@ -433,15 +436,18 @@ export function calcS04(input: S04Input, cfg: EngineConfig): S04Result {
       ? validMethods.sort((a, b) => a - b)[Math.floor(validMethods.length / 2)]
       : null;
 
-  const loanStretch = findLoanStretch(annualEbitda, existingAnnualDebt, rate, years, cfg.DSCR_MIN);
+  // DSCR: monthly EBITDA vs monthly debt
+  const annualEbitdaCalc = monthlyEbitda * 12;
+  const existingAnnualDebt = monthlyDebt * 12;
+  const loanStretch = findLoanStretch(annualEbitdaCalc, existingAnnualDebt, rate, years, cfg.DSCR_MIN);
   const recommendedAmount = loanPractical;
 
-  // DSCR before/after
-  const dscrBefore = existingAnnualDebt > 0 ? annualEbitda / existingAnnualDebt : null;
+  // DSCR before/after (convert to annual for standard comparison)
+  const dscrBefore = existingAnnualDebt > 0 ? annualEbitdaCalc / existingAnnualDebt : null;
   const loanForDscr = loanPractical ?? 0;
   const nd = newAnnualDebt(loanForDscr, rate, years);
   const totalDebt = existingAnnualDebt + nd;
-  const dscrAfter = totalDebt > 0 ? annualEbitda / totalDebt : null;
+  const dscrAfter = totalDebt > 0 ? annualEbitdaCalc / totalDebt : null;
 
   // Risky threshold: loan where dscr_after < DSCR_MIN
   const riskyThreshold = loanStretch;
@@ -456,7 +462,7 @@ export function calcS04(input: S04Input, cfg: EngineConfig): S04Result {
   if (desiredLoan && recommendedAmount && desiredLoan > recommendedAmount * cfg.DESIRED_LOAN_WARN_MULT) {
     warnings.push(`วงเงินที่ต้องการ (${fmtMoney(desiredLoan)}) เกินกำลัง — แนะนำไม่เกิน ${fmtMoney(recommendedAmount * cfg.DESIRED_LOAN_WARN_MULT)}`);
   }
-  if (annualEbitda <= 0) {
+  if (monthlyEbitda <= 0) {
     warnings.push('EBITDA ติดลบ — วิธีที่ 2 ใช้ไม่ได้ ระบบใช้ค่า median แทน');
   }
 
