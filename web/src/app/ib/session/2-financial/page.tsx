@@ -20,12 +20,16 @@ const WINWIN_PRESET = {
     interestExpense: 1231008, tax: 0, netProfit: 2626988,
     totalAssets: 83602443, totalLiabilities: 49197692, equity: 34404751,
     annualDebtService: 1223740,
+    currentAssets: 53000000, currentLiabilities: 45000000,
+    accountsReceivable: 1367149, inventory: 48091381, accountsPayable: 17703741,
   },
   curr: {
     revenue: 205250748, cogs: 185457426, depreciation: 2100000,
     interestExpense: 1361601, tax: 0, netProfit: 5572744,
     totalAssets: 135080444, totalLiabilities: 95102949, equity: 39977495,
     annualDebtService: 1954208,
+    currentAssets: 103620009, currentLiabilities: 94149056,
+    accountsReceivable: 3083203, inventory: 63598753, accountsPayable: 21261334,
   },
 };
 
