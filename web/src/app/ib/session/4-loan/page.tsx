@@ -132,6 +132,10 @@ export default function Session4LoanPage() {
                   <NumberInput value={existingDebtBalance} onChange={setExistingDebtBalance} compact suffix="฿" />
                 </div>
                 <div>
+                  <label className="text-xs font-medium mb-1 block text-text-secondary">มูลค่าหลักทรัพย์ค้ำประกัน</label>
+                  <NumberInput value={collateralValue} onChange={setCollateralValue} compact suffix="฿" />
+                </div>
+                <div>
                   <label className="text-xs font-medium mb-1 block text-text-secondary">วงเงินที่ต้องการ (ถ้ามี)</label>
                   <NumberInput value={desiredLoan} onChange={setDesiredLoan} compact suffix="฿" />
                 </div>
